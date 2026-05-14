@@ -51,19 +51,19 @@ export default function SolutionEcosystemSection({
     steps[activeIndex] ?? steps[0];
 
   return (
-    <section className="bg-white py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-[30px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
+          <h2 className="text-[24px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
             {title}
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-7 text-black/60 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/60 sm:mt-5 sm:text-base sm:leading-7">
             {description}
           </p>
         </div>
 
-        <div className="mt-16 grid items-center gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
-          <div className="space-y-6">
+        <div className="mt-10 grid items-center gap-8 lg:mt-16 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
+          <div className="space-y-4 sm:space-y-6">
             {steps.map(
               (step, index) => (
                 <button
@@ -74,7 +74,7 @@ export default function SolutionEcosystemSection({
                       index
                     )
                   }
-                  className={`rounded-sm px-5 py-4 transition ${
+                  className={`rounded-sm px-4 py-3 text-left transition sm:px-5 sm:py-4 ${
                     index ===
                     activeIndex
                       ? "border-l-2 border-blue-600 bg-[#f6f8fb]"
@@ -82,11 +82,11 @@ export default function SolutionEcosystemSection({
                   }`}
                 >
                   <h3
-                    className={`text-left text-[18px] leading-7 font-semibold ${index === activeIndex ? "text-blue-700" : "text-black"}`}
+                    className={`text-left text-[16px] leading-6 font-semibold sm:text-[18px] sm:leading-7 ${index === activeIndex ? "text-blue-700" : "text-black"}`}
                   >
                     {step.title}
                   </h3>
-                  <p className="mt-2 max-w-sm text-left text-[14px] leading-6 text-black/60 sm:text-[15px]">
+                  <p className="mt-1 max-w-sm text-left text-sm leading-6 text-black/60 sm:mt-2 sm:text-[15px]">
                     {step.description}
                   </p>
                 </button>
@@ -94,7 +94,7 @@ export default function SolutionEcosystemSection({
             )}
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center lg:justify-center">
             <div className="relative w-full max-w-4xl">
               <div className="relative aspect-4/3 overflow-hidden bg-neutral-100 shadow-[0_26px_60px_rgba(15,23,42,0.14)] ring-1 ring-black/10">
                 <Image
@@ -115,10 +115,10 @@ export default function SolutionEcosystemSection({
           </div>
         </div>
 
-        <div className="mt-14 flex justify-center">
+        <div className="mt-8 flex justify-center sm:mt-14">
           <Link
             href={buttonHref}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-black px-7 text-sm font-semibold text-white transition hover:bg-black/85"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-black px-6 text-sm font-semibold text-white transition hover:bg-black/85 sm:h-12 sm:px-7"
           >
             {buttonLabel}
           </Link>

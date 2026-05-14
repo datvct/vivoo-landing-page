@@ -12,7 +12,6 @@ import ProductGridSection from "@/components/common/ProductGridSection";
 import SolutionsSection from "@/components/common/SolutionsSection";
 import CustomerStoriesSection from "@/components/common/CustomerStoriesSection";
 import FAQSection from "@/components/common/FAQSection";
-import ContactSection from "@/components/common/ContactSection";
 import SolutionEcosystemSection from "@/components/sections/solution/SolutionEcosystemSection";
 import SolutionGuideSection from "@/components/sections/solution/SolutionGuideSection";
 

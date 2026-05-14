@@ -2,7 +2,6 @@ import SolutionHeroSection from "@/components/common/HeroSection";
 import ProductCatalogSection from "@/components/sections/product-category/ProductCatalogSection";
 import LogoSection from "@/components/common/LogoSection";
 import FAQSection from "@/components/common/FAQSection";
-import ContactSection from "@/components/common/ContactSection";
 import ProductBenefitsSection from "@/components/sections/product-category/ProductBenefitsSection";
 import CertificationsSection from "@/components/sections/product-category/CertificationsSection";
 import ResourcesSection from "@/components/sections/product-category/ResourcesSection";

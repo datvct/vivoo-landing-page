@@ -137,13 +137,13 @@ export default function CustomerStoriesSection() {
   };
 
   return (
-    <section className="bg-[#FCFCFC] py-22">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-[#FCFCFC] py-8 sm:py-12 lg:py-22">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-[30px] font-medium tracking-[-0.02em] text-black sm:text-[34px]">
+          <h2 className="text-2xl font-medium tracking-[-0.02em] text-black sm:text-[30px]">
             Our customer stories
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-7 text-black/65 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/65 sm:text-[15px]">
             Hear how Avigilon&apos;s
             security solutions have
             enabled organizations
@@ -153,7 +153,7 @@ export default function CustomerStoriesSection() {
           </p>
         </div>
 
-        <div className="relative mt-16 flex items-center justify-center gap-6 lg:gap-10">
+        <div className="relative mt-8 flex flex-col items-center justify-center gap-6 sm:mt-12 lg:flex-row lg:gap-10">
           <button
             type="button"
             onClick={goPrev}
@@ -163,10 +163,10 @@ export default function CustomerStoriesSection() {
             <ChevronLeft className="h-6 w-6" />
           </button>
 
-          <div className="grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-12">
+          <div className="grid w-full max-w-5xl items-center gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-12">
             <div
               key={`${activeStory.id}-image`}
-              className={`relative aspect-4/3 overflow-hidden rounded-xs bg-neutral-100 shadow-[0_18px_50px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition-all duration-500 ease-out ${isAnimating ? `${direction === 1 ? "-translate-x-8 opacity-0" : "translate-x-8 opacity-0"}` : "translate-x-0 opacity-100"}`}
+              className={`relative aspect-4/3 overflow-hidden rounded-lg bg-neutral-100 shadow-[0_18px_50px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition-all duration-500 ease-out lg:rounded-xs ${isAnimating ? `${direction === 1 ? "-translate-x-8 opacity-0" : "translate-x-8 opacity-0"}` : "translate-x-0 opacity-100"}`}
             >
               <Image
                 src={activeStory.image}
@@ -199,15 +199,15 @@ export default function CustomerStoriesSection() {
                 </span>
               </div> */}
 
-              <h3 className="text-[22px] font-semibold text-black sm:text-[26px]">
+              <h3 className="text-lg font-semibold text-black sm:text-[22px]">
                 {activeStory.title}
               </h3>
 
-              <p className="mt-4 max-w-xl text-[15px] leading-8 text-black/70 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-black/70 sm:text-[15px]">
                 “{activeStory.quote}”
               </p>
 
-              <p className="mt-5 max-w-xl text-[15px] leading-7 font-semibold text-black/80">
+              <p className="mt-5 max-w-xl text-sm leading-6 font-semibold text-black/80 sm:text-[15px]">
                 - {activeStory.author}
               </p>
 

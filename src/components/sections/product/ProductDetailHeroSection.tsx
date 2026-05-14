@@ -129,11 +129,11 @@ export default function ProductDetailHeroSection({
   }, [activeIndex]);
 
   return (
-    <section className="bg-white py-6 text-black">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-5 text-black sm:py-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <nav
           aria-label="Breadcrumb"
-          className="flex flex-wrap items-center gap-2 text-xs text-black/40 sm:text-sm"
+          className="flex flex-wrap items-center gap-2 text-[11px] text-black/40 sm:text-sm"
         >
           <span className="inline-flex items-center justify-center rounded-full p-1">
             <HomeIcon className="h-3.5 w-3.5" />
@@ -163,7 +163,7 @@ export default function ProductDetailHeroSection({
           )}
         </nav>
 
-        <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] lg:items-start">
+        <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] lg:items-start">
           <div>
             <div className="rounded-xl border border-black/10 bg-[#fafafa] shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
               <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-white">
@@ -177,7 +177,7 @@ export default function ProductDetailHeroSection({
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 58vw"
-                  className={`object-contain p-4 transition-all duration-500 ease-out ${isImageEntered ? "blur-0 scale-100 opacity-100" : "scale-[0.97] opacity-0 blur-[2px]"}`}
+                  className={`object-contain p-3 transition-all duration-500 ease-out sm:p-4 ${isImageEntered ? "blur-0 scale-100 opacity-100" : "scale-95 opacity-0 blur-sm"}`}
                 />
 
                 {totalSlides > 1 && (
@@ -188,9 +188,9 @@ export default function ProductDetailHeroSection({
                         goToPreviousSlide
                       }
                       aria-label="Previous slide"
-                      className="absolute top-1/2 left-4 -translate-y-1/2 cursor-pointer rounded-full border border-black/10 bg-white/90 p-2 text-black shadow-sm transition hover:bg-white"
+                      className="absolute top-1/2 left-2 -translate-y-1/2 cursor-pointer rounded-full border border-black/10 bg-white/90 p-1.5 text-black shadow-sm transition hover:bg-white sm:left-4 sm:p-2"
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                     <button
                       type="button"
@@ -198,16 +198,16 @@ export default function ProductDetailHeroSection({
                         goToNextSlide
                       }
                       aria-label="Next slide"
-                      className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer rounded-full border border-black/10 bg-white/90 p-2 text-black shadow-sm transition hover:bg-white"
+                      className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-full border border-black/10 bg-white/90 p-1.5 text-black shadow-sm transition hover:bg-white sm:right-4 sm:p-2"
                     >
-                      <ChevronRightIcon className="h-5 w-5" />
+                      <ChevronRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-2 sm:mt-5 sm:gap-4">
               {thumbnails.map(
                 (thumbnail, index) => {
                   const isActive =
@@ -225,7 +225,7 @@ export default function ProductDetailHeroSection({
                           index
                         )
                       }
-                      className={`relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-md border bg-white transition ${isActive ? "border-black/35 ring-1 ring-black/20" : "border-black/10 hover:border-black/20"}`}
+                      className={`relative flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-md border bg-white transition sm:h-16 sm:w-16 ${isActive ? "border-black/35 ring-1 ring-black/20" : "border-black/10 hover:border-black/20"}`}
                       aria-label={`Show image ${index + 1}`}
                     >
                       <Image
@@ -237,7 +237,7 @@ export default function ProductDetailHeroSection({
                         }
                         fill
                         sizes="64px"
-                        className="object-contain p-1.5"
+                        className="object-contain p-0.5 sm:p-1"
                       />
                     </button>
                   );
@@ -246,30 +246,32 @@ export default function ProductDetailHeroSection({
 
               <button
                 type="button"
-                className="flex h-16 min-w-40 items-center justify-center gap-2 rounded-md border border-black/10 bg-black/5 px-4 text-sm font-medium text-black/70 transition hover:bg-black/10"
+                className="hidden h-12 min-w-28 flex-none items-center justify-center gap-2 rounded-md border border-black/10 bg-black/5 px-3 text-sm font-medium text-black/70 transition hover:bg-black/10 sm:flex sm:h-16 sm:min-w-40 sm:px-4"
                 onClick={goToNextSlide}
               >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-black/30 bg-white">
-                  <Play className="h-4 w-4 fill-black text-black" />
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-black/30 bg-white sm:h-7 sm:w-7">
+                  <Play className="h-3 w-3 fill-black text-black sm:h-4 sm:w-4" />
                 </span>
-                Watch Video
+                <span className="text-xs whitespace-nowrap sm:text-sm">
+                  Watch Video
+                </span>
               </button>
             </div>
           </div>
 
-          <div className="pt-1 lg:pl-4">
-            <p className="text-sm text-black/45">
+          <div className="pt-1 text-center lg:pl-4 lg:text-left">
+            <p className="text-xs text-black/45 sm:text-sm">
               {categoryLabel}
             </p>
-            <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.03em] text-black sm:text-[38px] lg:text-[44px]">
+            <h1 className="mt-2 text-[26px] font-semibold tracking-[-0.03em] text-black sm:text-[38px] lg:text-[44px]">
               {title}
             </h1>
 
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:gap-3 lg:justify-start">
               {badges.map((badge) => (
                 <span
                   key={badge}
-                  className="rounded-full border px-4 py-2 text-sm shadow-[0_2px_10px_rgba(15,23,42,0.05)] transition"
+                  className="rounded-full border px-3 py-1.5 text-xs shadow-[0_2px_10px_rgba(15,23,42,0.05)] transition sm:px-4 sm:py-2 sm:text-sm"
                   style={{
                     borderColor: badge
                       .toLowerCase()
@@ -284,18 +286,18 @@ export default function ProductDetailHeroSection({
               ))}
             </div>
 
-            <p className="mt-8 max-w-xl text-[18px] leading-8 text-black/65">
+            <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-black/65 sm:mt-8 sm:text-[18px] sm:leading-8 lg:mx-0">
               {description}
             </p>
 
-            <ul className="mt-8 space-y-4">
+            <ul className="mt-6 space-y-3 text-left sm:mt-8 sm:space-y-4 lg:text-left">
               {features.map(
                 (feature) => (
                   <li
                     key={feature}
-                    className="flex items-start gap-3 text-[16px] leading-7 text-black/70"
+                    className="flex items-start gap-3 text-sm leading-6 text-black/70 sm:text-[16px] sm:leading-7"
                   >
-                    <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-black/75" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-black/75 sm:mt-1 sm:h-5 sm:w-5" />
                     <span>
                       {feature}
                     </span>
@@ -304,17 +306,17 @@ export default function ProductDetailHeroSection({
               )}
             </ul>
 
-            <div className="mt-8">
+            <div className="mt-6 flex justify-center sm:mt-8 lg:justify-start">
               <Link
                 href={primaryActionHref}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-black px-8 text-sm font-semibold text-white transition hover:bg-black/85"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-black px-6 text-sm font-semibold text-white transition hover:bg-black/85 sm:h-12 sm:px-8"
               >
                 {primaryActionLabel}
               </Link>
             </div>
 
-            <div className="mt-10 border-t border-black/15 pt-6">
-              <div className="grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 border-t border-black/15 pt-5 sm:mt-10 sm:pt-6">
+              <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
                 {detailLinks.map(
                   (link, index) => (
                     <Link
@@ -322,7 +324,7 @@ export default function ProductDetailHeroSection({
                       href={link.href}
                       className={`flex items-center gap-3 rounded-md px-3 py-2 text-black/70 transition hover:bg-black/5 ${index < detailLinks.length - 1 ? "sm:border-r sm:border-black/10" : ""}`}
                     >
-                      <span className="flex h-10 w-10 items-center justify-center bg-white">
+                      <span className="flex h-9 w-9 items-center justify-center bg-white sm:h-10 sm:w-10">
                         <DetailLinkIcon
                           icon={
                             link.icon

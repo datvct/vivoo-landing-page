@@ -46,16 +46,16 @@ export default function FAQSection({
   }
 
   return (
-    <section className="bg-[#f6f6f6] py-12">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="bg-[#f6f6f6] py-10 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-medium text-black">
+          <h2 className="text-xl font-medium text-black sm:text-2xl">
             {title}
           </h2>
         </div>
 
-        <div className="mx-auto mt-8 max-w-3xl">
-          <div className="space-y-4">
+        <div className="mx-auto mt-6 max-w-3xl sm:mt-8">
+          <div className="space-y-3 sm:space-y-4">
             {items.map((it, i) => {
               const open =
                 openIndex === i;
@@ -63,16 +63,16 @@ export default function FAQSection({
               return (
                 <div
                   key={it.question}
-                  className="overflow-hidden rounded-2xl bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] ring-1 ring-black/5 transition-all duration-300"
+                  className="overflow-hidden rounded-xl bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] ring-1 ring-black/5 transition-all duration-300 sm:rounded-2xl"
                 >
                   <button
-                    className="flex w-full items-center justify-between px-6 py-5 text-left"
+                    className="flex w-full items-center justify-between px-4 py-4 text-left sm:px-6 sm:py-5"
                     onClick={() =>
                       toggle(i)
                     }
                     aria-expanded={open}
                   >
-                    <span className="text-lg font-semibold text-black/80">
+                    <span className="pr-4 text-sm leading-6 font-semibold text-black/80 sm:text-lg">
                       {it.question}
                     </span>
 
@@ -95,8 +95,8 @@ export default function FAQSection({
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <div className="px-6 pb-5">
-                        <p className="text-sm leading-7 text-black/70">
+                      <div className="px-4 pb-4 sm:px-6 sm:pb-5">
+                        <p className="text-sm leading-6 text-black/70 sm:leading-7">
                           {it.answer}
                         </p>
                       </div>

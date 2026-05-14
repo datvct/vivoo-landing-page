@@ -24,18 +24,18 @@ export default function ProductFlexibleSetupSection({
   cards,
 }: ProductFlexibleSetupSectionProps) {
   return (
-    <section className="bg-white py-20 text-black">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-14 text-black sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-[28px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
+          <h2 className="text-[24px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
             {title}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-7 text-black/60 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/60 sm:mt-4 sm:text-base sm:leading-7">
             {description}
           </p>
         </div>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-2">
+        <div className="mt-10 grid gap-6 lg:mt-14 lg:grid-cols-2 lg:gap-8">
           {cards.map((card) => (
             <article
               key={card.title}
@@ -45,27 +45,27 @@ export default function ProductFlexibleSetupSection({
                 className={`h-2 w-full ${card.accentClassName}`}
               />
 
-              <div className="px-6 py-6 sm:px-8 sm:py-7">
-                <h3 className="text-[26px] font-normal tracking-[-0.02em] text-black sm:text-[30px]">
+              <div className="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+                <h3 className="text-[22px] font-normal tracking-[-0.02em] text-black sm:text-[30px]">
                   {card.title}
                 </h3>
 
-                <p className="mt-3 text-[18px] leading-7 font-semibold text-black">
+                <p className="mt-2 text-base leading-6 font-semibold text-black sm:mt-3 sm:text-[18px] sm:leading-7">
                   {card.subtitle}
                 </p>
 
-                <p className="mt-4 max-w-2xl text-[15px] leading-7 text-black/60">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-black/60 sm:mt-4 sm:text-[15px] sm:leading-7">
                   {card.description}
                 </p>
 
-                <ul className="mt-6 space-y-4">
+                <ul className="mt-5 space-y-3 sm:mt-6 sm:space-y-4">
                   {card.bullets.map(
                     (bullet) => (
                       <li
                         key={bullet}
-                        className="flex items-start gap-3 text-[15px] leading-7 text-black/70"
+                        className="flex items-start gap-3 text-sm leading-6 text-black/70 sm:text-[15px] sm:leading-7"
                       >
-                        <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-black/45" />
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-black/45 sm:mt-1 sm:h-5 sm:w-5" />
                         <span>
                           {bullet}
                         </span>
@@ -75,14 +75,14 @@ export default function ProductFlexibleSetupSection({
                 </ul>
               </div>
 
-              <div className="px-6 pb-6 sm:px-8 sm:pb-8">
+              <div className="px-4 pb-4 sm:px-6 sm:pb-6 lg:px-8 lg:pb-8">
                 <div className="relative aspect-4/3 overflow-hidden rounded-md bg-[#f5f7fa] ring-1 ring-black/5">
                   <Image
                     src={card.image}
                     alt={card.imageAlt}
                     fill
                     sizes="(max-width: 1024px) 100vw, 45vw"
-                    className="object-contain p-4"
+                    className="object-contain p-3 sm:p-4"
                   />
                 </div>
               </div>

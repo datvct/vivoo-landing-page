@@ -24,20 +24,20 @@ export default function ProductBenefitsSection({
   ctaHref = "#",
 }: Props) {
   return (
-    <section className="bg-white py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="sm:text-[28px} text-lg font-medium text-black">
+          <h2 className="text-lg font-medium text-black sm:text-[28px]">
             {title}
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-black/60">
+          <p className="mx-auto mt-3 max-w-2xl text-xs text-black/60 sm:text-sm">
             {intro}
           </p>
         </div>
 
-        <div className="mt-12 grid items-center gap-8 lg:grid-cols-2">
-          <div className="mx-auto w-full max-w-140">
-            <div className="relative mx-auto aspect-square w-full overflow-hidden rounded-sm shadow-2xl">
+        <div className="mt-8 grid items-center gap-6 lg:mt-12 lg:grid-cols-2 lg:gap-8">
+          <div className="mx-auto w-full max-w-[560px] lg:max-w-none">
+            <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-sm shadow-2xl sm:aspect-square">
               <Image
                 src={imageSrc}
                 alt="benefit image"
@@ -48,8 +48,8 @@ export default function ProductBenefitsSection({
             </div>
           </div>
 
-          <div className="mx-auto max-w-xl lg:pr-8">
-            <h3 className="text-base font-semibold text-black">
+          <div className="mx-auto max-w-xl text-center lg:mx-0 lg:pr-8 lg:text-left">
+            <h3 className="text-base font-semibold text-black sm:text-lg">
               {heading}
             </h3>
             <div className="mt-4 space-y-4 text-sm text-black/70">
@@ -59,7 +59,7 @@ export default function ProductBenefitsSection({
                 )
               )}
             </div>
-            <div className="mt-6">
+            <div className="mt-6 flex justify-center lg:justify-start">
               <Link
                 href={ctaHref}
                 className="text-sm font-semibold text-blue-600"

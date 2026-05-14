@@ -1,9 +1,4 @@
 import Link from "next/link";
-import {
-  Archive,
-  //   Tool,
-  Settings,
-} from "lucide-react";
 import H5aIrPtzIcon from "@/components/icons/H5aIrPtzIcon";
 import ToolsRepairIcon from "@/components/icons/ToolsRepairIcon";
 import AlertFolderIcon from "@/components/icons/AlertFolderIcon";
@@ -47,13 +42,13 @@ const resources: Resource[] = [
 
 export default function ResourcesSection() {
   return (
-    <section className="bg-white py-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-14 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h3 className="text-lg font-medium text-black sm:text-[22px]">
+          <h2 className="text-lg font-semibold text-black sm:text-[28px]">
             Resources
-          </h3>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-black/60">
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-5 text-black/60 sm:text-sm sm:leading-6">
             View additional resources to
             support your Avigilon dome
             security camera deployment
@@ -64,24 +59,24 @@ export default function ResourcesSection() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:mt-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {resources.map((r) => (
             <article
               key={r.title}
-              className="rounded bg-white p-6 shadow-md"
+              className="rounded bg-white p-4 shadow-md sm:p-6"
             >
               <div className="flex items-center justify-center">
-                <div className="rounded-full bg-white p-3 shadow-sm">
+                <div className="rounded-full bg-white p-2.5 shadow-sm sm:p-3">
                   {r.icon}
                 </div>
               </div>
-              <h4 className="mt-6 text-center text-sm font-semibold text-black">
+              <h4 className="mt-4 text-center text-sm font-semibold text-black sm:mt-6">
                 {r.title}
               </h4>
-              <p className="mt-3 text-center text-xs text-black/70">
+              <p className="mt-2 text-center text-xs leading-5 text-black/70 sm:mt-3 sm:leading-6">
                 {r.description}
               </p>
-              <div className="mt-6 text-center">
+              <div className="mt-4 text-center sm:mt-6">
                 <Link
                   href={r.href}
                   className="text-sm font-semibold text-blue-600"

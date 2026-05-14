@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 
-const menus = [
+export const menus = [
   {
     label: "Products",
     submenu: [

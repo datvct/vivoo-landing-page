@@ -17,14 +17,14 @@ export default function CertificationsSection() {
   ];
 
   return (
-    <section className="bg-white py-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-white py-10 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <h3 className="text-lg font-semibold text-black sm:text-[28px]">
             Compliance and
             certifications
           </h3>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-black/60">
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-5 text-black/60 sm:text-sm sm:leading-6">
             The high performance,
             security and quality of
             Avigilon dome cameras is
@@ -35,15 +35,15 @@ export default function CertificationsSection() {
           </p>
         </div>
 
-        <div className="mt-10">
-          <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-8 py-8">
+        <div className="mt-8 sm:mt-10">
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 py-6 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-8 sm:py-8">
             {logos.map((l) => (
               <div
                 key={l.alt}
-                className="flex w-1/2 items-center justify-center sm:w-1/4"
+                className="flex w-full items-center justify-center sm:w-1/4"
               >
                 <div className="mx-auto text-center">
-                  <div className="relative mx-auto h-12 w-full">
+                  <div className="relative mx-auto h-12 w-full sm:h-12">
                     <Image
                       src={l.src}
                       alt={l.alt}

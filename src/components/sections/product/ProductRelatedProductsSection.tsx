@@ -21,18 +21,18 @@ export default function ProductRelatedProductsSection({
   products,
 }: ProductRelatedProductsSectionProps) {
   return (
-    <section className="bg-[#f6f6f6] py-20 text-black">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="bg-[#f6f6f6] py-14 text-black sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-[28px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
+          <h2 className="text-[24px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
             {title}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-7 text-black/60 sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/60 sm:mt-4 sm:text-base sm:leading-7">
             {description}
           </p>
         </div>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:mt-12 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {products.map((product) => (
             <ProductCard
               key={product.title}
