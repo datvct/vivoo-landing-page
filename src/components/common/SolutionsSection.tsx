@@ -149,7 +149,7 @@ export default function SolutionsSection() {
         <h2 className="mb-5 text-center text-3xl font-semibold text-black">
           Your complete security suite
         </h2>
-        <p className="mb-14 text-center text-sm text-gray-500">
+        <p className="mb-10 text-center text-sm text-gray-500">
           The Avigilon security suite provides a complete portfolio of end-to-end
           video security products and services, powered by intelligence.
         </p>

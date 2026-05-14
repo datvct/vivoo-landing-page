@@ -105,7 +105,7 @@ export default function CustomerStoriesSection() {
     };
 
     return (
-        <section className="bg-white py-22">
+        <section className="bg-[#FCFCFC] py-22">
             <div className="mx-auto max-w-7xl px-6 lg:px-10">
                 <div className="mx-auto max-w-3xl text-center">
                     <h2 className="text-[30px] font-medium tracking-[-0.02em] text-black sm:text-[34px]">
