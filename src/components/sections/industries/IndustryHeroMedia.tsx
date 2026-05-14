@@ -1,0 +1,28 @@
+import Image from "next/image";
+
+type IndustryHeroMediaProps = {
+    image: string;
+    title: string;
+};
+
+export default function IndustryHeroMedia({ image, title }: IndustryHeroMediaProps) {
+    return (
+        <div
+            className="relative h-full w-full"
+            style={{
+                clipPath: "polygon(25% 0, 100% 0, 100% 100%, 0% 100%)"
+            }}
+        >
+            <div className="absolute inset-0 z-10 pointer-events-none bg-[linear-gradient(110deg,rgba(246,246,246,1)_0%,rgba(246,246,246,0.8)_5%,transparent_15%)]" />
+
+            <Image
+                src={image}
+                alt={title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+                priority
+            />
+        </div>
+    );
+}
