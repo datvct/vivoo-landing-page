@@ -7,21 +7,23 @@ type FeatureItem = {
     description: string;
 };
 
-type IndustrySecurityFeaturesSectionProps = {
+type FeaturesSectionProps = {
     title: string;
     description: string;
     image: string;
     features: FeatureItem[];
-    linkLabel: string;
+    sideTitle?: string;
+    sideDescription?: string;
 };
 
-export default function IndustrySecurityFeaturesSection({
+export default function FeaturesSection({
     title,
     description,
     image,
     features,
-    linkLabel,
-}: IndustrySecurityFeaturesSectionProps) {
+    sideTitle = "Powerful security system features",
+    sideDescription = "Empower your teams and secure your facilities with Avigilon Unity on-premise and cloud-native solutions.",
+}: FeaturesSectionProps) {
     return (
         <section className="bg-white py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -49,10 +51,10 @@ export default function IndustrySecurityFeaturesSection({
 
                     <div className="pt-2 lg:pt-6">
                         <h3 className="text-[24px] font-semibold tracking-[-0.02em] text-black sm:text-[28px]">
-                            Powerful security system features
+                            {sideTitle}
                         </h3>
                         <p className="mt-4 max-w-xl text-[15px] leading-7 text-black/60 sm:text-base">
-                            Empower your teams and secure your facilities with Avigilon Unity on-premise and cloud-native solutions.
+                            {sideDescription}
                         </p>
 
                         <div className="mt-8 space-y-7">
@@ -77,14 +79,6 @@ export default function IndustrySecurityFeaturesSection({
                                 );
                             })}
                         </div>
-
-                        <a
-                            href="#"
-                            className="mt-8 ml-14 inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 transition hover:text-blue-700"
-                        >
-                            {linkLabel}
-                            <span aria-hidden="true">→</span>
-                        </a>
                     </div>
                 </div>
             </div>

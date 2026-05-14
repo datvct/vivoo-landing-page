@@ -1,24 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type IndustryFeatureSectionProps = {
+type ProductItem = {
     title: string;
     description: string;
-    products: {
-        title: string;
-        description: string;
-        image: string;
-        linkLabel: string;
-    }[];
+    image: string;
+    linkLabel: string;
+    href?: string;
 };
 
-export default function IndustryFeatureSection({
+type ProductGridSectionProps = {
+    title: string;
+    description: string;
+    products: ProductItem[];
+    showViewAll?: boolean;
+    viewAllHref?: string;
+    viewAllLabel?: string;
+};
+
+export default function ProductGridSection({
     title,
     description,
     products,
-}: IndustryFeatureSectionProps) {
+    showViewAll = true,
+    viewAllHref = "#",
+    viewAllLabel = "View all products",
+}: ProductGridSectionProps) {
     return (
-        <section className="bg-white py-20">
+        <section className="bg-[#f6f6f6] py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-10">
                 <div className="mx-auto max-w-3xl text-center">
                     <h2 className="text-[30px] font-medium tracking-[-0.02em] text-black sm:text-[36px]">
@@ -35,7 +44,7 @@ export default function IndustryFeatureSection({
                             key={product.title}
                             className="overflow-hidden bg-white shadow-[0_10px_28px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1"
                         >
-                            <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
+                            <div className="relative aspect-4/3 overflow-hidden bg-neutral-100">
                                 <Image
                                     src={product.image}
                                     alt={product.title}
@@ -54,7 +63,7 @@ export default function IndustryFeatureSection({
                                 </p>
 
                                 <Link
-                                    href="#"
+                                    href={product.href || "#"}
                                     className="mt-5 inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 transition hover:text-blue-700"
                                 >
                                     {product.linkLabel}
@@ -65,15 +74,17 @@ export default function IndustryFeatureSection({
                     ))}
                 </div>
 
-                <div className="mt-10 text-center">
-                    <Link
-                        href="#"
-                        className="inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 transition hover:text-blue-700"
-                    >
-                        View all products
-                        <span aria-hidden="true">→</span>
-                    </Link>
-                </div>
+                {showViewAll && (
+                    <div className="mt-10 text-center">
+                        <Link
+                            href={viewAllHref}
+                            className="inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 transition hover:text-blue-700"
+                        >
+                            {viewAllLabel}
+                            <span aria-hidden="true">→</span>
+                        </Link>
+                    </div>
+                )}
             </div>
         </section>
     );

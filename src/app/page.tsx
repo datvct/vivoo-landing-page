@@ -17,7 +17,6 @@ export default function HomePage() {
       <CustomerStoriesSection />
       <DiscoverMoreSection />
       <ComplianceSection />
-      <ContactSection />
     </>
   );
 }
