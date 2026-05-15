@@ -24,7 +24,7 @@ export default function SupportResourcesSection({
   cards,
 }: SupportResourcesSectionProps) {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-2xl font-semibold tracking-[-0.03em] text-black sm:text-[30px]">
           {title}
@@ -41,7 +41,7 @@ export default function SupportResourcesSection({
         </p>
       </div>
 
-      <div className="mx-auto mt-8 max-w-7xl overflow-hidden bg-[#111] p-8 text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)]">
+      <div className="mx-auto mt-8 max-w-7xl overflow-hidden bg-[#111] p-6 text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)] sm:p-8">
         <div className="flex min-h-62.5 flex-col justify-end rounded-sm bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(0,0,0,0.25))] p-6 text-center">
           <div className="mx-auto max-w-xl">
             <h3 className="text-xl font-semibold tracking-[-0.02em]">
@@ -64,11 +64,11 @@ export default function SupportResourcesSection({
         </div>
       </div>
 
-      <div className="mx-auto mt-2 grid max-w-7xl gap-0 md:grid-cols-3">
+      <div className="mx-auto mt-2 grid max-w-7xl grid-cols-1 gap-0 sm:grid-cols-2 md:grid-cols-3">
         {cards.map((card) => (
           <article
             key={card.title}
-            className={`min-h-50 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.08)] md:p-5 ${toneClasses[card.tone]}`}
+            className={`min-h-50 p-3 shadow-[0_12px_28px_rgba(15,23,42,0.08)] sm:p-4 md:p-5 ${toneClasses[card.tone]}`}
           >
             <h3 className="text-sm font-semibold tracking-[-0.01em]">
               {card.title}

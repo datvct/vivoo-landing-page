@@ -15,10 +15,24 @@ export default function SolutionGuideSection({
   buttonLabel,
 }: SolutionGuideSectionProps) {
   return (
-    <section className="bg-white py-24">
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 px-6 lg:flex-row lg:gap-16 lg:px-10">
+    <section className="bg-white py-14 sm:py-24">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-4 sm:px-6 lg:flex-row lg:gap-16 lg:px-10">
         <div className="flex w-full justify-center lg:w-1/2 lg:justify-end">
-          <div className="relative h-105 w-full max-w-140">
+          {/* Simple centered image for mobile */}
+          <div className="w-full max-w-md sm:hidden">
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-lg bg-neutral-100">
+              <Image
+                src={image}
+                alt={title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Complex layered artwork only on desktop */}
+          <div className="relative hidden h-105 w-full max-w-140 lg:block">
             <div className="absolute top-10 left-4 h-75 w-55 -rotate-12 overflow-hidden rounded-lg bg-white shadow-[0_20px_45px_rgba(15,23,42,0.18)] ring-1 ring-black/5">
               <Image
                 src={image}
@@ -44,20 +58,22 @@ export default function SolutionGuideSection({
         </div>
 
         <div className="w-full lg:w-1/2 lg:pl-4">
-          <div className="max-w-xl">
-            <h2 className="text-[30px] font-medium tracking-[-0.02em] text-black sm:text-[36px] lg:text-[40px]">
+          <div className="max-w-xl text-center lg:text-left">
+            <h2 className="text-[24px] font-medium tracking-[-0.02em] text-black sm:text-[30px] lg:text-[40px]">
               {title}
             </h2>
-            <p className="mt-5 max-w-xl text-[15px] leading-7 text-black/60 sm:text-base">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-black/60 sm:text-base">
               {description}
             </p>
 
-            <Link
-              href="#"
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-full border border-black/40 bg-white px-6 text-sm font-semibold text-black transition hover:border-black/60 hover:bg-black/5"
-            >
-              {buttonLabel}
-            </Link>
+            <div className="mt-6">
+              <Link
+                href="#"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-black/40 bg-white px-5 text-sm font-semibold text-black transition hover:border-black/60 hover:bg-black/5"
+              >
+                {buttonLabel}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

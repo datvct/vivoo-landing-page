@@ -24,7 +24,7 @@ export default function BlogPostCard({
         </div>
       </div>
 
-      <div className="flex flex-col justify-center px-6 py-6">
+      <div className="flex flex-col justify-center px-4 py-5 sm:px-6 sm:py-6">
         <div className="text-xs font-medium tracking-[0.2em] text-black/45 uppercase">
           {post.date} · {post.readTime}
         </div>

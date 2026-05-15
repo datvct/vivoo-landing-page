@@ -296,17 +296,22 @@ export default function BlogPage() {
   }, [currentPage]);
 
   const goToPage = (page: number) => {
-    setCurrentPage(
-      Math.min(
-        Math.max(page, 1),
-        totalPages
-      )
+    const next = Math.min(
+      Math.max(page, 1),
+      totalPages
     );
+    setCurrentPage(next);
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
     <main className="min-h-screen bg-[#f7f7f5] text-black">
-      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-16">
         <BlogHeroSection title="Security industry insights, news, and trends" />
         <BlogPostsGrid
           posts={visiblePosts}

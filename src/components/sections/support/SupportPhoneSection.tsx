@@ -22,7 +22,7 @@ export default function SupportPhoneSection({
 
   return (
     <section className="bg-white py-14">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-semibold tracking-[-0.03em] text-black sm:text-[30px]">
             {title}
@@ -57,7 +57,7 @@ export default function SupportPhoneSection({
             )}
           </div>
 
-          <div className="mt-10 grid gap-8 text-center md:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 gap-8 text-center sm:grid-cols-2 md:grid-cols-3">
             {region.items.map(
               (item) => (
                 <div key={item.country}>
