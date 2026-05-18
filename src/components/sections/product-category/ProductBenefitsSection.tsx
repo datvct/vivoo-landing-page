@@ -24,10 +24,10 @@ export default function ProductBenefitsSection({
   ctaHref = "#",
 }: Props) {
   return (
-    <section className="bg-white py-14 sm:py-20">
+    <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-lg font-medium text-black sm:text-[28px]">
+          <h2 className="text-xl font-semibold text-black sm:text-3xl">
             {title}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-xs text-black/60 sm:text-sm">
@@ -36,8 +36,8 @@ export default function ProductBenefitsSection({
         </div>
 
         <div className="mt-8 grid items-center gap-6 lg:mt-12 lg:grid-cols-2 lg:gap-8">
-          <div className="mx-auto w-full max-w-[560px] lg:max-w-none">
-            <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-sm shadow-2xl sm:aspect-square">
+          <div className="mx-auto w-full max-w-140 lg:max-w-none">
+            <div className="relative mx-auto aspect-4/3 w-full overflow-hidden rounded-sm shadow-2xl sm:aspect-square">
               <Image
                 src={imageSrc}
                 alt="benefit image"

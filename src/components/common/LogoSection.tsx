@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function LogoSection() {
   return (
-    <section className="flex flex-col gap-5 bg-[#FCFCFC] py-8 sm:py-10 lg:py-12">
-      <h2 className="px-4 text-center text-lg font-semibold text-black sm:text-xl md:text-2xl">
+    <section className="flex flex-col gap-5 bg-[#FCFCFC] py-6 sm:py-10 lg:py-12">
+      <h2 className="px-4 text-center text-lg font-semibold text-black sm:text-3xl">
         Trusted by 100,000+
         organizations globally
       </h2>

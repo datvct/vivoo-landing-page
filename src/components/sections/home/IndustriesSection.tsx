@@ -171,14 +171,14 @@ export default function IndustriesSection() {
   };
 
   return (
-    <section className="bg-[#fcfcfc] py-8 sm:py-12 md:py-16 lg:py-20">
+    <section className="bg-[#fcfcfc] py-6 sm:py-16">
       <div className="mx-auto flex max-w-7xl flex-col items-center px-4 sm:px-6 lg:px-10">
         <div className="max-w-3xl text-center">
-          <h2 className="text-2xl font-medium tracking-[-0.02em] text-black sm:text-3xl md:text-4xl lg:text-5xl">
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-black sm:text-3xl">
             Security for every site,
             everywhere
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-black/65 sm:mt-4 sm:text-sm sm:leading-7 md:mt-5 md:text-base lg:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-black/65 sm:mt-4 sm:text-base sm:leading-7">
             See how people and
             organizations around the
             world are better protected

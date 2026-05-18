@@ -41,10 +41,10 @@ const services: Service[] = [
 
 export default function ServiceListSection() {
   return (
-    <section className="bg-gray-50 py-12 sm:py-16">
+    <section className="bg-gray-50 py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-900 sm:text-3xl">
             Service Groups
           </h2>
           <p className="mt-2 text-base text-gray-600">
@@ -56,7 +56,7 @@ export default function ServiceListSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {services.map((s) => (
             <ServiceCard
               key={s.id}

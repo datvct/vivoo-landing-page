@@ -25,10 +25,10 @@ export default function ProductCatalogSection({
   ctaHref = "#",
 }: ProductCatalogSectionProps) {
   return (
-    <section className="bg-white py-14 sm:py-20">
+    <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-xl font-medium tracking-[-0.02em] text-black sm:text-[22px] lg:text-[28px]">
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-black sm:text-3xl">
             {title}
           </h2>
           {subtitle && (

@@ -182,7 +182,7 @@ export default async function SolutionPage({
       {/* TOC and Content Section */}
       <section
         id="solution-content"
-        className="mx-auto max-w-7xl px-6 py-16 lg:px-10"
+        className="mx-auto max-w-7xl px-4 py-6 sm:px-10 sm:py-16"
       >
         <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
           {/* Sidebar - Table of Contents */}
@@ -246,13 +246,13 @@ export default async function SolutionPage({
       />
 
       {/* CTA Section */}
-      <section className="bg-[#f6f6f6] py-16">
+      <section className="bg-[#f6f6f6] py-6 sm:py-16">
         <div className="mx-auto max-w-7xl px-6 text-center lg:px-10">
-          <h2 className="mb-4 text-3xl font-bold">
+          <h2 className="mb-4 text-xl font-bold sm:text-3xl">
             Ready to secure your
             construction site?
           </h2>
-          <p className="mb-8 text-lg text-black/60">
+          <p className="mb-8 text-base text-black/60 sm:text-lg">
             Get a free security audit
             and custom solution for your
             needs

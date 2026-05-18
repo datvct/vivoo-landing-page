@@ -31,7 +31,7 @@ export default function SolutionHeroSection({
           <span>{title}</span>
         </div>
       </div>
-      <div className="relative mx-auto flex h-121.25 max-w-7xl items-center px-6 py-16 lg:px-10">
+      <div className="relative mx-auto flex h-121.25 max-w-7xl items-center px-4 py-8 sm:px-10 sm:py-16">
         <div className="relative z-20 w-full lg:w-1/2">
           <SolutionHeroText
             title={title}

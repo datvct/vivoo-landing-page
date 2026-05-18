@@ -263,7 +263,7 @@ export default function ProductDetailHeroSection({
             <p className="text-xs text-black/45 sm:text-sm">
               {categoryLabel}
             </p>
-            <h1 className="mt-2 text-[26px] font-semibold tracking-[-0.03em] text-black sm:text-[38px] lg:text-[44px]">
+            <h1 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-black sm:text-3xl">
               {title}
             </h1>
 

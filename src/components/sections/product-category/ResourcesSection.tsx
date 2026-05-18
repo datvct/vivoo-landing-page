@@ -42,10 +42,10 @@ const resources: Resource[] = [
 
 export default function ResourcesSection() {
   return (
-    <section className="bg-white py-14 sm:py-16">
+    <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-lg font-semibold text-black sm:text-[28px]">
+          <h2 className="text-xl font-semibold text-black sm:text-3xl">
             Resources
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-xs leading-5 text-black/60 sm:text-sm sm:leading-6">
@@ -70,10 +70,10 @@ export default function ResourcesSection() {
                   {r.icon}
                 </div>
               </div>
-              <h4 className="mt-4 text-center text-sm font-semibold text-black sm:mt-6">
+              <h4 className="mt-4 text-center text-sm font-semibold text-black sm:mt-6 sm:text-lg">
                 {r.title}
               </h4>
-              <p className="mt-2 text-center text-xs leading-5 text-black/70 sm:mt-3 sm:leading-6">
+              <p className="mt-2 text-center text-xs leading-5 text-black/70 sm:mt-3 sm:text-base sm:leading-6">
                 {r.description}
               </p>
               <div className="mt-4 text-center sm:mt-6">

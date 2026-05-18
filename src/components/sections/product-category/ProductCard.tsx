@@ -24,7 +24,7 @@ export default function ProductCard({
         />
       </div>
 
-      <h3 className="mt-4 text-[15px] font-semibold text-black sm:mt-6 sm:text-[16px]">
+      <h3 className="mt-4 text-base font-semibold text-black sm:mt-6 sm:text-[20px]">
         {title}
       </h3>
 

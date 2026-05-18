@@ -3,7 +3,7 @@ import LogoSection from "@/components/common/LogoSection";
 
 export default function ContactPage() {
   return (
-    <div className="bg-white py-20 text-black">
+    <div className="bg-white py-8 text-black lg:py-20">
       <div className="mx-auto max-w-7xl px-6 text-center lg:px-10">
         <h1 className="text-[34px] font-semibold">
           Get your free quote
@@ -21,7 +21,7 @@ export default function ContactPage() {
         <ContactForm />
       </div>
 
-      <div className="mt-16">
+      <div className="mt-6 sm:mt-16">
         <LogoSection />
       </div>
     </div>

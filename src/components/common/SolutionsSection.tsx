@@ -35,10 +35,10 @@ const tabs: Tab[] = [
 
 export default function SolutionsSection() {
   return (
-    <section className="bg-white py-12 sm:py-16">
+    <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 lg:text-4xl">
+          <h2 className="text-xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
             Solutions
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-gray-600">
@@ -51,7 +51,7 @@ export default function SolutionsSection() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {tabs.map((t) => (
             <SolutionCard
               key={t.id}

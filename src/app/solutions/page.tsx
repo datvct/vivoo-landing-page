@@ -48,7 +48,7 @@ export default function SolutionsListPage() {
     <main className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-3xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-gray-900 sm:text-3xl">
             Solutions
           </h1>
           <p className="mt-3 text-base text-gray-600">
@@ -59,7 +59,7 @@ export default function SolutionsListPage() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {solutions.map((s, idx) => (
             <article
               key={s.id}
