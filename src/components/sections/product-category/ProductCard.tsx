@@ -1,13 +1,6 @@
+import { ProductItem } from "@/types/product-types";
 import Image from "next/image";
 import Link from "next/link";
-
-type ProductCardProps = {
-  title: string;
-  description: string;
-  image: string;
-  badges?: string[];
-  href?: string;
-};
 
 export default function ProductCard({
   title,
@@ -15,7 +8,7 @@ export default function ProductCard({
   image,
   badges,
   href = "#",
-}: ProductCardProps) {
+}: ProductItem) {
   return (
     <Link
       href={href}

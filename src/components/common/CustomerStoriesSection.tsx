@@ -11,16 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
-type Story = {
-  id: number;
-  company: string;
-  title: string;
-  quote: string;
-  author: string;
-  image: string;
-  logo: string;
-};
+import { Story } from "@/types/home-types";
 
 const stories: Story[] = [
   {
@@ -140,7 +131,7 @@ export default function CustomerStoriesSection() {
     <section className="bg-[#FCFCFC] py-8 sm:py-12 lg:py-22">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-medium tracking-[-0.02em] text-black sm:text-[30px]">
+          <h2 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
             Our customer stories
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/65 sm:text-[15px]">

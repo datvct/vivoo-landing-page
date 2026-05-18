@@ -1,16 +1,7 @@
 "use client";
 
+import { FormState } from "@/types/contact-types";
 import { useState } from "react";
-
-type FormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  company: string;
-  postal: string;
-  message: string;
-};
 
 export default function ContactForm() {
   const [form, setForm] =

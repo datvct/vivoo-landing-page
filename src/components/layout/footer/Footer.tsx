@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Clock3,
@@ -12,8 +13,9 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import ContactSection from "@/components/common/ContactSection";
+import { usePathname } from "next/navigation";
 
-const quickLinks = [
+const product = [
   {
     label: "ViVoo Camera",
     href: "/product-category/camera",
@@ -37,12 +39,25 @@ const solutionLinks = [
     label: "Education",
     href: "/solutions/education",
   },
+  {
+    label: "Service 1",
+    href: "/services/service-1",
+  },
+  {
+    label: "Service 2",
+    href: "/services/service-2",
+  },
 ];
 
 export default function Footer() {
+  const pathName = usePathname();
+  // Show ContactSection except on contact page; footer always renders
+
   return (
     <>
-      <ContactSection />
+      {pathName !== "/contact" && (
+        <ContactSection />
+      )}
       <footer className="bg-black text-white">
         <div className="mx-auto max-w-7xl px-6 py-14 lg:px-10 lg:py-16">
           <div className="grid gap-10 border-b border-white/10 pb-10 md:grid-cols-2 lg:grid-cols-4">
@@ -89,29 +104,25 @@ export default function Footer() {
 
             <div>
               <h5 className="text-base font-semibold">
-                Quick Links
+                Products
               </h5>
               <ul className="mt-4 space-y-2.5">
-                {quickLinks.map(
-                  (item) => (
-                    <li
-                      key={item.label}
+                {product.map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-white/70 transition hover:text-white"
                     >
-                      <Link
-                        href={item.href}
-                        className="text-sm text-white/70 transition hover:text-white"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  )
-                )}
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h5 className="text-base font-semibold">
-                Solutions
+                Solutions & Services
               </h5>
               <ul className="mt-4 space-y-2.5">
                 {solutionLinks.map(

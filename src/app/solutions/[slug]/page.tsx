@@ -1,19 +1,8 @@
 import { notFound } from "next/navigation";
-import {
-  CircleCheckBig,
-  Fingerprint,
-  LockKeyhole,
-  ShieldCheck,
-} from "lucide-react";
 import LogoSection from "@/components/common/LogoSection";
 import SolutionHeroSection from "@/components/common/HeroSection";
-import FeaturesSection from "@/components/common/FeaturesSection";
-import ProductGridSection from "@/components/common/ProductGridSection";
-import SolutionsSection from "@/components/common/SolutionsSection";
-import CustomerStoriesSection from "@/components/common/CustomerStoriesSection";
 import FAQSection from "@/components/common/FAQSection";
-import SolutionEcosystemSection from "@/components/sections/solution/SolutionEcosystemSection";
-import SolutionGuideSection from "@/components/sections/solution/SolutionGuideSection";
+import ProductGridSection from "@/components/common/ProductGridSection";
 
 type IndustryContent = {
   slug: string;
@@ -22,8 +11,6 @@ type IndustryContent = {
   image: string;
   heroBadges: string[];
   logoNames: string[];
-  benefitsTitle: string;
-  benefitsDescription: string;
 };
 
 const SolutionPages: Record<
@@ -51,88 +38,47 @@ const SolutionPages: Record<
       "Police",
       "American School of the Deaf",
     ],
-    benefitsTitle:
-      "Benefits of construction site security monitoring",
-    benefitsDescription:
-      "With increased risks of theft and vandalism, construction sites require robust video monitoring and surveillance systems to provide extra protection.",
   },
 };
 
-const featureSection = {
-  title:
-    "Avigilon police station security technology",
-  description:
-    "Find the law enforcement agency security system that’s right for your station, with compliant access control and security cameras for police departments and correctional facilities.",
-  image: "/images/camera-1.avif",
-  linkLabel: "Connect with an expert",
-  features: [
-    {
-      icon: CircleCheckBig,
-      title: "High-level compliance",
-      description:
-        "Our products are compliant with federal procurement and security guidelines, supporting agencies that need trusted deployment standards.",
-    },
-    {
-      icon: Fingerprint,
-      title:
-        "Integrated sensor and recognition technology",
-      description:
-        "Select camera platforms that combine recognition, analytics and alerts to help teams detect, identify and respond in real time.",
-    },
-    {
-      icon: ShieldCheck,
-      title:
-        "Anomaly detection and analytics",
-      description:
-        "Software can understand perimeters and behaviors to classify events, track people or vehicles and send alerts before threats escalate.",
-    },
-    {
-      icon: LockKeyhole,
-      title:
-        "Enhance security with multi-factor authentication",
-      description:
-        "Choose from mobile, key fob and PIN-based credentials to enable layered access control for high-risk buildings and spaces.",
-    },
-  ],
-};
-
-const ecosystemSection = {
-  title:
-    "Safety and security ecosystem",
-  description:
-    "Our ecosystem supports the collaboration needed between public safety and enterprises to help protect people, property and places. Because people and technology are stronger when united.",
-  image: "/images/camera-1.avif",
-  imageAlt:
-    "Security ecosystem dashboard on a monitor",
-  buttonLabel: "GET PRICING",
-  buttonHref: "#",
-  steps: [
-    {
-      title: "Detect",
-      description:
-        "Identify and analyze potential threats and incidents, with powerful insights into critical events.",
-      image: "/images/image1.avif",
-      imageAlt:
-        "Detect stage security dashboard",
-    },
-    {
-      title: "Respond",
-      description:
-        "Coordinate effective actions and resources to manage incidents quickly and accurately.",
-      image: "/images/camera-1.avif",
-      imageAlt:
-        "Respond stage security screen",
-    },
-    {
-      title: "Resolve",
-      description:
-        "Tools to investigate incidents, document and report results for future preparedness.",
-      image: "/images/camera-2.avif",
-      imageAlt:
-        "Resolve stage monitoring dashboard",
-      active: true,
-    },
-  ],
+const solutionSections = {
+  overview: {
+    title: "Overview",
+    content: [
+      "Construction sites face unique security challenges with expensive equipment, remote locations, and rotating workforce. A comprehensive security solution combines video surveillance, access control, and real-time monitoring to protect assets and personnel.",
+      "Modern construction security goes beyond simple camera placement. It requires intelligent systems that can detect intrusions, monitor restricted areas, and provide actionable insights to your security team.",
+    ],
+  },
+  benefits: {
+    title: "Benefits",
+    content: [
+      "Equipment Protection: Monitor expensive machinery and materials to prevent theft and vandalism",
+      "Worker Safety: Enhance site safety with real-time surveillance and emergency response coordination",
+      "Insurance Compliance: Meet insurance requirements with documented security measures and incident records",
+      "Remote Management: Access your site from anywhere with cloud-based monitoring and alerts",
+      "Incident Prevention: Deter criminal activity with visible cameras and comprehensive coverage",
+    ],
+  },
+  features: {
+    title: "Key Features",
+    content: [
+      "AI-Powered Video Analytics: Detect unauthorized access and unusual activities in real-time",
+      "Mobile Access: Monitor your site anytime, anywhere with secure mobile applications",
+      "Cloud Storage: Secure backup of footage with redundant storage and easy playback",
+      "Integration Capabilities: Connect with access control and alarm systems for unified management",
+      "Scalability: Expand coverage as your project grows and needs change",
+    ],
+  },
+  implementation: {
+    title: "Implementation",
+    content: [
+      "Planning: Site survey and assessment to determine optimal camera placement and coverage",
+      "Installation: Professional installation ensuring proper angles, coverage, and cable management",
+      "Configuration: System setup with motion detection, alerts, and user access controls",
+      "Training: Team training on system operation and emergency response procedures",
+      "Support: Ongoing monitoring and technical support to ensure system reliability",
+    ],
+  },
 };
 
 const productSection = {
@@ -186,15 +132,6 @@ const productSection = {
   ],
 };
 
-const guideSection = {
-  title:
-    "Get your free healthcare security guide",
-  description:
-    "Download our healthcare security guide, featuring a comprehensive security checklist, to help you learn the latest healthcare security strategies and audit your healthcare facility’s security posture.",
-  image: "/images/image1.avif",
-  buttonLabel: "DOWNLOAD FREE GUIDE",
-};
-
 export function generateStaticParams() {
   return [
     { slug: "construction" },
@@ -217,8 +154,15 @@ export default async function SolutionPage({
     notFound();
   }
 
+  const sections = Object.entries(
+    solutionSections
+  ).map(([key, section]) => ({
+    id: key,
+    ...section,
+  }));
+
   return (
-    <div className="bg-[#f6f6f6] text-black">
+    <main className="min-h-screen text-black">
       <SolutionHeroSection
         title={content.title}
         description={
@@ -234,24 +178,63 @@ export default async function SolutionPage({
       />
 
       <LogoSection />
-      <SolutionEcosystemSection
-        title={ecosystemSection.title}
-        description={
-          ecosystemSection.description
-        }
-        image={ecosystemSection.image}
-        imageAlt={
-          ecosystemSection.imageAlt
-        }
-        buttonLabel={
-          ecosystemSection.buttonLabel
-        }
-        buttonHref={
-          ecosystemSection.buttonHref
-        }
-        steps={ecosystemSection.steps}
-      />
-      <SolutionsSection />
+
+      {/* TOC and Content Section */}
+      <section
+        id="solution-content"
+        className="mx-auto max-w-7xl px-6 py-16 lg:px-10"
+      >
+        <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
+          {/* Sidebar - Table of Contents */}
+          <aside className="lg:sticky lg:top-8 lg:self-start">
+            <div className="text-sm font-semibold text-black">
+              Table of Contents
+            </div>
+            <ol className="mt-4 space-y-3 text-sm leading-6 text-black/70">
+              {sections.map(
+                (section, index) => (
+                  <li key={section.id}>
+                    <a
+                      href={`#${section.id}`}
+                      className="transition hover:text-black"
+                    >
+                      {index + 1}.{" "}
+                      {section.title}
+                    </a>
+                  </li>
+                )
+              )}
+            </ol>
+            <button className="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/85">
+              REQUEST A QUOTE
+            </button>
+          </aside>
+
+          {/* Main Content */}
+          <article className="space-y-12 text-[15px] leading-7 text-black/65">
+            {sections.map((section) => (
+              <section
+                key={section.id}
+                id={section.id}
+                className="scroll-mt-8"
+              >
+                <h2 className="text-[30px] font-medium tracking-[-0.03em] text-black sm:text-[34px]">
+                  {section.title}
+                </h2>
+                <div className="mt-4 space-y-4">
+                  {section.content.map(
+                    (text, idx) => (
+                      <p key={idx}>
+                        {text}
+                      </p>
+                    )
+                  )}
+                </div>
+              </section>
+            ))}
+          </article>
+        </div>
+      </section>
       <ProductGridSection
         title={productSection.title}
         description={
@@ -261,31 +244,30 @@ export default async function SolutionPage({
           productSection.products
         }
       />
-      <CustomerStoriesSection />
-      <FeaturesSection
-        title={featureSection.title}
-        description={
-          featureSection.description
-        }
-        image={featureSection.image}
-        features={
-          featureSection.features
-        }
-        sideTitle="Powerful security system features"
-        sideDescription="Empower your teams and secure your facilities with Avigilon Unity on-premise and cloud-native solutions."
-      />
 
+      {/* CTA Section */}
+      <section className="bg-[#f6f6f6] py-16">
+        <div className="mx-auto max-w-7xl px-6 text-center lg:px-10">
+          <h2 className="mb-4 text-3xl font-bold">
+            Ready to secure your
+            construction site?
+          </h2>
+          <p className="mb-8 text-lg text-black/60">
+            Get a free security audit
+            and custom solution for your
+            needs
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button className="rounded-full bg-[#0b76ff] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#095bd6]">
+              Get Free Audit
+            </button>
+            <button className="rounded-full border-2 border-[#0b76ff] px-8 py-3 font-semibold text-[#0b76ff] transition-colors hover:bg-[#0b76ff] hover:text-white">
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </section>
       <FAQSection />
-      <SolutionGuideSection
-        title={guideSection.title}
-        description={
-          guideSection.description
-        }
-        image={guideSection.image}
-        buttonLabel={
-          guideSection.buttonLabel
-        }
-      />
-    </div>
+    </main>
   );
 }

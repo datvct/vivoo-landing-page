@@ -58,12 +58,12 @@ export default function Header() {
               Contact
             </Link>
 
-            <Link href="/support">
+            {/* <Link href="/support">
               <CircleHelp
                 size={18}
                 color="black"
               />
-            </Link>
+            </Link> */}
           </div>
 
           {/* Mobile menu button */}

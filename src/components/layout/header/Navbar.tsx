@@ -36,15 +36,15 @@ export const menus = [
     ],
   },
   {
-    label: "Resources",
+    label: "Services",
     submenu: [
       {
-        title: "Blog",
-        link: "/blog",
+        title: "Service 1",
+        link: "/services/service-1",
       },
       {
-        title: "Support Center",
-        link: "/support",
+        title: "Service 2",
+        link: "/services/service-2",
       },
     ],
   },

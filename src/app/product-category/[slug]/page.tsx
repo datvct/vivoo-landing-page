@@ -3,7 +3,6 @@ import ProductCatalogSection from "@/components/sections/product-category/Produc
 import LogoSection from "@/components/common/LogoSection";
 import FAQSection from "@/components/common/FAQSection";
 import ProductBenefitsSection from "@/components/sections/product-category/ProductBenefitsSection";
-import CertificationsSection from "@/components/sections/product-category/CertificationsSection";
 import ResourcesSection from "@/components/sections/product-category/ResourcesSection";
 
 export function generateStaticParams() {
@@ -138,8 +137,6 @@ export default async function ProductCategoryPage({
       />
 
       <ProductBenefitsSection />
-
-      <CertificationsSection />
 
       <ResourcesSection />
 

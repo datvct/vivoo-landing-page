@@ -18,15 +18,7 @@ import {
   ShoppingBag,
   Server,
 } from "lucide-react";
-
-type Industry = {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  image: string;
-  imageAlt: string;
-  imagePosition?: string;
-};
+import { Industry } from "@/types/home-types";
 
 const industries: Industry[] = [
   {

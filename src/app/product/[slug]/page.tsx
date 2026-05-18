@@ -33,8 +33,7 @@ const productDetails: Record<
     slug: "h6a-dome-camera",
     breadcrumbs: [
       "Products",
-      "Security Cameras",
-      "Dome Camera",
+      "Vivoo Cameras",
       "H6A Dome Camera",
     ],
     title: "H6A Dome Camera",

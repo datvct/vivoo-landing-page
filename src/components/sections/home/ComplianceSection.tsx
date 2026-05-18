@@ -1,15 +1,10 @@
+import { ComplianceItem } from "@/types/home-types";
 import {
   BadgeCheck,
   CircleCheckBig,
   ShieldCheck,
   Stamp,
 } from "lucide-react";
-
-type ComplianceItem = {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-};
 
 const complianceItems: ComplianceItem[] =
   [

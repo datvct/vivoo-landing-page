@@ -1,11 +1,5 @@
+import { SolutionHeroTextProps } from "@/types/solution-types";
 import Link from "next/link";
-
-type SolutionHeroTextProps = {
-  title: string;
-  description: string;
-  primaryCta: string;
-  secondaryCta: string;
-};
 
 export default function SolutionHeroText({
   title,

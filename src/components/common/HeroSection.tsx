@@ -1,13 +1,8 @@
+import Link from "next/link";
 import SolutionHeroMedia from "@/components/common/HeroMedia";
 import SolutionHeroText from "@/components/common/HeroText";
+import { SolutionHeroSectionProps } from "@/types/solution-types";
 
-type SolutionHeroSectionProps = {
-  title: string;
-  description: string;
-  image: string;
-  primaryCta: string;
-  secondaryCta: string;
-};
 export default function SolutionHeroSection({
   title,
   description,
@@ -17,6 +12,25 @@ export default function SolutionHeroSection({
 }: SolutionHeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-[#f6f6f6]">
+      <div className="relative mx-auto max-w-7xl px-6 py-4 lg:px-10">
+        <div className="flex items-center gap-2 text-xs text-black/45">
+          <Link
+            href="/"
+            className="hover:text-black/60"
+          >
+            Home
+          </Link>
+          <span>›</span>
+          <Link
+            href="/solutions"
+            className="hover:text-black/60"
+          >
+            Solutions
+          </Link>
+          <span>›</span>
+          <span>{title}</span>
+        </div>
+      </div>
       <div className="relative mx-auto flex h-121.25 max-w-7xl items-center px-6 py-16 lg:px-10">
         <div className="relative z-20 w-full lg:w-1/2">
           <SolutionHeroText
