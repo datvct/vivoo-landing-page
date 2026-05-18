@@ -1,6 +1,6 @@
 import LogoSection from "@/components/common/LogoSection";
 import Image from "next/image";
-import Link from "next/link";
+import Breadcrumb from "@/components/common/Breadcrumb";
 import { serviceDetails } from "@/lib/service-details";
 import FAQSection from "@/components/common/FAQSection";
 import ProductGridSection from "@/components/common/ProductGridSection";
@@ -149,25 +149,19 @@ export default function ServiceDetailPage({
     <main className="min-h-screen text-black">
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-10">
-          <div className="flex items-center gap-2 text-xs text-black/45">
-            <Link
-              href="/"
-              className="hover:text-black"
-            >
-              Home
-            </Link>
-            <span>›</span>
-            <Link
-              href="/services"
-              className="hover:text-black"
-            >
-              Services
-            </Link>
-            <span>›</span>
-            <span className="text-black/65">
-              {detail.title}
-            </span>
-          </div>
+          <Breadcrumb
+            items={[
+              {
+                label: "Home",
+                href: "/",
+              },
+              {
+                label: "Services",
+                href: "/services",
+              },
+            ]}
+            currentLabel={detail.title}
+          />
         </div>
 
         <div className="mx-auto mt-6 max-w-7xl px-4 pb-8 sm:px-6 lg:px-10 lg:pb-10">

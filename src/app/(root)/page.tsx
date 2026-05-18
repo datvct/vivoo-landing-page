@@ -3,9 +3,9 @@ import CustomerStoriesSection from "@/components/common/CustomerStoriesSection";
 import IndustriesSection from "@/components/sections/home/IndustriesSection";
 import LogoSection from "@/components/common/LogoSection";
 import ProductGridSection from "@/components/common/ProductGridSection";
-import SolutionsSection from "@/components/common/SolutionsSection";
-import ServiceListSection from "@/components/common/ServiceListSection";
+import SolutionsSection from "@/components/sections/solution/SolutionsSection";
 import BannerSlider from "@/components/sections/home/BannerSlider";
+import ServiceListSection from "@/components/sections/services/ServiceListSection";
 
 const featuredProducts = [
   {

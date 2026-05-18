@@ -4,12 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
-  ChevronRight,
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
   FileText,
   HelpCircle,
-  HomeIcon,
   Play,
 } from "lucide-react";
 import {
@@ -17,6 +15,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import Breadcrumb from "@/components/common/Breadcrumb";
 
 type Thumbnail = {
   src: string;
@@ -30,7 +29,10 @@ type DetailLink = {
 };
 
 type ProductDetailHeroSectionProps = {
-  breadcrumbs: string[];
+  breadcrumbs: (
+    | string
+    | { label: string; href?: string }
+  )[];
   title: string;
   categoryLabel: string;
   badges: string[];
@@ -128,40 +130,28 @@ export default function ProductDetailHeroSection({
     };
   }, [activeIndex]);
 
+  // normalize breadcrumb items (accept either string or {label, href})
+  const normalized = breadcrumbs.map(
+    (b) =>
+      typeof b === "string"
+        ? { label: b }
+        : b
+  );
+
+  const itemsForBreadcrumb =
+    normalized.slice(0, -1);
+  const currentCrumb =
+    normalized[normalized.length - 1];
+
   return (
     <section className="bg-white py-5 text-black sm:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-        <nav
-          aria-label="Breadcrumb"
-          className="flex flex-wrap items-center gap-2 text-[11px] text-black/40 sm:text-sm"
-        >
-          <span className="inline-flex items-center justify-center rounded-full p-1">
-            <HomeIcon className="h-3.5 w-3.5" />
-          </span>
-          {breadcrumbs.map(
-            (crumb, index) => (
-              <span
-                key={crumb}
-                className="inline-flex items-center gap-2"
-              >
-                {index > 0 && (
-                  <ChevronRight className="h-3.5 w-3.5 text-black/25" />
-                )}
-                <span
-                  className={
-                    index ===
-                    breadcrumbs.length -
-                      1
-                      ? "text-black/75"
-                      : "text-black/35"
-                  }
-                >
-                  {crumb}
-                </span>
-              </span>
-            )
-          )}
-        </nav>
+        <Breadcrumb
+          items={itemsForBreadcrumb}
+          currentLabel={
+            currentCrumb?.label ?? title
+          }
+        />
 
         <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] lg:items-start">
           <div>

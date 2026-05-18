@@ -12,6 +12,10 @@ export type SolutionHeroSectionProps = {
   image: string;
   primaryCta: string;
   secondaryCta: string;
+  breadcrumbs?: {
+    label: string;
+    href?: string;
+  }[];
 };
 
 export type SolutionHeroTextProps = {

@@ -1,4 +1,4 @@
-import ServicesSection from "@/components/common/ServicesSection";
+import ServicesSection from "@/components/sections/services/ServicesSection";
 
 export const metadata = {
   title: "Services | Vivoo",

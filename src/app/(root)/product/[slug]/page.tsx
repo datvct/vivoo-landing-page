@@ -6,7 +6,10 @@ import ProductRelatedProductsSection from "@/components/sections/product/Product
 
 type ProductDetail = {
   slug: string;
-  breadcrumbs: string[];
+  breadcrumbs: (
+    | string
+    | { label: string; href?: string }
+  )[];
   title: string;
   categoryLabel: string;
   badges: string[];
@@ -32,9 +35,14 @@ const productDetails: Record<
   "h6a-dome-camera": {
     slug: "h6a-dome-camera",
     breadcrumbs: [
-      "Products",
-      "Vivoo Cameras",
-      "H6A Dome Camera",
+      {
+        label: "Security Cameras",
+        href: "/product-category/security-cameras",
+      },
+      {
+        label: "Dome Camera",
+        href: "/product/h6a-dome-camera",
+      },
     ],
     title: "H6A Dome Camera",
     categoryLabel:
@@ -97,10 +105,14 @@ const productDetails: Record<
   "h6xp-dome-camera": {
     slug: "h6xp-dome-camera",
     breadcrumbs: [
-      "Products",
-      "Security Cameras",
-      "Dome Camera",
-      "H6XP Dome Camera",
+      {
+        label: "Dome Camera",
+        href: "/product-category/dome-cameras",
+      },
+      {
+        label: "H6XP Dome Camera",
+        href: "/product/h6xp-dome-camera",
+      },
     ],
     title: "H6XP Dome Camera",
     categoryLabel:
@@ -294,7 +306,10 @@ export default async function ProductDetailPage({
   return (
     <main className="bg-white text-black">
       <ProductDetailHeroSection
-        breadcrumbs={detail.breadcrumbs}
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          ...detail.breadcrumbs,
+        ]}
         title={detail.title}
         categoryLabel={
           detail.categoryLabel

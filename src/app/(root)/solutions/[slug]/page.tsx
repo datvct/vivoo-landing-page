@@ -41,6 +41,21 @@ const SolutionPages: Record<
   },
 };
 
+const breadcrumbs = [
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "Solutions",
+    href: "/solutions",
+  },
+  {
+    label: "Construction Security",
+    href: "/solutions/construction",
+  },
+];
+
 const solutionSections = {
   overview: {
     title: "Overview",
@@ -175,11 +190,11 @@ export default async function SolutionPage({
         secondaryCta={
           content.heroBadges[1]
         }
+        breadcrumbs={breadcrumbs}
       />
 
       <LogoSection />
 
-      {/* TOC and Content Section */}
       <section
         id="solution-content"
         className="mx-auto max-w-7xl px-4 py-6 sm:px-10 sm:py-16"

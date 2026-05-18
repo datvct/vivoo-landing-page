@@ -111,6 +111,15 @@ export default async function ProductCategoryPage({
     },
   ];
 
+  const breadcrumbs = [
+    {
+      label: "Home",
+      href: "/",
+    },
+    {
+      label: content.title,
+    },
+  ];
   return (
     <div className="bg-[#f6f6f6] text-black">
       <SolutionHeroSection
@@ -125,6 +134,7 @@ export default async function ProductCategoryPage({
         secondaryCta={
           content.heroBadges[1]
         }
+        breadcrumbs={breadcrumbs}
       />
 
       <LogoSection />
