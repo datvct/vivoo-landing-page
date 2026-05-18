@@ -2,7 +2,7 @@ export type ProductItem = {
   title: string;
   description: string;
   image: string;
-  linkLabel: string;
+  linkLabel?: string;
   href?: string;
   category?: string;
   price?: string;
