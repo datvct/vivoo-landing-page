@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const menus = [
   {
@@ -34,6 +35,7 @@ export const menus = [
         link: "/solutions/education",
       },
     ],
+    link: "/solutions",
   },
   {
     label: "Services",
@@ -47,13 +49,14 @@ export const menus = [
         link: "/services/service-2",
       },
     ],
+    link: "/services",
   },
 ];
 
 export default function Navbar() {
   const [hoveredMenu, setHoveredMenu] =
     useState<string | null>(null);
-
+  const router = useRouter();
   return (
     <nav className="hidden gap-8 lg:flex">
       {menus.map((item) => (
@@ -68,7 +71,14 @@ export default function Navbar() {
           }
         >
           {/* Main Menu Item */}
-          <button className="flex cursor-pointer items-center gap-1 py-6 text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-blue-600">
+          <button
+            onClick={() =>
+              router.push(
+                item.link ?? "#"
+              )
+            }
+            className="flex cursor-pointer items-center gap-1 py-6 text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-blue-600"
+          >
             {item.label}
             <ChevronDown
               size={16}
