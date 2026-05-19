@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export const menus = [
+export const defaultMenus = [
   {
     label: "Products",
     submenu: [
@@ -53,13 +53,20 @@ export const menus = [
   },
 ];
 
-export default function Navbar() {
+type NavbarProps = {
+  menus?: any[];
+};
+
+export default function Navbar({ menus = [] }: NavbarProps) {
   const [hoveredMenu, setHoveredMenu] =
     useState<string | null>(null);
   const router = useRouter();
+
+  const activeMenus = menus && menus.length > 0 ? menus : defaultMenus;
+
   return (
     <nav className="hidden gap-8 lg:flex">
-      {menus.map((item) => (
+      {activeMenus.map((item) => (
         <div
           key={item.label}
           className="group relative"
@@ -72,56 +79,60 @@ export default function Navbar() {
         >
           {/* Main Menu Item */}
           <button
-            onClick={() =>
-              router.push(
-                item.link ?? "#"
-              )
-            }
+            onClick={() => {
+              if (item.link) {
+                router.push(item.link);
+              }
+            }}
             className="flex cursor-pointer items-center gap-1 py-6 text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-blue-600"
           >
             {item.label}
-            <ChevronDown
-              size={16}
-              className={`transition-transform duration-300 ${
-                hoveredMenu ===
-                item.label
-                  ? "rotate-180"
-                  : ""
-              }`}
-            />
+            {item.submenu && item.submenu.length > 0 && (
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-300 ${
+                  hoveredMenu ===
+                  item.label
+                    ? "rotate-180"
+                    : ""
+                }`}
+              />
+            )}
           </button>
 
           {/* Dropdown Menu */}
-          <div
-            className={`absolute left-0 mt-0 w-56 origin-top transform rounded-lg border border-gray-100 bg-white shadow-lg transition-all duration-300 ${
-              hoveredMenu === item.label
-                ? "visible translate-y-0 opacity-100"
-                : "invisible -translate-y-2 opacity-0"
-            }`}
-          >
-            {/* Arrow pointer */}
-            <div className="absolute -top-2 left-4 h-4 w-4 rotate-45 transform border-t border-l border-gray-100 bg-white" />
+          {item.submenu && item.submenu.length > 0 && (
+            <div
+              className={`absolute left-0 mt-0 w-56 origin-top transform rounded-lg border border-gray-100 bg-white shadow-lg transition-all duration-300 ${
+                hoveredMenu === item.label
+                  ? "visible translate-y-0 opacity-100"
+                  : "invisible -translate-y-2 opacity-0"
+              }`}
+            >
+              {/* Arrow pointer */}
+              <div className="absolute -top-2 left-4 h-4 w-4 rotate-45 transform border-t border-l border-gray-100 bg-white" />
 
-            {/* Submenu items */}
-            <ul className="pt-3 pb-3">
-              {item.submenu.map(
-                (subitem, index) => (
-                  <li key={index}>
-                    <Link
-                      href={
-                        subitem?.link ??
-                        "#"
-                      }
-                      className="block px-4 py-2.5 text-sm text-gray-700 transition-colors duration-150 first:pt-4 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      {subitem?.title ??
-                        ""}
-                    </Link>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
+              {/* Submenu items */}
+              <ul className="pt-3 pb-3">
+                {item.submenu.map(
+                  (subitem: any, index: number) => (
+                    <li key={index}>
+                      <Link
+                        href={
+                          subitem?.link ??
+                          "#"
+                        }
+                        className="block px-4 py-2.5 text-sm text-gray-700 transition-colors duration-150 first:pt-4 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        {subitem?.title ??
+                          ""}
+                      </Link>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          )}
 
           {/* Hover line indicator */}
           <div

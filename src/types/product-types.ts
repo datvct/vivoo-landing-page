@@ -17,3 +17,23 @@ export type ProductGridSectionProps = {
   viewAllHref?: string;
   viewAllLabel?: string;
 };
+
+export type ProductDetail = {
+  slug: string;
+  breadcrumbs: (
+    | string
+    | { label: string; href?: string }
+  )[];
+  title: string;
+  categoryLabel: string;
+  badges: string[];
+  description: string;
+  features: string[];
+  primaryActionLabel: string;
+  primaryActionHref: string;
+  thumbnails: {
+    src: string;
+    alt: string;
+  }[];
+  detail:string
+};

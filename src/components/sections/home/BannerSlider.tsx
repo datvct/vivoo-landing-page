@@ -10,26 +10,27 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
-import { BannerSlide } from "@/types/home-types";
+import { useSiteSettingQuery } from "@/services/site-settings/queries";
+import { HomeSettings } from "@/types/types";
 
-const banners: BannerSlide[] = [
+const defaultBanners = [
   {
-    id: 1,
+    id: "1",
     image: "/images/image1.avif",
     alt: "Vivoo banner quảng cáo 1",
   },
   {
-    id: 2,
+    id: "2",
     image: "/images/product.avif",
     alt: "Vivoo banner quảng cáo 2",
   },
   {
-    id: 3,
+    id: "3",
     image: "/images/camera-1.avif",
     alt: "Vivoo banner quảng cáo 3",
   },
   {
-    id: 4,
+    id: "4",
     image: "/images/camera-2.avif",
     alt: "Vivoo banner quảng cáo 4",
   },
@@ -37,15 +38,26 @@ const banners: BannerSlide[] = [
 
 type BannerSliderProps = {
   fullWidth?: boolean;
+  slides?: any[];
 };
 
 export default function BannerSlider({
   fullWidth = false,
+  slides,
 }: BannerSliderProps) {
+  const { data: settingData } = useSiteSettingQuery("home");
+  const homeSettings = (settingData?.data?.value || {}) as Partial<HomeSettings>;
+  const banners = slides && slides.length > 0
+    ? slides
+    : (homeSettings.banners && homeSettings.banners.length > 0
+      ? homeSettings.banners
+      : defaultBanners);
+
   const [current, setCurrent] =
     useState(0);
 
   useEffect(() => {
+    if (banners.length <= 1) return;
     const timer = setInterval(() => {
       setCurrent((prev) =>
         prev === banners.length - 1
@@ -55,7 +67,7 @@ export default function BannerSlider({
     }, 6000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [banners.length]);
 
   const containerClass = fullWidth
     ? "w-full"
@@ -71,20 +83,20 @@ export default function BannerSlider({
               transform: `translateX(-${current * 100}%)`,
             }}
           >
-            {banners.map((banner) => (
+            {banners.map((banner, index) => (
               <div
                 key={banner.id}
                 className="relative min-w-full"
               >
                 <div className="relative h-56 sm:h-112.5">
                   <Image
-                    src={banner.image}
+                    src={banner.image || "/images/product.avif"}
                     alt={banner.alt}
                     fill
                     sizes="(max-width: 1024px) 100vw, 1280px"
                     className="object-cover"
                     priority={
-                      banner.id === 1
+                      index === 0
                     }
                   />
                 </div>
@@ -92,36 +104,40 @@ export default function BannerSlider({
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() =>
-              setCurrent((prev) =>
-                prev === 0
-                  ? banners.length - 1
-                  : prev - 1
-              )
-            }
-            className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-3 text-slate-900 shadow-lg transition hover:bg-white"
-            aria-label="Banner trước"
-          >
-            <ArrowLeft size={20} />
-          </button>
+          {banners.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrent((prev) =>
+                    prev === 0
+                      ? banners.length - 1
+                      : prev - 1
+                  )
+                }
+                className="absolute top-1/2 left-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-3 text-slate-900 shadow-lg transition hover:bg-white"
+                aria-label="Banner trước"
+              >
+                <ArrowLeft size={20} />
+              </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              setCurrent((prev) =>
-                prev ===
-                banners.length - 1
-                  ? 0
-                  : prev + 1
-              )
-            }
-            className="absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-3 text-slate-900 shadow-lg transition hover:bg-white"
-            aria-label="Banner tiếp theo"
-          >
-            <ArrowRight size={20} />
-          </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrent((prev) =>
+                    prev ===
+                    banners.length - 1
+                      ? 0
+                      : prev + 1
+                  )
+                }
+                className="absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-3 text-slate-900 shadow-lg transition hover:bg-white"
+                aria-label="Banner tiếp theo"
+              >
+                <ArrowRight size={20} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </section>

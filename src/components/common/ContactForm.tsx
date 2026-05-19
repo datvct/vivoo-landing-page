@@ -3,7 +3,22 @@
 import { FormState } from "@/types/contact-types";
 import { useState } from "react";
 
+import { useCreateContactMutation } from "@/services/contacts/mutations";
+
 export default function ContactForm() {
+  const createContactMutation = useCreateContactMutation(() => {
+    setForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      company: "",
+      postal: "",
+      message: "",
+    });
+    setTouched({});
+  });
+
   const [form, setForm] =
     useState<FormState>({
       firstName: "",
@@ -19,8 +34,6 @@ export default function ContactForm() {
     useState<Record<string, boolean>>(
       {}
     );
-  const [submitted, setSubmitted] =
-    useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -79,25 +92,18 @@ export default function ContactForm() {
       );
     if (hasError) return;
 
-    // Simulate submit
-    setSubmitted(true);
-    setTimeout(() => {
-      alert(
-        "Thank you — we received your request."
-      );
-      setSubmitted(false);
-      setForm({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        company: "",
-        postal: "",
-        message: "",
-      });
-      setTouched({});
-    }, 800);
+    createContactMutation.mutate({
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phone: form.phone,
+      company: form.company,
+      postal: form.postal,
+      message: form.message || "Requesting a quote.",
+    });
   };
+
+  const submitted = createContactMutation.isPending;
 
   return (
     <form

@@ -1,0 +1,347 @@
+:root {
+  --color-placeholder: #c5c5c8;
+  --background-color-editor: #f5f5f5;
+  --border-color-editor: #d9d9d9;
+  --radius-editor: 8px;
+}
+[data-mui-color-scheme="dark"] {
+  --color-placeholder: #76778c;
+  --background-color-editor: #1c1c1c;
+  --border-color-editor: #333333;
+}
+
+/* Light mode */
+.custom-quill .ql-container {
+  height: var(--quill-editor-height, 400px);
+  border-top: 0;
+  border-bottom-left-radius: var(--radius-editor);
+  border-bottom-right-radius: var(--radius-editor);
+}
+.custom-quill .ql-container:focus {
+  border-color: #639F52;
+  box-shadow: 0 0 0 2px rgba(76, 255, 5, 0.1);
+  outline: 0;
+  background-color: #ffffff;
+}
+.custom-quill-view > p {
+  margin: 0;
+}
+
+.custom-quill.error .ql-container {
+  border: 0.1px solid var(--mui-palette-error-main);
+}
+
+/* Dark mode */
+.custom-quill.dark .ql-container {
+  border: 0.1px solid var(--border-color-editor);
+}
+
+.custom-quill.dark.error .ql-container {
+  border-color: var(--mui-palette-error-main);
+}
+
+/* Customizing the toolbar */
+.custom-quill .ql-toolbar {
+  /* border: 0.1px solid rgba(225, 222, 245, 0.22); */
+  border-top-left-radius: var(--radius-editor);
+  border-top-right-radius: var(--radius-editor);
+}
+
+.custom-quill.error .ql-toolbar {
+  border: 0.1px solid var(--mui-palette-error-main);
+}
+
+.custom-quill.dark .ql-toolbar {
+  border: 0.1px solid var(--border-color-editor);
+}
+
+.custom-quill.dark.error .ql-toolbar {
+  border-color: var(--mui-palette-error-main);
+}
+
+/* Dark mode toolbar icons */
+.custom-quill.dark .ql-toolbar .ql-stroke {
+  stroke: var(--mui-palette-text-primary);
+}
+
+.custom-quill.dark .ql-toolbar .ql-fill {
+  fill: var(--mui-palette-text-primary);
+}
+/* Ensure toolbar text is visible */
+.custom-quill .ql-toolbar .ql-picker-label,
+.custom-quill .ql-toolbar .ql-picker-item {
+  color: var(--mui-palette-text-primary); /* Light mode text color */
+}
+
+.custom-quill.dark .ql-toolbar .ql-picker-label,
+.custom-quill.dark .ql-toolbar .ql-picker-item {
+  color: var(--mui-palette-text-primary); /* Dark mode text color */
+}
+
+.custom-quill.dark .ql-editor .ql-blank,
+.ql-editor.ql-blank::before {
+  color: var(--mui-palette-text-primary);
+}
+
+#editor-container {
+  /* font-size: ${convertToPx(FONT_SIZE.md)}; */
+  /* color: ${colors.text}; */
+}
+
+.custom-quill .ql-editor {
+  padding: 16px;
+  font-family: sans-serif;
+  color: var(--mui-palette-text-primary);
+  font-size: 15px;
+}
+
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+  color: var(--color-placeholder) !important;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.2s ease-out;
+}
+
+/* Placeholder positioning in fullscreen mode */
+.custom-quill.fullscreen .ql-editor.ql-blank::before {
+  /* Calculate left position: center the 1200px container + add padding */
+  left: max(32px, calc((100vw - 1200px) / 2) + 16px);
+}
+.custom-quill pre.ql-syntax,
+.ql-snow .ql-editor pre.ql-syntax {
+  /* font-family: sans-serif; */
+  /* background-color: ${colors.background}; */
+  /* color: ${colors.text}; */
+}
+
+.custom-quill blockquote,
+.ql-snow .ql-editor blockquote {
+  border-left-color: var(--mui-palette-customColors-inputBorder);
+  overflow-x: scroll;
+}
+.custom-quill pre,
+.ql-snow .ql-editor pre.ql-syntax {
+  /* background-color: var(--mui-palette-customColors-inputBackground); */
+  background: var(--background-color-editor) !important;
+  color: var(--mui-palette-text-primary) !important;
+  border-radius: 4px;
+  padding: 10px;
+  overflow-x: scroll;
+}
+
+.custom-quill img,
+.ql-snow .ql-editor img {
+  border-radius: 8px;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.custom-quill ol,
+.ql-editor ol,
+.custom-quill ul,
+.ql-editor ul {
+  padding-left: 1rem;
+  list-style: disc;
+}
+.custom-quill span[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill p:has(span[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+.custom-quill strong[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill p:has(trong[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+.custom-quill em[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill p:has(em[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+.custom-quill u[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill p:has(u[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+.custom-quill s[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill p:has(s[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+.custom-quill p[style*="background-color"] {
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1.8;
+  /* line-height: ${convertToPx(FONT_SIZE['3xl'])}; */
+}
+.custom-quill div:has(p[style*="background-color"]) {
+  margin-bottom: 4px;
+}
+
+/* Fullscreen mode styles */
+.custom-quill.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: #ffffff;
+  padding: 0;
+  margin: 0;
+  animation: expandFullscreen 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.custom-quill.fullscreen.dark {
+  background-color: #1c1c1c;
+}
+
+/* Smooth transition when exiting fullscreen */
+.custom-quill:not(.fullscreen) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fullscreen toolbar - sticky at top */
+.custom-quill.fullscreen .ql-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: slideDownToolbar 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
+}
+
+.custom-quill.fullscreen.dark .ql-toolbar {
+  background-color: #1c1c1c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Fullscreen container - take up remaining space */
+.custom-quill.fullscreen .ql-container {
+  height: calc(100vh - 42px) !important;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  animation: fadeInContent 0.4s ease-out 0.15s backwards;
+}
+
+/* Fullscreen editor content area */
+.custom-quill.fullscreen .ql-editor {
+  padding-top: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: slideUpContent 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+}
+
+/* Fullscreen button hover effect */
+.custom-quill .editor-fullscreen-button:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.custom-quill.dark .editor-fullscreen-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Fullscreen mode - enhance fullscreen button appearance */
+.custom-quill.fullscreen .editor-fullscreen-button {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: fadeInButton 0.4s ease-out 0.3s backwards;
+  transition: all 0.2s ease;
+  z-index: 10001 !important; /* Higher than toolbar */
+  position: fixed; /* Fixed positioning in fullscreen */
+  top: 8px;
+  right: 8px;
+}
+
+.custom-quill.fullscreen.dark .editor-fullscreen-button {
+  background-color: rgba(28, 28, 28, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Smooth transition for fullscreen button */
+.custom-quill .editor-fullscreen-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animations for fullscreen transitions */
+@keyframes expandFullscreen {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDownToolbar {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpContent {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInButton {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

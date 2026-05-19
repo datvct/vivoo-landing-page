@@ -14,18 +14,13 @@ import {
   useMemo,
   useEffect,
   useState,
+  ReactNode,
 } from "react";
 import Breadcrumb from "@/components/common/Breadcrumb";
 
 type Thumbnail = {
   src: string;
   alt: string;
-};
-
-type DetailLink = {
-  label: string;
-  href: string;
-  icon: "datasheet" | "support";
 };
 
 type ProductDetailHeroSectionProps = {
@@ -41,24 +36,9 @@ type ProductDetailHeroSectionProps = {
   primaryActionLabel: string;
   primaryActionHref: string;
   thumbnails: Thumbnail[];
-  detailLinks: DetailLink[];
+  deviceInfo?: ReactNode;
 };
 
-function DetailLinkIcon({
-  icon,
-}: {
-  icon: DetailLink["icon"];
-}) {
-  if (icon === "datasheet") {
-    return (
-      <FileText className="h-5 w-5 text-black" />
-    );
-  }
-
-  return (
-    <HelpCircle className="h-5 w-5 text-black" />
-  );
-}
 
 export default function ProductDetailHeroSection({
   breadcrumbs,
@@ -70,7 +50,7 @@ export default function ProductDetailHeroSection({
   primaryActionLabel,
   primaryActionHref,
   thumbnails,
-  detailLinks,
+  deviceInfo,
 }: ProductDetailHeroSectionProps) {
   const [activeIndex, setActiveIndex] =
     useState(0);
@@ -247,6 +227,10 @@ export default function ProductDetailHeroSection({
                 </span>
               </button>
             </div>
+
+            {deviceInfo && (
+              <div className="mt-5 rounded-xl border border-black/10 bg-[#fafafa] p-4 text-sm leading-6 text-black/75 shadow-[0_4px_12px_rgba(15,23,42,0.03)] sm:mt-6 sm:p-5" dangerouslySetInnerHTML={{__html:deviceInfo}}/>
+            )}
           </div>
 
           <div className="pt-1 text-center lg:pl-4 lg:text-left">
@@ -305,30 +289,7 @@ export default function ProductDetailHeroSection({
               </Link>
             </div>
 
-            <div className="mt-8 border-t border-black/15 pt-5 sm:mt-10 sm:pt-6">
-              <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-                {detailLinks.map(
-                  (link, index) => (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      className={`flex items-center gap-3 rounded-md px-3 py-2 text-black/70 transition hover:bg-black/5 ${index < detailLinks.length - 1 ? "sm:border-r sm:border-black/10" : ""}`}
-                    >
-                      <span className="flex h-9 w-9 items-center justify-center bg-white sm:h-10 sm:w-10">
-                        <DetailLinkIcon
-                          icon={
-                            link.icon
-                          }
-                        />
-                      </span>
-                      <span className="text-sm font-medium text-black/65">
-                        {link.label}
-                      </span>
-                    </Link>
-                  )
-                )}
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>

@@ -2,21 +2,31 @@
 
 import Link from "next/link";
 import Navbar, {
-  menus,
+  defaultMenus,
 } from "./Navbar";
 import {
-  CircleHelp,
   Menu,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { useSiteSettingQuery } from "@/services/site-settings/queries";
+import { GeneralSettings } from "@/types/types";
 
 export default function Header() {
   const [open, setOpen] =
     useState(false);
   const [showDrawer, setShowDrawer] =
     useState(false);
+
+  // Fetch logo from general settings and menus from header settings
+  const { data: generalData } = useSiteSettingQuery("general");
+  const generalValue = (generalData?.data?.value || {}) as Partial<GeneralSettings>;
+  const logoUrl = generalValue.logoUrl || "/svgs/logo.svg";
+
+  const { data: headerData } = useSiteSettingQuery("header");
+  const customMenus = headerData?.data?.value?.menus || [];
+  const activeMenus = customMenus.length > 0 ? customMenus : defaultMenus;
 
   const openDrawer = () => {
     setShowDrawer(true);
@@ -39,14 +49,15 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link href="/">
             <Image
-              src="/svgs/logo.svg"
+              src={logoUrl}
               alt="Logo"
               width={120}
               height={80}
+              style={{ objectFit: "contain" }}
             />
           </Link>
 
-          <Navbar />
+          <Navbar menus={customMenus} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -57,13 +68,6 @@ export default function Header() {
             >
               Contact
             </Link>
-
-            {/* <Link href="/support">
-              <CircleHelp
-                size={18}
-                color="black"
-              />
-            </Link> */}
           </div>
 
           {/* Mobile menu button */}
@@ -92,10 +96,11 @@ export default function Header() {
             <div className="flex items-center justify-between border-b px-4 py-4">
               <Link href="/">
                 <Image
-                  src="/svgs/logo.svg"
+                  src={logoUrl}
                   alt="Logo"
                   width={110}
                   height={60}
+                  style={{ objectFit: "contain" }}
                 />
               </Link>
               <button
@@ -108,34 +113,42 @@ export default function Header() {
               </button>
             </div>
 
-            <nav className="px-4 py-6">
-              {menus.map((group) => (
+            <nav className="px-4 py-6 max-h-[calc(100vh-80px)] overflow-y-auto">
+              {activeMenus.map((group: any) => (
                 <div
                   key={group.label}
                   className="mb-6"
                 >
                   <div className="mb-3 text-sm font-semibold text-black">
-                    {group.label}
-                  </div>
-                  <div className="space-y-1">
-                    {group.submenu.map(
-                      (s) => (
-                        <Link
-                          key={s.title}
-                          href={
-                            s.link ??
-                            "#"
-                          }
-                          className="block rounded-md px-3 py-2 text-sm text-black/80 hover:bg-black/5"
-                          onClick={
-                            closeDrawer
-                          }
-                        >
-                          {s.title}
-                        </Link>
-                      )
+                    {group.link ? (
+                      <Link href={group.link} onClick={closeDrawer} className="hover:text-blue-600">
+                        {group.label}
+                      </Link>
+                    ) : (
+                      group.label
                     )}
                   </div>
+                  {group.submenu && group.submenu.length > 0 && (
+                    <div className="space-y-1 pl-2 border-l border-slate-100">
+                      {group.submenu.map(
+                        (s: any) => (
+                          <Link
+                            key={s.title}
+                            href={
+                              s.link ??
+                              "#"
+                            }
+                            className="block rounded-md px-3 py-2 text-sm text-black/80 hover:bg-black/5"
+                            onClick={
+                              closeDrawer
+                            }
+                          >
+                            {s.title}
+                          </Link>
+                        )
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
 

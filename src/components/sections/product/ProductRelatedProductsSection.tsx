@@ -21,7 +21,7 @@ export default function ProductRelatedProductsSection({
   products,
 }: ProductRelatedProductsSectionProps) {
   return (
-    <section className="bg-[#f6f6f6] py-6 text-black sm:py-16">
+    <section className="bg-white py-6 text-black sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-xl font-semibold tracking-[-0.02em] text-black sm:text-3xl">

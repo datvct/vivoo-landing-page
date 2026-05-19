@@ -3,30 +3,7 @@ import ProductDetailHeroSection from "@/components/sections/product/ProductDetai
 import ProductFlexibleSetupSection from "@/components/sections/product/ProductFlexibleSetupSection";
 import ProductInsightsSection from "@/components/sections/product/ProductInsightsSection";
 import ProductRelatedProductsSection from "@/components/sections/product/ProductRelatedProductsSection";
-
-type ProductDetail = {
-  slug: string;
-  breadcrumbs: (
-    | string
-    | { label: string; href?: string }
-  )[];
-  title: string;
-  categoryLabel: string;
-  badges: string[];
-  description: string;
-  features: string[];
-  primaryActionLabel: string;
-  primaryActionHref: string;
-  thumbnails: {
-    src: string;
-    alt: string;
-  }[];
-  detailLinks: {
-    label: string;
-    href: string;
-    icon: "datasheet" | "support";
-  }[];
-};
+import { ProductDetail } from "@/types/product-types";
 
 const productDetails: Record<
   string,
@@ -51,6 +28,17 @@ const productDetails: Record<
       "Unity On-Premise",
       "Alta Cloud-Native",
     ],
+    detail:`
+       <div>
+      <p><strong>Thông tin thiết bị:</strong></p>
+      <ul className="list-disc pl-5 mt-2">
+        <li>Mã máy: VIVOO-2026-X</li>
+        <li>Tình trạng: Hoạt động tốt</li>
+        <li>Bảo hành: 12 tháng</li>
+      </ul>
+    </div>
+    `,
+ 
     description:
       "Detect critical events with integrated video and audio for enhanced awareness and faster response times.",
     features: [
@@ -83,24 +71,8 @@ const productDetails: Record<
         src: "/images/camera-1.avif",
         alt: "H6A dome camera rear view",
       },
-    ],
-    detailLinks: [
-      {
-        label: "Alta Datasheet",
-        href: "#",
-        icon: "datasheet",
-      },
-      {
-        label: "Unity Datasheet",
-        href: "#",
-        icon: "datasheet",
-      },
-      {
-        label: "Support",
-        href: "#",
-        icon: "support",
-      },
-    ],
+    ]
+    
   },
   "h6xp-dome-camera": {
     slug: "h6xp-dome-camera",
@@ -130,6 +102,16 @@ const productDetails: Record<
       "Simple integration with existing systems",
       "ONVIF conformant",
     ],
+        detail:`
+       <div>
+      <p><strong>Thông tin thiết bị:</strong></p>
+      <ul className="list-disc pl-5 mt-2">
+        <li>Mã máy: VIVOO-2026-X</li>
+        <li>Tình trạng: Hoạt động tốt</li>
+        <li>Bảo hành: 12 tháng</li>
+      </ul>
+    </div>
+    `,
     primaryActionLabel: "GET PRICING",
     primaryActionHref: "#",
     thumbnails: [
@@ -154,23 +136,7 @@ const productDetails: Record<
         alt: "H6XP dome camera rear view",
       },
     ],
-    detailLinks: [
-      {
-        label: "Alta Datasheet",
-        href: "#",
-        icon: "datasheet",
-      },
-      {
-        label: "Unity Datasheet",
-        href: "#",
-        icon: "datasheet",
-      },
-      {
-        label: "Support",
-        href: "#",
-        icon: "support",
-      },
-    ],
+
   },
 };
 
@@ -314,6 +280,7 @@ export default async function ProductDetailPage({
         categoryLabel={
           detail.categoryLabel
         }
+        deviceInfo={detail.detail}
         badges={detail.badges}
         description={detail.description}
         features={detail.features}
@@ -324,7 +291,6 @@ export default async function ProductDetailPage({
           detail.primaryActionHref
         }
         thumbnails={detail.thumbnails}
-        detailLinks={detail.detailLinks}
       />
       <ProductInsightsSection
         title="Key benefits of Avigilon’s dome cameras"
@@ -333,11 +299,11 @@ export default async function ProductDetailPage({
         ctaLabel="GET PRICING"
       />
 
-      <ProductFlexibleSetupSection
+      {/* <ProductFlexibleSetupSection
         title="Capture clear details with a flexible setup"
         description="Get the visibility you need, no matter the deployment choice. Available in cloud and on-premise options, the H6A Dome is ready to meet the challenge."
         cards={flexibleSetupCards}
-      />
+      /> */}
 
       <ProductRelatedProductsSection
         title="You may also be interested in these products"

@@ -1,0 +1,466 @@
+/* Tiptap editor – same variables as Quill where possible */
+:root {
+  --tiptap-editor-height: var(--quill-editor-height, 400px);
+}
+
+.custom-tiptap {
+  --color-placeholder: #c5c5c8;
+  --background-color-editor: #f5f5f5;
+  --border-color-editor: #d9d9d9;
+  --radius-editor: 8px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color-editor);
+  border-radius: var(--radius-editor);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* Toolbar */
+.custom-tiptap-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color-editor);
+  background: #fafafa;
+}
+
+.custom-tiptap-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #595959;
+  cursor: pointer;
+}
+
+.custom-tiptap-toolbar button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #262626;
+}
+
+.custom-tiptap-toolbar button.active {
+  background: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
+}
+
+.custom-tiptap-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.custom-tiptap-toolbar .toolbar-tooltip-wrap {
+  display: inline-flex;
+}
+
+.custom-tiptap-toolbar .toolbar-sep {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--border-color-editor);
+}
+
+.custom-tiptap-toolbar .tiptap-heading-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  font-size: 0.875rem;
+}
+
+.custom-tiptap-toolbar button:has(.tiptap-heading-trigger) {
+  min-width: 56px;
+}
+
+/* Block type dropdown: P icon for paragraph (align with antd menu icon size) */
+.tiptap-block-icon-p {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
+}
+
+/* Container & content */
+.custom-tiptap-container {
+  border: none;
+  background: #fff;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.custom-tiptap-container:focus-within {
+  border-color: #639f52;
+  box-shadow: 0 0 0 2px rgba(76, 255, 5, 0.1);
+  outline: 0;
+}
+
+.custom-tiptap.error .custom-tiptap-container {
+  border-color: var(--mui-palette-error-main, #ff4d4f);
+}
+
+.custom-tiptap.error .custom-tiptap-toolbar {
+  border-color: var(--mui-palette-error-main, #ff4d4f);
+}
+
+/* ProseMirror editor content */
+.custom-tiptap .tiptap-editor-content,
+.custom-tiptap .ProseMirror {
+  min-height: var(--tiptap-editor-height);
+  padding: 16px;
+  font-family: sans-serif;
+  font-size: 15px;
+  color: var(--mui-palette-text-primary, #262626);
+  outline: none;
+}
+
+.custom-tiptap .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--color-placeholder);
+  pointer-events: none;
+  height: 0;
+}
+
+.custom-tiptap .ProseMirror:focus {
+  outline: none;
+}
+
+/* Blocks */
+.custom-tiptap .ProseMirror h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror blockquote {
+  border-left: 4px solid var(--border-color-editor);
+  padding-left: 1rem;
+  margin: 0.5em 0;
+  color: #595959;
+}
+
+.custom-tiptap .ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--border-color-editor);
+  margin: 1em 0;
+}
+
+.custom-tiptap .ProseMirror pre {
+  background: var(--background-color-editor);
+  color: var(--mui-palette-text-primary, #262626);
+  border-radius: 4px;
+  padding: 10px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror ul {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-left: 1.5rem;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-left: 1.5rem;
+  margin: 0.5em 0;
+}
+
+.custom-tiptap .ProseMirror ul li,
+.custom-tiptap .ProseMirror ol li {
+  margin: 0.25em 0;
+}
+
+/* Task list: ẩn bullet, style checkbox và item đã xong */
+/* Dùng cả data-type (ProseMirror) và .tiptap-task-item (class từ TaskItem config) */
+.custom-tiptap .ProseMirror ul[data-type="taskList"],
+.custom-tiptap .ProseMirror ul:has(> .tiptap-task-item) {
+  list-style: none;
+  padding-left: 0;
+}
+
+.custom-tiptap .ProseMirror li[data-type="taskItem"],
+.custom-tiptap .ProseMirror li.tiptap-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.25em 0;
+}
+
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label,
+.custom-tiptap .ProseMirror li.tiptap-task-item > label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Checkbox task list: custom đẹp, đồng bộ mọi trình duyệt */
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label input[type="checkbox"],
+.custom-tiptap .ProseMirror li.tiptap-task-item > label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  margin: 0;
+  margin-right: 0.5rem;
+  margin-top: 3px;
+  border: 2px solid #d9d9d9;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  vertical-align: top;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label input[type="checkbox"]:hover,
+.custom-tiptap .ProseMirror li.tiptap-task-item > label input[type="checkbox"]:hover {
+  border-color: #40a9ff;
+  background: #f0f8ff;
+}
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label input[type="checkbox"]:checked,
+.custom-tiptap .ProseMirror li.tiptap-task-item > label input[type="checkbox"]:checked {
+  border-color: #1890ff;
+  background: #1890ff;
+  box-shadow: 0 1px 3px rgba(24, 144, 255, 0.35);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' d='M2.5 7l3 3 6-6'/%3E%3C/svg%3E");
+  background-size: 12px 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label input[type="checkbox"]:focus,
+.custom-tiptap .ProseMirror li.tiptap-task-item > label input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+.custom-tiptap .ProseMirror li[data-type="taskItem"] > label input[type="checkbox"]:focus:checked,
+.custom-tiptap .ProseMirror li.tiptap-task-item > label input[type="checkbox"]:focus:checked {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.35), 0 1px 3px rgba(24, 144, 255, 0.35);
+}
+
+.custom-tiptap .ProseMirror li[data-type="taskItem"][data-checked="true"] > div,
+.custom-tiptap .ProseMirror li.tiptap-task-item[data-checked="true"] > div {
+  text-decoration: line-through;
+  color: #8c8c8c;
+}
+
+/* Highlight (mark): border-radius + padding nhẹ, tham khảo ql-editor code/pre */
+.custom-tiptap .ProseMirror mark {
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.custom-tiptap .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Image with explicit width (from resize or size menu) */
+.custom-tiptap .ProseMirror img[width] {
+  max-width: none;
+}
+
+/* Image alignment: chỉ dùng data-align, bạn có thể override CSS theo nhu cầu */
+.custom-tiptap .ProseMirror img[data-align="center"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.custom-tiptap .ProseMirror img[data-align="right"] {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+.custom-tiptap .ProseMirror img[data-align="left"] {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Wrapper (resize container) căn theo img[data-align] */
+.custom-tiptap .ProseMirror [data-node="image"]:has(img[data-align="center"]),
+.custom-tiptap .ProseMirror [data-resize-container]:has(img[data-align="center"]),
+.custom-tiptap .ProseMirror div:has(> img[data-align="center"]) {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: fit-content !important;
+  max-width: 100%;
+}
+.custom-tiptap .ProseMirror [data-node="image"]:has(img[data-align="right"]),
+.custom-tiptap .ProseMirror [data-resize-container]:has(img[data-align="right"]),
+.custom-tiptap .ProseMirror div:has(> img[data-align="right"]) {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  width: fit-content !important;
+  max-width: 100%;
+}
+.custom-tiptap .ProseMirror [data-node="image"]:has(img[data-align="left"]),
+.custom-tiptap .ProseMirror [data-resize-container]:has(img[data-align="left"]),
+.custom-tiptap .ProseMirror div:has(> img[data-align="left"]) {
+  display: block !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  width: fit-content !important;
+  max-width: 100%;
+}
+
+/* Resize handle visibility (Tiptap Image resize) */
+.custom-tiptap .ProseMirror [data-resize-handle],
+.custom-tiptap .ProseMirror [data-dir="right"],
+.custom-tiptap .ProseMirror [data-dir="bottom"] {
+  position: absolute;
+  z-index: 10;
+  background: #1890ff;
+  opacity: 0.8;
+}
+.custom-tiptap .ProseMirror [data-dir="right"] {
+  width: 6px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  cursor: col-resize;
+}
+.custom-tiptap .ProseMirror [data-dir="bottom"] {
+  height: 6px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  cursor: row-resize;
+}
+
+/* Image size bubble menu (Jira-style) */
+.tiptap-image-size-bubble {
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e8e8e8;
+  z-index: 1000;
+}
+
+.tiptap-image-size-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tiptap-image-size-label {
+  font-size: 12px;
+  color: #595959;
+  margin-right: 4px;
+}
+
+.tiptap-image-size-sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 6px;
+  background: #e8e8e8;
+}
+
+.tiptap-image-size-menu button.active {
+  background: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.tiptap-image-size-menu button {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background: #fff;
+  color: #262626;
+  cursor: pointer;
+}
+
+.tiptap-image-size-menu button:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.custom-tiptap .ProseMirror a {
+  color: #1890ff;
+  text-decoration: underline;
+}
+
+.custom-tiptap .ProseMirror p {
+  margin: 0 0 0.5em;
+}
+
+.custom-tiptap .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* YouTube embed: responsive iframe + align (giống ảnh) */
+.custom-tiptap .ProseMirror iframe {
+  max-width: 100%;
+  border: none;
+  border-radius: 8px;
+}
+
+/* Toàn bộ (full width): wrapper chiếm 100% bề ngang */
+.custom-tiptap .ProseMirror [data-youtube-video][data-full-width] {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.custom-tiptap .ProseMirror [data-youtube-video][data-align="center"]:not([data-full-width]),
+.custom-tiptap .ProseMirror div:has(> [data-youtube-video][data-align="center"]):not(:has([data-full-width])) {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.custom-tiptap .ProseMirror [data-youtube-video][data-align="right"]:not([data-full-width]),
+.custom-tiptap .ProseMirror div:has(> [data-youtube-video][data-align="right"]):not(:has([data-full-width])) {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.custom-tiptap .ProseMirror [data-youtube-video][data-align="left"]:not([data-full-width]) {
+  display: block;
+  margin-left: 0;
+  margin-right: 0;
+}

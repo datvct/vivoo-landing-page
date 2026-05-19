@@ -14,6 +14,8 @@ import {
 } from "react-icons/fa";
 import ContactSection from "@/components/common/ContactSection";
 import { usePathname } from "next/navigation";
+import { useSiteSettingQuery } from "@/services/site-settings/queries";
+import { GeneralSettings } from "@/types/types";
 
 const product = [
   {
@@ -51,7 +53,18 @@ const solutionLinks = [
 
 export default function Footer() {
   const pathName = usePathname();
-  // Show ContactSection except on contact page; footer always renders
+  const { data: settingData } = useSiteSettingQuery("general");
+  const settings = (settingData?.data?.value || {}) as Partial<GeneralSettings>;
+
+  const logoDark = settings.logoDarkUrl || "/svgs/logo-bg-black.svg";
+  const copyrightText = settings.copyrightText || "Avigilon Vietnam. All rights reserved.";
+  const facebookLink = settings.facebookUrl || "#";
+  const linkedinLink = settings.linkedinUrl || "#";
+  const youtubeLink = settings.youtubeUrl || "#";
+  const addressVal = settings.supportAddress || "Tầng 3, Tòa Hpcons Building, 2/13A Bạch Đằng, Phường Tân Sơn Hòa, Hồ Chí Minh";
+  const phoneVal = settings.supportPhone || "(+84) 123456789";
+  const emailVal = settings.supportEmail || "contact@gmail.com";
+  const hoursVal = settings.businessHours || "Mon - Sat: 08:00 - 5:30";
 
   return (
     <>
@@ -63,8 +76,8 @@ export default function Footer() {
           <div className="grid gap-10 border-b border-white/10 pb-10 md:grid-cols-2 lg:grid-cols-4">
             <div>
               <Image
-                src="/svgs/logo-bg-black.svg"
-                alt="Avigilon Vietnam Logo"
+                src={logoDark}
+                alt="Logo"
                 width={120}
                 height={80}
                 className="mb-6"
@@ -79,21 +92,21 @@ export default function Footer() {
 
               <div className="mt-6 flex items-center gap-3">
                 <Link
-                  href="#"
+                  href={facebookLink}
                   aria-label="Facebook"
                   className="rounded-full border border-white/20 p-2 text-white/80 transition hover:border-white/40 hover:text-white"
                 >
                   <FaFacebook className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="#"
+                  href={linkedinLink}
                   aria-label="LinkedIn"
                   className="rounded-full border border-white/20 p-2 text-white/80 transition hover:border-white/40 hover:text-white"
                 >
                   <FaLinkedin className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="#"
+                  href={youtubeLink}
                   aria-label="Youtube"
                   className="rounded-full border border-white/20 p-2 text-white/80 transition hover:border-white/40 hover:text-white"
                 >
@@ -150,35 +163,31 @@ export default function Footer() {
                 <li className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/85" />
                   <span>
-                    Tầng 3, Tòa Hpcons
-                    Building, 2/13A Bạch
-                    Đằng, Phường Tân Sơn
-                    Hòa, Hồ Chí Minh
+                    {addressVal}
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="h-4 w-4 shrink-0 text-white/85" />
                   <Link
-                    href="tel:+842812345678"
+                    href={`tel:${phoneVal.replace(/\s+/g, "")}`}
                     className="transition hover:text-white"
                   >
-                    (+84) 123456789
+                    {phoneVal}
                   </Link>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 shrink-0 text-white/85" />
                   <Link
-                    href="mailto:sales@avigilon.vn"
+                    href={`mailto:${emailVal}`}
                     className="transition hover:text-white"
                   >
-                    contact@gmail.com
+                    {emailVal}
                   </Link>
                 </li>
                 <li className="flex items-center gap-3">
                   <Clock3 className="h-4 w-4 shrink-0 text-white/85" />
                   <span>
-                    Mon - Sat: 08:00 -
-                    5:30
+                    {hoursVal}
                   </span>
                 </li>
               </ul>
@@ -189,8 +198,7 @@ export default function Footer() {
             <p>
               ©{" "}
               {new Date().getFullYear()}{" "}
-              Avigilon Vietnam. All
-              rights reserved.
+              {copyrightText}
             </p>
             <div className="flex items-center gap-4">
               <Link

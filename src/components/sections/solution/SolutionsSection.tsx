@@ -2,7 +2,7 @@ import Link from "next/link";
 import SolutionCard from "./SolutionCard";
 import { Tab } from "@/types/solution-types";
 
-const tabs: Tab[] = [
+const defaultTabs: Tab[] = [
   {
     id: "video",
     title: "Video security",
@@ -33,26 +33,57 @@ const tabs: Tab[] = [
   },
 ];
 
-export default function SolutionsSection() {
+async function getSolutions() {
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
+  try {
+    const res = await fetch(`${apiBase}/solutions?status=PUBLISHED&limit=100`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const result = await res.json();
+      return result?.data?.items || [];
+    }
+  } catch (error) {
+    // Ignore and fallback
+  }
+  return [];
+}
+
+type SolutionsSectionProps = {
+  title?: string;
+  description?: string;
+};
+
+export default async function SolutionsSection({
+  title = "Solutions",
+  description = "The Avigilon security suite offers an integrated portfolio of video security products and services powered by intelligence and built for scale.",
+}: SolutionsSectionProps) {
+  const dbSolutions = await getSolutions();
+
+  const activeTabs: Tab[] = dbSolutions.length > 0
+    ? dbSolutions.map((s: any) => ({
+      id: s.id,
+      title: s.title,
+      slug: s.slug,
+      text: s.description || "",
+      image: s.thumbnailUrl || "/images/image1.avif"
+    }))
+    : defaultTabs;
+
   return (
     <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
-            Solutions
+            {title}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-gray-600">
-            The Avigilon security suite
-            offers an integrated
-            portfolio of video security
-            products and services
-            powered by intelligence and
-            built for scale.
+            {description}
           </p>
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-          {tabs.map((t) => (
+          {activeTabs.map((t) => (
             <SolutionCard
               key={t.id}
               tab={t}

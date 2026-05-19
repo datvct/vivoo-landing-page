@@ -11,9 +11,18 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Story } from "@/types/home-types";
 
-const stories: Story[] = [
+type StoryItem = {
+  id: string | number;
+  company: string;
+  title: string;
+  quote: string;
+  author: string;
+  image: string;
+  logo: string;
+};
+
+const defaultStories: StoryItem[] = [
   {
     id: 1,
     company: "City of Kelowna",
@@ -71,7 +80,19 @@ const stories: Story[] = [
   },
 ];
 
-export default function CustomerStoriesSection() {
+type CustomerStoriesSectionProps = {
+  title?: string;
+  description?: string;
+  stories?: StoryItem[];
+};
+
+export default function CustomerStoriesSection({
+  title = "Our customer stories",
+  description = "Hear how Avigilon's security solutions have enabled organizations globally to help keep their people, properties and assets safe and secure.",
+  stories = [],
+}: CustomerStoriesSectionProps) {
+  const activeStories = stories && stories.length > 0 ? stories : defaultStories;
+
   const [activeIndex, setActiveIndex] =
     useState(0);
   const [isAnimating, setIsAnimating] =
@@ -83,7 +104,7 @@ export default function CustomerStoriesSection() {
   >(null);
 
   const activeStory =
-    stories[activeIndex];
+    activeStories[activeIndex];
 
   const setStory = (
     nextIndex: number
@@ -113,7 +134,7 @@ export default function CustomerStoriesSection() {
 
   const goNext = () => {
     setStory(
-      activeIndex === stories.length - 1
+      activeIndex === activeStories.length - 1
         ? 0
         : activeIndex + 1
     );
@@ -122,25 +143,22 @@ export default function CustomerStoriesSection() {
   const goPrev = () => {
     setStory(
       activeIndex === 0
-        ? stories.length - 1
+        ? activeStories.length - 1
         : activeIndex - 1
     );
   };
+
+  if (!activeStory) return null;
 
   return (
     <section className="bg-[#FCFCFC] py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-xl font-semibold tracking-tight text-black sm:text-3xl">
-            Our customer stories
+            {title}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-black/65 sm:text-[15px]">
-            Hear how Avigilon&apos;s
-            security solutions have
-            enabled organizations
-            globally to help keep their
-            people, properties and
-            assets safe and secure.
+            {description}
           </p>
         </div>
 
@@ -160,7 +178,7 @@ export default function CustomerStoriesSection() {
               className={`relative aspect-4/3 overflow-hidden rounded-lg bg-neutral-100 shadow-[0_18px_50px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition-all duration-500 ease-out lg:rounded-xs ${isAnimating ? `${direction === 1 ? "-translate-x-8 opacity-0" : "translate-x-8 opacity-0"}` : "translate-x-0 opacity-100"}`}
             >
               <Image
-                src={activeStory.image}
+                src={activeStory.image || "/images/image1.avif"}
                 alt={activeStory.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 36vw"
@@ -173,23 +191,6 @@ export default function CustomerStoriesSection() {
               key={activeStory.id}
               className={`flex flex-col justify-center transition-all duration-500 ease-out ${isAnimating ? `${direction === 1 ? "-translate-x-8 opacity-0 delay-75" : "translate-x-8 opacity-0 delay-75"}` : "translate-x-0 opacity-100"}`}
             >
-              {/* <div className="mb-5 flex items-center gap-3 text-black/75">
-                <div className="relative h-10 w-10 overflow-hidden rounded-full bg-white ring-1 ring-black/10">
-                  <Image
-                    src={
-                      activeStory.logo
-                    }
-                    alt="Company logo"
-                    fill
-                    sizes="40px"
-                    className="object-contain p-1"
-                  />
-                </div>
-                <span className="text-sm leading-5 font-medium">
-                  {activeStory.company}
-                </span>
-              </div> */}
-
               <h3 className="text-lg font-semibold text-black sm:text-[22px]">
                 {activeStory.title}
               </h3>
@@ -223,7 +224,7 @@ export default function CustomerStoriesSection() {
         </div>
 
         <div className="mt-10 flex items-center justify-center gap-2.5">
-          {stories.map(
+          {activeStories.map(
             (story, index) => {
               const isActive =
                 index === activeIndex;
