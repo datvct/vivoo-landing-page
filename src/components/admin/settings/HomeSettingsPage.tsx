@@ -316,7 +316,7 @@ export default function HomeSettingsPage() {
         </Button>
       </div>
 
-      <Card bordered={false} className="rounded-2xl border border-slate-100 shadow-sm">
+      <Card className="rounded-2xl border border-slate-100 shadow-sm">
         <Tabs
           defaultActiveKey="banners"
           items={[
