@@ -2,23 +2,21 @@
 
 import { useEffect, useState } from "react";
 import type { ColumnsType } from "antd/es/table";
+import type { TableProps } from "antd";
 import { Button, Modal, Select, Image } from "antd";
+import { useRouter } from "next/navigation";
 import CustomTable from "../common/CustomTable";
 import AdminSearchBar from "../common/AdminSearchBar";
 import AdminStatusTag from "../common/AdminStatusTag";
 import AdminActionMenu from "../common/AdminActionMenu";
-import CategoryModal from "./CategoryModal";
 import { Plus, RotateCcw } from "lucide-react";
-import { ProductCategory, ProductCategoryFormValues, ProductCategoryStatus } from "@/types/types";
+import { ProductCategory, ProductCategoryStatus } from "@/types/types";
 import { formatDateTime } from "@/utils/utils";
 import { useProductCategoriesQuery } from "@/services/product-categories/queries";
-import {
-  useCreateCategoryMutation,
-  useUpdateCategoryMutation,
-  useDeleteCategoryMutation,
-} from "@/services/product-categories/mutations";
+import { useDeleteCategoryMutation } from "@/services/product-categories/mutations";
 
 export default function CategoryManagementPage() {
+  const router = useRouter();
   // Search & Pagination & Filter & Sort States
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -27,10 +25,6 @@ export default function CategoryManagementPage() {
   const [limit, setLimit] = useState(12);
   const [sortBy, setSortBy] = useState<string>("sortOrder");
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
-
-  // Modal States
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<ProductCategory | null>(null);
 
   // Debounce search input
   useEffect(() => {
@@ -41,7 +35,6 @@ export default function CategoryManagementPage() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Fetch Categories Query Hook
   const { data, isLoading } = useProductCategoriesQuery({
     page,
     limit,
@@ -54,20 +47,7 @@ export default function CategoryManagementPage() {
   const categories = data?.data?.items || [];
   const totalItems = data?.data?.meta?.totalItems || 0;
 
-  // CRUD Mutation Hooks
-  const createMutation = useCreateCategoryMutation(() => setModalOpen(false));
-  const updateMutation = useUpdateCategoryMutation(() => setModalOpen(false));
   const deleteMutation = useDeleteCategoryMutation();
-
-  function openCreate() {
-    setEditing(null);
-    setModalOpen(true);
-  }
-
-  function openEdit(record: ProductCategory) {
-    setEditing(record);
-    setModalOpen(true);
-  }
 
   function handleDelete(id: string) {
     Modal.confirm({
@@ -82,16 +62,20 @@ export default function CategoryManagementPage() {
     });
   }
 
-  async function handleSave(values: ProductCategoryFormValues) {
-    if (editing) {
-      updateMutation.mutate({
-        id: editing.id,
-        payload: values,
-      });
-    } else {
-      createMutation.mutate(values);
+  const handleTableChange: TableProps<ProductCategory>["onChange"] = (pagination, _filters, sorter) => {
+    if (pagination) {
+      setPage(pagination.current ?? 1);
+      setLimit(pagination.pageSize ?? 12);
     }
-  }
+    const sort = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (sort?.field != null && sort.order != null) {
+      setSortBy(sort.field as string);
+      setSortOrder(sort.order === "descend" ? "DESC" : "ASC");
+    } else {
+      setSortBy("sortOrder");
+      setSortOrder("ASC");
+    }
+  };
 
   const columns: ColumnsType<ProductCategory> = [
     {
@@ -189,7 +173,7 @@ export default function CategoryManagementPage() {
       align: "center",
       render: (_, record: ProductCategory) => (
         <AdminActionMenu
-          onEdit={() => openEdit(record)}
+          onEdit={() => router.push(`/admin/product-categories/${record.id}/edit`)}
           onDelete={() => handleDelete(record.id)}
         />
       ),
@@ -212,7 +196,7 @@ export default function CategoryManagementPage() {
           <Button
             type="primary"
             icon={<Plus className="w-4 h-4 mr-1 inline-block" />}
-            onClick={openCreate}
+            onClick={() => router.push("/admin/product-categories/create")}
             size="large"
             className="shadow-sm font-semibold h-[32px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
           >
@@ -278,28 +262,9 @@ export default function CategoryManagementPage() {
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} of ${total} items`,
           }}
-          onChange={(pagination: any, filters: any, sorter: any) => {
-            if (pagination) {
-              setPage(pagination.current || 1);
-              setLimit(pagination.pageSize || 12);
-            }
-            if (sorter && sorter.field) {
-              setSortBy(sorter.field);
-              setSortOrder(sorter.order === "descend" ? "DESC" : "ASC");
-            } else {
-              setSortBy("sortOrder");
-              setSortOrder("ASC");
-            }
-          }}
+          onChange={handleTableChange}
           scroll={{ x: 1100 }}
           className="[&_.ant-table-thead>tr>th]:bg-slate-50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-pagination]:!px-4"
-        />
-        <CategoryModal
-          open={modalOpen}
-          categoryId={editing?.id}
-          confirmLoading={createMutation.isPending || updateMutation.isPending}
-          onCancel={() => setModalOpen(false)}
-          onSave={handleSave}
         />
       </div>
     </div>

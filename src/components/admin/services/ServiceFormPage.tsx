@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Spin, Image } from "antd";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, UploadCloud, X } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, UploadCloud, X } from "lucide-react";
 import TiptapEditor from "@/components/common/TiptapEditor";
 import AdminFormInput from "../common/AdminFormInput";
 import AdminFormSelect from "../common/AdminFormSelect";
@@ -12,7 +12,10 @@ import {
   useUpdateServiceMutation,
 } from "@/services/services/mutations";
 import { useServiceQuery } from "@/services/services/queries";
-import { ServiceStatus } from "@/types/types";
+import { ServiceFormValues } from "@/types/types";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
+
+import { generateSlug } from "@/utils/slug";
 
 export default function ServiceFormPage() {
   const router = useRouter();
@@ -24,7 +27,9 @@ export default function ServiceFormPage() {
 
   // State for Thumbnail Image
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null | undefined>(undefined);
+  const [thumbnailMediaUrl, setThumbnailMediaUrl] = useState<string | null>(null);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
   // Fetch service details in Edit Mode
   const { data: serviceData, isLoading: isServiceLoading } = useServiceQuery(
@@ -58,11 +63,8 @@ export default function ServiceFormPage() {
         seoDescription: srv.seoDescription || "",
         seoKeywords: srv.seoKeywords || "",
         seoRobots: srv.seoRobots || "",
+        thumbnailUrl: srv.thumbnailUrl || undefined,
       });
-
-      if (srv.thumbnailUrl) {
-        setThumbnailPreview(srv.thumbnailUrl);
-      }
     } else if (!isEditMode) {
       form.setFieldsValue({
         status: "draft",
@@ -71,9 +73,13 @@ export default function ServiceFormPage() {
         seoDescription: "",
         seoKeywords: "",
         seoRobots: "",
+        thumbnailUrl: undefined,
       });
     }
   }, [isEditMode, serviceData, form]);
+
+  const resolvedThumbnailPreview =
+    thumbnailPreview === undefined ? serviceData?.data?.thumbnailUrl || null : thumbnailPreview;
 
   // Clean up object URLs on unmount
   useEffect(() => {
@@ -88,12 +94,7 @@ export default function ServiceFormPage() {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isEditMode) {
       const title = e.target.value;
-      const slugVal = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
-        .replace(/\s+/g, "-") // Replace spaces with dashes
-        .replace(/-+/g, "-") // Collapse consecutive dashes
-        .replace(/^-+|-+$/g, ""); // Trim leading/trailing dashes
+      const slugVal = generateSlug(title);
       form.setFieldsValue({ slug: slugVal });
     }
   };
@@ -104,15 +105,43 @@ export default function ServiceFormPage() {
     if (file) {
       setThumbnailFile(file);
       setThumbnailPreview(URL.createObjectURL(file));
+      setThumbnailMediaUrl(null);
+      form.setFieldsValue({ thumbnailUrl: undefined });
     }
   };
 
+  const handleSelectMedia = (media: { secureUrl: string }) => {
+    if (thumbnailPreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+    setThumbnailFile(null);
+    setThumbnailMediaUrl(media.secureUrl);
+    setThumbnailPreview(media.secureUrl);
+    form.setFieldsValue({ thumbnail: undefined, thumbnailUrl: media.secureUrl });
+    setMediaPickerOpen(false);
+  };
+
+  const handleClearThumbnail = () => {
+    if (thumbnailPreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+    setThumbnailFile(null);
+    setThumbnailMediaUrl(null);
+    setThumbnailPreview(null);
+    form.setFieldsValue({ thumbnail: undefined, thumbnailUrl: undefined });
+  };
+
   // Main Form Submit Handler
-  const onFinish = (values: any) => {
-    const payload: any = {
+  const onFinish = (values: ServiceFormValues) => {
+    const payload: Record<string, unknown> = {
       ...values,
-      thumbnail: thumbnailFile,
     };
+
+    if (thumbnailFile) {
+      payload.thumbnail = thumbnailFile;
+    } else if (thumbnailMediaUrl) {
+      payload.thumbnailUrl = thumbnailMediaUrl;
+    }
 
     if (isEditMode) {
       updateMutation.mutate({
@@ -166,7 +195,7 @@ export default function ServiceFormPage() {
       </div>
 
       {isServiceLoading ? (
-        <div className="h-[400px] flex items-center justify-center">
+        <div className="h-100 flex items-center justify-center">
           <Spin size="large" />
         </div>
       ) : (
@@ -298,42 +327,62 @@ export default function ServiceFormPage() {
               className="shadow-sm border-slate-100 rounded-2xl"
             >
               <div className="space-y-4">
-                {thumbnailPreview ? (
+                <Form.Item name="thumbnailUrl" hidden>
+                  <Input type="hidden" />
+                </Form.Item>
+
+                {resolvedThumbnailPreview ? (
                   <div className="relative border border-slate-200 rounded-xl p-1 bg-slate-50 flex items-center justify-center aspect-video overflow-hidden">
                     <Image
-                      src={thumbnailPreview}
+                      src={resolvedThumbnailPreview}
                       alt="thumbnail"
-                      className="max-h-[160px] max-w-full object-contain"
+                      className="max-h-40 max-w-full object-contain"
                     />
                     <button
                       type="button"
-                      onClick={() => {
-                        setThumbnailFile(null);
-                        setThumbnailPreview(null);
-                      }}
+                      onClick={handleClearThumbnail}
                       className="absolute top-2 right-2 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full p-1 shadow-sm flex items-center justify-center z-10"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition bg-slate-50/50 hover:bg-slate-50">
+                  <div className="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 transition bg-slate-50/50 hover:bg-slate-50">
                     <UploadCloud className="w-8 h-8 text-slate-400" />
                     <span className="font-medium text-slate-700 text-sm">Upload Thumbnail</span>
                     <span className="text-[11px] text-slate-400">PNG, JPG, JPEG up to 5MB</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleThumbnailChange}
-                      className="hidden"
-                    />
-                  </label>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <label className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 text-sm font-medium text-slate-700 transition cursor-pointer">
+                        Upload File
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleThumbnailChange}
+                          className="hidden"
+                        />
+                      </label>
+
+                      <Button icon={<ImageIcon className="w-4 h-4" />} onClick={() => setMediaPickerOpen(true)}>
+                        Choose from Media
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </Card>
           </div>
         </Form>
       )}
+
+      <MediaPickerModal
+        open={mediaPickerOpen}
+        onCancel={() => setMediaPickerOpen(false)}
+        onSelect={handleSelectMedia}
+        selectionMode="single"
+        defaultTab="image"
+        selectableTypes={["image"]}
+        title="Choose Service Thumbnail from Media"
+      />
     </div>
   );
 }

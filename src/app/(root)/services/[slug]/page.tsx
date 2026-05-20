@@ -1,166 +1,134 @@
-import LogoSection from "@/components/common/LogoSection";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
+import LogoSection from "@/components/common/LogoSection";
 import Breadcrumb from "@/components/common/Breadcrumb";
-import { serviceDetails } from "@/lib/service-details";
 import FAQSection from "@/components/common/FAQSection";
 import ProductGridSection from "@/components/common/ProductGridSection";
+import { constructMetadata } from "@/utils/seo";
+import { getServiceBySlug, getServices } from "@/lib/get-services";
+import { getProducts } from "@/lib/get-products";
+import "../../../../components/common/TiptapEditor/styles.css";
 
-type Props = {
-  params: { slug: string };
-};
-
-function slugToTitle(slug: string) {
-  return decodeURIComponent(slug)
-    .replace(/[-_]+/g, " ")
-    .split(" ")
-    .map(
-      (w) =>
-        w.charAt(0).toUpperCase() +
-        w.slice(1)
-    )
-    .join(" ");
+export async function generateStaticParams() {
+  const services = await getServices({ limit: 100 });
+  return services.map((s: any) => ({
+    slug: s.slug,
+  }));
 }
 
-const productSection = {
-  title:
-    "Products and casino security technology",
-  description:
-    "Explore our wide range of video security and access control products designed to help you foster a secure gaming environment.",
-  products: [
-    {
-      title: "Avigilon Unity Video",
-      description:
-        "An intuitive, AI-enabled video management platform to bring you the most critical information, ensuring you never miss a moment.",
-      image: "/images/image1.avif",
-      linkLabel: "View product",
-    },
-    {
-      title: "Avigilon Unity Access",
-      description:
-        "Secure back offices and sensitive areas with our browser-based solution, offering the flexibility to respond from anywhere.",
-      image: "/images/camera-1.avif",
-      linkLabel: "View product",
-    },
-    {
-      title: "H5A Modular Camera",
-      description:
-        "Built-in analytics for enhanced object detection and classification. Ready for discrete installation at every game table.",
-      image: "/images/camera-2.avif",
-      linkLabel: "View product",
-    },
-    {
-      title: "H5A Multisensor Camera",
-      description:
-        "Be covered from all angles with the H5A Multisensor camera that can deliver 180, 270 or 360-degree views.",
-      image: "/images/image1.avif",
-      linkLabel: "Learn More",
-    },
-    {
-      title: "NVR6",
-      description:
-        "High-performance recording and dense storage options with Avigilon Network Video Recorders (NVR).",
-      image: "/images/camera-1.avif",
-      linkLabel: "View product",
-    },
-    {
-      title: "VB400 Body-Worn Camera",
-      description:
-        "Capture an entire shift of live video and audio. Connect seamlessly to Unity Video.",
-      image: "/images/camera-2.avif",
-      linkLabel: "View product",
-    },
-  ],
-};
-
-export default function ServiceDetailPage({
+export async function generateMetadata({
   params,
-}: Props) {
-  const slug = params.slug;
-  const title = slugToTitle(slug);
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getServiceBySlug(slug);
 
-  const sourced = serviceDetails[slug];
-  const detail = {
-    category:
-      sourced?.category ?? "Service",
-    title:
-      sourced?.title ??
-      "Services Detail",
-    subtitle:
-      sourced?.subtitle ??
-      "Solutions and services to keep your organisation secure and operational.",
-    heroImage:
-      sourced?.heroImage ??
-      "/images/product.avif",
-    guideLabel:
-      sourced?.guideLabel ??
-      "REQUEST A QUOTE",
-    guideHref:
-      sourced?.guideHref ?? "#quote",
-    toc: sourced?.toc ?? [
-      "Overview",
-      "Features",
-      "Benefits",
-      "Implementation",
-      "FAQ",
-    ],
-    intro: sourced?.intro ?? [
-      `This page describes our ${title} service. Use this page as a starting point — replace with real content from your CMS or API.`,
-    ],
-    sections: sourced?.sections ?? [
-      {
-        id: "overview",
-        title: "Overview",
-        content: [
-          "High-level summary of the service, its objectives and the problems it solves.",
-        ],
-      },
-      {
-        id: "features",
-        title: "Features",
-        content: [
-          "Key features and technical highlights that customers will value.",
-        ],
-      },
-      {
-        id: "benefits",
-        title: "Benefits",
-        content: [
-          "Business benefits, ROI considerations and case uses.",
-        ],
-      },
-      {
-        id: "implementation",
-        title: "Implementation",
-        content: [
-          "How we deliver the service: timelines, phases and responsibilities.",
-        ],
-      },
-      {
-        id: "faq",
-        title: "FAQ",
-        content: [
-          "Frequently asked questions about the service.",
-        ],
-      },
-    ],
+  if (!service) {
+    return constructMetadata({
+      title: "Service Not Found",
+      noIndex: true,
+    });
+  }
+
+  return constructMetadata({
+    title: service.seoTitle || service.title,
+    description: service.seoDescription || service.description || "",
+    canonicalUrl: `/services/${slug}`,
+    ogImage: service.thumbnailUrl || undefined,
+  });
+}
+
+// Helper function to dynamically parse h2 tags on server-side
+function parseTableOfContents(htmlContent: string) {
+  const headings: { text: string; id: string }[] = [];
+  if (!htmlContent) return { headings, html: htmlContent };
+
+  const idCounts = new Map<string, number>();
+
+  const cleanId = (text: string) => {
+    const cleanText = text.replace(/<[^>]*>/g, "").trim();
+    let baseId = cleanText
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    if (!baseId) baseId = "heading";
+
+    if (idCounts.has(baseId)) {
+      const count = idCounts.get(baseId)! + 1;
+      idCounts.set(baseId, count);
+      return `${baseId}-${count}`;
+    } else {
+      idCounts.set(baseId, 0);
+      return baseId;
+    }
   };
+
+  const modifiedHtml = htmlContent.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/gi, (match, attrs, content) => {
+    if (attrs.includes('id=')) {
+      const idMatch = attrs.match(/id="([^"]*)"/);
+      if (idMatch) {
+        const id = idMatch[1];
+        headings.push({ text: content.replace(/<[^>]*>/g, "").trim(), id });
+        return match;
+      }
+    }
+    const id = cleanId(content);
+    headings.push({ text: content.replace(/<[^>]*>/g, "").trim(), id });
+    return `<h2${attrs} id="${id}">${content}</h2>`;
+  });
+
+  return { headings, html: modifiedHtml };
+}
+
+export default async function ServiceDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const service = await getServiceBySlug(slug);
+
+  if (!service) {
+    notFound();
+  }
+
+  // Parse Table of Contents and inject IDs
+  const { headings, html: parsedHtml } = parseTableOfContents(service.content || "");
+
+  // Fetch related products dynamically
+  const rawProducts = await getProducts({ limit: 6 });
+  const products = rawProducts.map((p: any) => ({
+    title: p.title,
+    description: p.description || "",
+    image: p.thumbnailUrl || "/images/image1.avif",
+    badges: p.badges || [],
+    href: `/product/${p.slug}`,
+  }));
+
+  const breadcrumbs = [
+    {
+      label: "Home",
+      href: "/",
+    },
+    {
+      label: "Services",
+      href: "/services",
+    },
+  ];
+
+  const heroImage = service.thumbnailUrl || "/images/product.avif";
 
   return (
     <main className="min-h-screen text-black">
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-10">
           <Breadcrumb
-            items={[
-              {
-                label: "Home",
-                href: "/",
-              },
-              {
-                label: "Services",
-                href: "/services",
-              },
-            ]}
-            currentLabel={detail.title}
+            items={breadcrumbs}
+            currentLabel={service.title}
           />
         </div>
 
@@ -168,13 +136,13 @@ export default function ServiceDetailPage({
           <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
             <div className="max-w-xl">
               <div className="text-sm font-medium tracking-[0.2em] text-black/45 uppercase">
-                {detail.category}
+                Service
               </div>
               <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-black sm:text-5xl lg:text-[48px]">
-                {detail.title}
+                {service.title}
               </h1>
               <p className="mt-5 max-w-lg text-[15px] leading-7 text-black/65 sm:text-base">
-                {detail.subtitle}
+                {service.description || "Solutions and services to keep your organisation secure and operational."}
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
@@ -184,14 +152,12 @@ export default function ServiceDetailPage({
                 >
                   VIEW DETAILS
                 </a>
-                <a
-                  href={
-                    detail.guideHref
-                  }
+                <Link
+                  href="/contact"
                   className="inline-flex h-12 items-center justify-center rounded-full border border-black/45 bg-white px-6 text-sm font-semibold text-black transition hover:border-black hover:bg-black/5"
                 >
-                  {detail.guideLabel}
-                </a>
+                  REQUEST A QUOTE
+                </Link>
               </div>
             </div>
 
@@ -199,8 +165,8 @@ export default function ServiceDetailPage({
               <div className="absolute top-0 left-[-6%] hidden h-full w-[62%] skew-x-[-24deg] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.04)] lg:block" />
               <div className="absolute inset-0">
                 <Image
-                  src={detail.heroImage}
-                  alt={detail.title}
+                  src={heroImage}
+                  alt={service.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
@@ -217,88 +183,58 @@ export default function ServiceDetailPage({
         id="table-of-contents"
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-14"
       >
-        <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
-          <aside className="lg:sticky lg:top-8 lg:self-start">
-            <div className="text-sm font-semibold text-black">
-              Table of Contents
-            </div>
-            <ol className="mt-4 space-y-3 text-sm leading-6 text-black/70">
-              {detail.toc.map(
-                (item, index) => {
-                  const section =
-                    detail.sections[
-                      index
-                    ];
-                  return (
-                    <li key={item}>
-                      <a
-                        href={`#${section.id}`}
-                        className="transition hover:text-black"
-                      >
-                        {index + 1}.{" "}
-                        {item}
+        <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
+          {/* Sidebar - Dynamic Table of Contents and Quick Actions */}
+          <aside className="lg:sticky lg:top-8 lg:self-start space-y-6">
+            {headings.length > 0 && (
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
+                <div className="text-sm font-semibold text-black mb-4">
+                  Table of Contents
+                </div>
+                <ol className="space-y-3 text-[13px] leading-5 text-black/70 font-medium">
+                  {headings.map((heading, index) => (
+                    <li key={heading.id} className="hover:text-black transition">
+                      <a href={`#${heading.id}`} className="flex items-start gap-1">
+                        <span>{index + 1}.</span>
+                        <span>{heading.text}</span>
                       </a>
                     </li>
-                  );
-                }
-              )}
-            </ol>
-
-            <a
-              id="quote"
-              href="#"
-              className="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white transition hover:bg-black/85"
-            >
-              REQUEST A QUOTE
-            </a>
-          </aside>
-
-          <article className="space-y-12 text-[15px] leading-7 text-black/65">
-            {detail.intro.map(
-              (paragraph) => (
-                <p key={paragraph}>
-                  {paragraph}
-                </p>
-              )
+                  ))}
+                </ol>
+              </div>
             )}
 
-            {detail.sections.map(
-              (section) => (
-                <section
-                  key={section.id}
-                  id={section.id}
-                  className="scroll-mt-8"
-                >
-                  <h2 className="text-[30px] font-medium tracking-[-0.03em] text-black sm:text-[34px]">
-                    {section.title}
-                  </h2>
-                  <div className="mt-4 space-y-4">
-                    {section.content.map(
-                      (paragraph) => (
-                        <p
-                          key={
-                            paragraph
-                          }
-                        >
-                          {paragraph}
-                        </p>
-                      )
-                    )}
-                  </div>
-                </section>
-              )
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
+              <h3 className="text-base font-bold text-black mb-2">
+                Interested in this service?
+              </h3>
+              <p className="text-xs text-black/60 mb-6 leading-relaxed">
+                Get in touch with our experts to design a custom service plan tailored to your needs.
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex w-full h-11 items-center justify-center rounded-full bg-black text-sm font-semibold text-white transition hover:bg-black/85"
+              >
+                REQUEST A QUOTE
+              </Link>
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <article className="tiptap-editor-content text-[15px] leading-7 text-black/65">
+            {parsedHtml ? (
+              <div dangerouslySetInnerHTML={{ __html: parsedHtml }} />
+            ) : (
+              <p className="text-gray-500 italic">No detailed content available for this service.</p>
             )}
           </article>
         </div>
       </section>
+
       <ProductGridSection
-        title={productSection.title}
-        description={
-          productSection.description
-        }
-        products={
-          productSection.products
-        }
+        title="Products and security technology"
+        description="Explore our wide range of video security and access control products designed to help you foster a secure environment."
+        products={products}
       />
       <FAQSection />
     </main>

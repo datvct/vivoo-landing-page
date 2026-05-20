@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { useSiteSettingQuery } from "@/services/site-settings/queries";
 
 type FaqItem = {
   question: string;
@@ -15,34 +16,35 @@ type FAQSectionProps = {
 
 export default function FAQSection({
   title = "FAQs about school safety technologies",
-  items = [
-    {
-      question:
-        "How does video security improve school safety?",
-      answer:
-        "Video security helps monitor activity, deter incidents and provide evidence for investigations.",
-    },
-    {
-      question:
-        "What are the key features to look for in school security products?",
-      answer:
-        "Look for analytics, low-light performance, easy management and integrations with access control.",
-    },
-    {
-      question:
-        "How does access control prevent unauthorized entry in schools?",
-      answer:
-        "Access control restricts entry points, enforces policies and logs activity for audits.",
-    },
-  ],
+  items,
 }: FAQSectionProps) {
-  const [openIndex, setOpenIndex] =
-    useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { data: settingData } = useSiteSettingQuery("general");
+
+  const defaultItems = [
+    {
+      question: "How does video security improve school safety?",
+      answer: "Video security helps monitor activity, deter incidents and provide evidence for investigations.",
+    },
+    {
+      question: "What are the key features to look for in school security products?",
+      answer: "Look for analytics, low-light performance, easy management and integrations with access control.",
+    },
+    {
+      question: "How does access control prevent unauthorized entry in schools?",
+      answer: "Access control restricts entry points, enforces policies and logs activity for audits.",
+    },
+  ];
+
+  const dbFaqs = settingData?.data?.value?.faqs?.map((faq: { question: string; answer: string }) => ({
+    question: faq.question,
+    answer: faq.answer,
+  }));
+
+  const displayItems: FaqItem[] = items || dbFaqs || defaultItems;
 
   function toggle(i: number) {
-    setOpenIndex((prev) =>
-      prev === i ? null : i
-    );
+    setOpenIndex((prev) => (prev === i ? null : i));
   }
 
   return (
@@ -56,7 +58,7 @@ export default function FAQSection({
 
         <div className="mx-auto mt-6 max-w-3xl sm:mt-8">
           <div className="space-y-3 sm:space-y-4">
-            {items.map((it, i) => {
+            {displayItems.map((it, i) => {
               const open =
                 openIndex === i;
 
@@ -77,22 +79,20 @@ export default function FAQSection({
                     </span>
 
                     <div
-                      className={`ml-4 shrink-0 transition-transform duration-300 ${
-                        open
+                      className={`ml-4 shrink-0 transition-transform duration-300 ${open
                           ? "rotate-45"
                           : "rotate-0"
-                      }`}
+                        }`}
                     >
                       <Plus size={18} />
                     </div>
                   </button>
 
                   <div
-                    className={`grid transition-all duration-300 ease-in-out ${
-                      open
+                    className={`grid transition-all duration-300 ease-in-out ${open
                         ? "grid-rows-[1fr] opacity-100"
                         : "grid-rows-[0fr] opacity-0"
-                    }`}
+                      }`}
                   >
                     <div className="overflow-hidden">
                       <div className="px-4 pb-4 sm:px-6 sm:pb-5">

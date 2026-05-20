@@ -13,7 +13,7 @@ export const useCreateCategoryMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to create category!");
+      message.error(error.response?.message|| "Failed to create category!");
     },
   });
 };
@@ -29,7 +29,7 @@ export const useUpdateCategoryMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to update category!");
+      message.error(error.response?.message|| "Failed to update category!");
     },
   });
 };
@@ -44,7 +44,7 @@ export const useDeleteCategoryMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["product-categories"] });
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to delete category!");
+      message.error(error.response?.message|| "Failed to delete category!");
     },
   });
 };

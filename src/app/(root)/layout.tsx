@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   Geist,
   Geist_Mono,
@@ -18,33 +17,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
-
-  try {
-    const res = await fetch(`${backendUrl}/site-settings/general`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const result = await res.json();
-      const settings = result?.data?.value;
-      if (settings) {
-        return {
-          title: settings.siteTitle || "VIVOO",
-          description: settings.siteDescription || "VIVOO - Advanced Security Solutions",
-        };
-      }
-    }
-  } catch (error) {
-    // Fallback to default metadata
-  }
-
-  return {
-    title: "VIVOO",
-    description: "VIVOO - Advanced Security Solutions",
-  };
-}
 
 export default function RootLayout({
   children,

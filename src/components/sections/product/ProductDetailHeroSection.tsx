@@ -6,9 +6,8 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
-  FileText,
-  HelpCircle,
   Play,
+  X,
 } from "lucide-react";
 import {
   useMemo,
@@ -35,6 +34,7 @@ type ProductDetailHeroSectionProps = {
   features: string[];
   primaryActionLabel: string;
   primaryActionHref: string;
+  videoUrl?: string;
   thumbnails: Thumbnail[];
   deviceInfo?: ReactNode;
 };
@@ -49,15 +49,13 @@ export default function ProductDetailHeroSection({
   features,
   primaryActionLabel,
   primaryActionHref,
+  videoUrl,
   thumbnails,
   deviceInfo,
 }: ProductDetailHeroSectionProps) {
-  const [activeIndex, setActiveIndex] =
-    useState(0);
-  const [
-    isImageEntered,
-    setIsImageEntered,
-  ] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isImageEntered, setIsImageEntered] = useState(true);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const totalSlides = thumbnails.length;
 
@@ -187,7 +185,7 @@ export default function ProductDetailHeroSection({
                   return (
                     <button
                       key={
-                        thumbnail.alt
+                        index
                       }
                       type="button"
                       onClick={() =>
@@ -195,7 +193,7 @@ export default function ProductDetailHeroSection({
                           index
                         )
                       }
-                      className={`relative flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-md border bg-white transition sm:h-16 sm:w-16 ${isActive ? "border-black/35 ring-1 ring-black/20" : "border-black/10 hover:border-black/20"}`}
+                      className={`relative flex cursor-pointer h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-md border bg-white transition sm:h-16 sm:w-16 ${isActive ? "border-black/35 ring-1 ring-black/20" : "border-black/10 hover:border-black/20"}`}
                       aria-label={`Show image ${index + 1}`}
                     >
                       <Image
@@ -214,22 +212,24 @@ export default function ProductDetailHeroSection({
                 }
               )}
 
-              <button
-                type="button"
-                className="hidden h-12 min-w-28 flex-none items-center justify-center gap-2 rounded-md border border-black/10 bg-black/5 px-3 text-sm font-medium text-black/70 transition hover:bg-black/10 sm:flex sm:h-16 sm:min-w-40 sm:px-4"
-                onClick={goToNextSlide}
-              >
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-black/30 bg-white sm:h-7 sm:w-7">
-                  <Play className="h-3 w-3 fill-black text-black sm:h-4 sm:w-4" />
-                </span>
-                <span className="text-xs whitespace-nowrap sm:text-sm">
-                  Watch Video
-                </span>
-              </button>
+              {!!videoUrl && (
+                <button
+                  type="button"
+                  className="hidden cursor-pointer h-12 min-w-28 flex-none items-center justify-center gap-2 rounded-md border border-black/10 bg-black/5 px-3 text-sm font-medium text-black/70 transition hover:bg-black/10 sm:flex sm:h-16 sm:min-w-40 sm:px-4"
+                  onClick={() => setIsVideoModalOpen(true)}
+                >
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-black/30 bg-white sm:h-7 sm:w-7">
+                    <Play className="h-3 w-3 fill-black text-black sm:h-4 sm:w-4" />
+                  </span>
+                  <span className="text-xs whitespace-nowrap sm:text-sm">
+                    Watch Video
+                  </span>
+                </button>
+              )}
             </div>
 
             {deviceInfo && (
-              <div className="mt-5 rounded-xl border border-black/10 bg-[#fafafa] p-4 text-sm leading-6 text-black/75 shadow-[0_4px_12px_rgba(15,23,42,0.03)] sm:mt-6 sm:p-5" dangerouslySetInnerHTML={{__html:deviceInfo}}/>
+              <div className="tiptap-editor-content mt-5 rounded-xl border border-black/10 bg-[#fafafa] p-4 text-sm leading-6 text-black/75 shadow-[0_4px_12px_rgba(15,23,42,0.03)] sm:mt-6 sm:p-5" dangerouslySetInnerHTML={{ __html: deviceInfo }} />
             )}
           </div>
 
@@ -289,10 +289,31 @@ export default function ProductDetailHeroSection({
               </Link>
             </div>
 
-            
+
           </div>
         </div>
       </div>
+
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-6" onClick={() => setIsVideoModalOpen(false)}>
+          <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setIsVideoModalOpen(false)}
+              className="absolute cursor-pointer top-4 right-4 text-white hover:text-white/80 transition bg-black/40 hover:bg-black/60 rounded-full p-2 z-[101]"
+              aria-label="Close video"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <video
+              src={videoUrl}
+              controls
+              autoPlay
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

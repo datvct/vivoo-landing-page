@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import ComplianceSection from "@/components/sections/home/ComplianceSection";
 import CustomerStoriesSection from "@/components/common/CustomerStoriesSection";
 import IndustriesSection from "@/components/sections/home/IndustriesSection";
@@ -6,153 +7,81 @@ import ProductGridSection from "@/components/common/ProductGridSection";
 import SolutionsSection from "@/components/sections/solution/SolutionsSection";
 import BannerSlider from "@/components/sections/home/BannerSlider";
 import ServiceListSection from "@/components/sections/services/ServiceListSection";
+import { constructMetadata } from "@/utils/seo";
+import { getGeneralSettings, getHomeSettings } from "@/lib/get-settings";
+import { getServices } from "@/lib/get-services";
+import { getProducts } from "@/lib/get-products";
 
-const defaultFeaturedProducts = [
-  {
-    title: "AI Camera",
-    description:
-      "A smart camera solution for surveillance, recognition, and early alerting.",
-    image: "/images/camera-1.avif",
-    linkLabel: "View product",
-    href: "/product/camera-ai",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-  },
-  {
-    title: "Security Devices",
-    description:
-      "A hardware suite ideal for enterprise and retail security systems.",
-    image: "/images/camera-2.avif",
-    linkLabel: "View details",
-    href: "/product/security-devices",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-  },
-  {
-    title: "Monitoring Solutions",
-    description:
-      "Optimized for various deployment models with flexible scalability.",
-    image: "/images/product.avif",
-    linkLabel: "Explore",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-    href: "/product/monitoring-solutions",
-  },
-  {
-    title: "AI Camera",
-    description:
-      "A smart camera solution for surveillance, recognition, and early alerting.",
-    image: "/images/camera-1.avif",
-    linkLabel: "View product",
-    href: "/product/camera-ai",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-  },
-  {
-    title: "Security Devices",
-    description:
-      "A hardware suite ideal for enterprise and retail security systems.",
-    image: "/images/camera-2.avif",
-    linkLabel: "View details",
-    href: "/product/security-devices",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-  },
-  {
-    title: "Monitoring Solutions",
-    description:
-      "Optimized for various deployment models with flexible scalability.",
-    image: "/images/product.avif",
-    linkLabel: "Explore",
-    href: "/product/monitoring-solutions",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-  },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getGeneralSettings();
+  const title = settings?.seoHomeTitle || settings?.siteTitle || "VIVOO - Advanced Security Solutions";
+  const description = settings?.seoHomeDescription || settings?.siteDescription || "VIVOO provides state-of-the-art security, cloud and integration services.";
+  const keywords = settings?.seoHomeKeywords
+    ? settings.seoHomeKeywords.split(",").map((k: string) => k.trim())
+    : [
+      "VIVOO",
+      "Avigilon",
+      "Camera giám sát",
+      "Camera AI",
+      "Hệ thống an ninh",
+      "Giải pháp an ninh doanh nghiệp",
+      "VMS Alta",
+      "VMS Unity",
+      "Avigilon Vietnam",
+      "Managed Security Services"
+    ];
 
-async function getHomeSettings() {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
 
-  try {
-    const res = await fetch(`${backendUrl}/site-settings/home`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const result = await res.json();
-      return result?.data?.value || null;
-    }
-  } catch (error) {
-    // Ignore and fallback
-  }
-  return null;
+  const noIndex = settings?.seoHomeRobots
+    ? settings.seoHomeRobots.toLowerCase().includes("noindex")
+    : false;
+
+  return constructMetadata({
+    title,
+    description,
+    canonicalUrl: "/",
+    keywords,
+    noIndex,
+    ogType: "website",
+    faviconUrl: settings?.faviconUrl,
+    iconsShortcut: settings?.faviconUrl,
+  });
 }
 
-async function getProducts() {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  try {
-    const res = await fetch(`${apiBase}/products?limit=6&status=PUBLISHED`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const result = await res.json();
-      return result?.data?.items || [];
-    }
-  } catch (error) {
-    // Ignore
-  }
-  return [];
-}
-
-async function getServices() {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  try {
-    const res = await fetch(`${apiBase}/services?limit=100&status=PUBLISHED`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const result = await res.json();
-      return result?.data?.items || [];
-    }
-  } catch (error) {
-    // Ignore
-  }
-  return [];
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default async function HomePage() {
   const homeSettings = await getHomeSettings();
-  const dbProducts = await getProducts();
-  const dbServices = await getServices();
-
-  const trustedTitle = homeSettings?.trustedTitle || "Trusted by 100,000+ organizations globally";
-  const trustedLogos = homeSettings?.trustedLogos || [];
+  const dbProducts = await getProducts({
+    limit: 6,
+    page: 1,
+    sortOrder: 'ASC',
+    sortBy: 'sortOrder',
+    status: 'published'
+  });
+  const dbServices = await getServices({
+    page: 1,
+    limit: 6,
+    status: 'published'
+  });
 
   const productsTitle = homeSettings?.productsTitle || "Featured Products";
   const productsDescription = homeSettings?.productsDescription || "A selection of Vivoo's standout products for a quick overview below the logos.";
-  
   const products = dbProducts.length > 0
     ? dbProducts.map((p: any) => ({
-        title: p.title,
-        description: p.description || "",
-        image: p.thumbnailUrl || "/images/camera-1.avif",
-        linkLabel: p.primaryActionLabel || "View product",
-        href: `/product/${p.slug}`,
-        badges: p.badges || [],
-      }))
-    : defaultFeaturedProducts;
+      title: p.title,
+      description: p.description || "",
+      image: p.thumbnailUrl || "/images/camera-1.avif",
+      linkLabel: p.primaryActionLabel || "View product",
+      href: `/product/${p.slug}`,
+      badges: p.badges || [],
+    }))
+    : [];
 
   const solutionsTitle = homeSettings?.solutionsTitle || "Solutions";
   const solutionsDescription = homeSettings?.solutionsDescription || "The Avigilon security suite offers an integrated portfolio of video security products and services powered by intelligence and built for scale.";
@@ -175,7 +104,7 @@ export default async function HomePage() {
   return (
     <>
       <BannerSlider />
-      <LogoSection title={trustedTitle} logos={trustedLogos} />
+      <LogoSection />
       <ProductGridSection
         title={productsTitle}
         description={productsDescription}

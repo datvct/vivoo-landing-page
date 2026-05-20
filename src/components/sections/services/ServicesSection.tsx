@@ -1,8 +1,6 @@
-import { Service } from "@/types/service-types";
 import ServiceCard from "./ServiceCard";
-import Breadcrumb from "@/components/common/Breadcrumb";
 
-const services: Service[] = [
+const fallbackServices = [
   {
     id: "managed",
     title: "Managed Security",
@@ -45,7 +43,13 @@ const services: Service[] = [
   },
 ];
 
-export default function ServicesSection() {
+export default function ServicesSection({
+  services = [],
+}: {
+  services?: any[];
+}) {
+  const displayServices = services.length > 0 ? services : fallbackServices;
+
   return (
     <section className="bg-white py-6 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
@@ -54,15 +58,12 @@ export default function ServicesSection() {
             Services
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-gray-600">
-            Our services help you
-            design, deploy and operate
-            secure, resilient systems at
-            scale.
+            Our services help you design, deploy and operate secure, resilient systems at scale.
           </p>
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-          {services.map((s) => (
+          {displayServices.map((s) => (
             <ServiceCard
               key={s.id}
               service={s}

@@ -24,7 +24,7 @@ export const useLoginMutation = () => {
       router.push("/admin");
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Login failed, please try again!");
+      message.error(error.response?.message|| "Login failed, please try again!");
     },
   });
 };

@@ -400,7 +400,7 @@ const ImagePopoverButton: React.FC<{ editor: Editor }> = ({ editor }) => {
       }
     } catch (err: any) {
       console.error(err);
-      message.error(err?.response?.data?.message || "Upload image failed! Please try again.");
+      message.error(err?.response?.message || "Upload image failed! Please try again.");
     } finally {
       hide();
       setOpen(false);
@@ -501,7 +501,7 @@ const VideoPopoverButton: React.FC<{ editor: Editor }> = ({ editor }) => {
       }
     } catch (err: any) {
       console.error(err);
-      message.error(err?.response?.data?.message || "Tải video thất bại! Hãy thử lại.");
+      message.error(err?.response?.message || "Tải video thất bại! Hãy thử lại.");
     } finally {
       hide();
       setOpen(false);
@@ -634,6 +634,21 @@ type ToolbarProps = {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor, disabled }) => {
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const forceUpdate = () => setTick((tick) => tick + 1);
+
+    editor.on("selectionUpdate", forceUpdate);
+    editor.on("transaction", forceUpdate);
+
+    return () => {
+      editor.off("selectionUpdate", forceUpdate);
+      editor.off("transaction", forceUpdate);
+    };
+  }, [editor]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

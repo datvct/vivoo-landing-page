@@ -1,47 +1,12 @@
 import LucideIcon from "@/components/common/LucideIcon";
-
-type ComplianceItem = {
-  id: string;
-  title: string;
-  iconName: string;
-};
-
-const defaultComplianceItems: ComplianceItem[] =
-  [
-    {
-      id: "safety-act",
-      title: "SAFETY Act Designation",
-      iconName: "BadgeCheck",
-    },
-    {
-      id: "ndaa",
-      title: "NDAA Compliant",
-      iconName: "CircleCheckBig",
-    },
-    {
-      id: "soc2",
-      title: "SOC2 Type II",
-      iconName: "ShieldCheck",
-    },
-    {
-      id: "iso",
-      title: "ISO 27001+ Certified",
-      iconName: "Stamp",
-    },
-  ];
-
-type ComplianceSectionProps = {
-  title?: string;
-  description?: string;
-  complianceList?: ComplianceItem[];
-};
+import { ComplianceSectionProps } from "@/types/types";
 
 export default function ComplianceSection({
   title = "Compliance and certifications",
   description = "Our end-to-end security solutions are compliant with global government regulations and built on a trusted, cybersecurity platform - all designed to help you focus on what matters most.",
   complianceList = [],
 }: ComplianceSectionProps) {
-  const activeItems = complianceList && complianceList.length > 0 ? complianceList : defaultComplianceItems;
+  const activeItems = complianceList && complianceList.length > 0 ? complianceList : [];
 
   return (
     <section className="bg-white py-6 sm:py-16">

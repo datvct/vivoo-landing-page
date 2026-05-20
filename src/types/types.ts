@@ -40,6 +40,17 @@ export type ProductCategory = {
   description?: string | null;
   thumbnailUrl?: string | null;
   thumbnailMediaId?: string | null;
+  heroTitle?: string | null;
+  heroDescription?: string | null;
+  heroCtaLabel?: string | null;
+  heroCtaHref?: string | null;
+  benefitsTitle?: string | null;
+  benefitsDescription?: string | null;
+  featureTitle?: string | null;
+  featureBody?: string | null;
+  featureImageUrl?: string | null;
+  featureLinkLabel?: string | null;
+  featureLinkHref?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoKeywords?: string | null;
@@ -69,7 +80,19 @@ export type ProductCategoryFormValues = {
   subtitle?: string | null;
   description?: string | null;
   thumbnailUrl?: string | null;
-  thumbnail?: any; // for file upload (thumbnail key)
+  thumbnail?: File;
+  heroTitle?: string | null;
+  heroDescription?: string | null;
+  heroCtaLabel?: string | null;
+  heroCtaHref?: string | null;
+  benefitsTitle?: string | null;
+  benefitsDescription?: string | null;
+  featureTitle?: string | null;
+  featureBody?: string | null;
+  featureImageUrl?: string | null;
+  featureImage?: File;
+  featureLinkLabel?: string | null;
+  featureLinkHref?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoKeywords?: string | null;
@@ -344,6 +367,7 @@ export type GeneralResource = {
   id: string;
   title: string;
   url: string;
+  description?: string | null;
   type?: string;
 };
 
@@ -352,6 +376,7 @@ export type GeneralSettings = {
   siteDescription: string;
   logoUrl?: string;
   logoDarkUrl?: string;
+  faviconUrl?: string;
   supportEmail?: string;
   supportPhone?: string;
   supportAddress?: string;
@@ -362,6 +387,27 @@ export type GeneralSettings = {
   youtubeUrl?: string;
   faqs?: GeneralFAQ[];
   resources?: GeneralResource[];
+  
+  // Page SEO Settings
+  seoHomeTitle?: string;
+  seoHomeDescription?: string;
+  seoHomeKeywords?: string;
+  seoHomeRobots?: string;
+
+  seoSolutionsTitle?: string;
+  seoSolutionsDescription?: string;
+  seoSolutionsKeywords?: string;
+  seoSolutionsRobots?: string;
+
+  seoServicesTitle?: string;
+  seoServicesDescription?: string;
+  seoServicesKeywords?: string;
+  seoServicesRobots?: string;
+
+  seoContactTitle?: string;
+  seoContactDescription?: string;
+  seoContactKeywords?: string;
+  seoContactRobots?: string;
 };
 
 export type HeaderSubmenuItem = {
@@ -435,4 +481,51 @@ export type HomeSettings = {
   complianceTitle: string;
   complianceDescription: string;
   complianceList: HomeComplianceItem[];
+};
+
+export type IndustryItem = {
+  id: string;
+  label: string;
+  iconName: string;
+  image: string;
+  imageAlt: string;
+  imagePosition?: string;
+};
+
+export type IndustriesSectionProps = {
+  title?: string;
+  description?: string;
+  industries?: IndustryItem[];
+};
+
+
+type StoryItem = {
+  id: string | number;
+  company: string;
+  title: string;
+  quote: string;
+  author: string;
+  image: string;
+  logo: string;
+};
+
+
+
+export type CustomerStoriesSectionProps = {
+  title?: string;
+  description?: string;
+  stories?: StoryItem[];
+};
+
+
+type ComplianceItem = {
+  id: string;
+  title: string;
+  iconName: string;
+};
+
+export type ComplianceSectionProps = {
+  title?: string;
+  description?: string;
+  complianceList?: ComplianceItem[];
 };

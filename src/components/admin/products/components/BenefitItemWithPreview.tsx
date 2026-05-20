@@ -1,25 +1,61 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
-import React, { useEffect, useState } from "react";
-import { Form, Input, Select, Button, Upload } from "antd";
-import { X, UploadCloud, Shield, Mic, Camera, Sun, Bell, Video } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Form, Input, Select, Upload } from "antd";
+import {
+  X,
+  UploadCloud,
+  Shield,
+  Mic,
+  Camera,
+  Sun,
+  Bell,
+  Video,
+  Image as ImageIcon,
+} from "lucide-react";
+import type { FormListFieldData } from "antd/es/form/FormList";
+import type { Media } from "@/types/types";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 
-export const BenefitItemWithPreview = ({ name, restField, remove }: any) => {
+type BenefitItemWithPreviewProps = {
+  name: number;
+  restField: Omit<FormListFieldData, "name" | "key">;
+  remove: (index: number | number[]) => void;
+};
+
+export const BenefitItemWithPreview = ({ name, restField, remove }: BenefitItemWithPreviewProps) => {
+  const form = Form.useFormInstance();
   const benefitValues = Form.useWatch(['benefits', name]);
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+
+  const uploadedFile = benefitValues?.imageFile?.[0]?.originFileObj || benefitValues?.imageFile?.[0];
+  const previewUrl = useMemo(() => {
+    if (uploadedFile instanceof File) {
+      return URL.createObjectURL(uploadedFile);
+    }
+
+    return "";
+  }, [uploadedFile]);
 
   useEffect(() => {
-    if (benefitValues?.imageFile?.[0]) {
-      const fileObj = benefitValues.imageFile[0].originFileObj || benefitValues.imageFile[0];
-      if (fileObj instanceof File) {
-        const url = URL.createObjectURL(fileObj);
-        setPreviewUrl(url);
-        return () => URL.revokeObjectURL(url);
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
       }
-    } else {
-      setPreviewUrl("");
+    };
+  }, [previewUrl]);
+
+  const handlePickMedia = (item: Media) => {
+    form.setFieldValue(['benefits', name, 'image'], item.secureUrl);
+    form.setFieldValue(['benefits', name, 'imageFile'], []);
+
+    if (!benefitValues?.imageAlt?.trim()) {
+      form.setFieldValue(['benefits', name, 'imageAlt'], item.originalFilename || "");
     }
-  }, [benefitValues?.imageFile]);
+
+    setMediaPickerOpen(false);
+  };
 
   const renderIcon = (key: string) => {
     switch (key) {
@@ -65,7 +101,7 @@ export const BenefitItemWithPreview = ({ name, restField, remove }: any) => {
             rules={[{ required: true, message: 'Missing icon' }]}
             className="mb-0"
           >
-            <Select placeholder="Select an icon" className="[&_.ant-select-selector]:!rounded-lg">
+            <Select placeholder="Select an icon" className="[&_.ant-select-selector]:rounded-lg!">
               <Select.Option value="shield">Shield</Select.Option>
               <Select.Option value="mic">Mic</Select.Option>
               <Select.Option value="camera">Camera</Select.Option>
@@ -102,10 +138,20 @@ export const BenefitItemWithPreview = ({ name, restField, remove }: any) => {
             getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList}
             className="mb-0"
           >
-            <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
+            <Upload beforeUpload={() => false} maxCount={1} accept="image/*" showUploadList={false}>
               <Button icon={<UploadCloud className="w-4 h-4" />}>Select Image</Button>
             </Upload>
           </Form.Item>
+
+          <div className="md:col-span-2 -mt-2">
+            <Button
+              type="default"
+              icon={<ImageIcon className="w-4 h-4" />}
+              onClick={() => setMediaPickerOpen(true)}
+            >
+              Choose from Media
+            </Button>
+          </div>
 
           <Form.Item
             {...restField}
@@ -144,6 +190,13 @@ export const BenefitItemWithPreview = ({ name, restField, remove }: any) => {
           )}
         </div>
       </div>
+
+      <MediaPickerModal
+        open={mediaPickerOpen}
+        onCancel={() => setMediaPickerOpen(false)}
+        onSelect={handlePickMedia}
+        selectableTypes={["image"]}
+      />
     </div>
   );
 };

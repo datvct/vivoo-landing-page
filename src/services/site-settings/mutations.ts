@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { siteSettingsApi } from "./api";
 import { message } from "antd";
+import { getErrorMessage } from "@/utils/error";
 
 export const useUpsertSiteSettingMutation = () => {
   const queryClient = useQueryClient();
@@ -14,7 +15,7 @@ export const useUpsertSiteSettingMutation = () => {
     },
     onError: (error: any) => {
       message.error(
-        error?.response?.data?.message || "Failed to update settings."
+        getErrorMessage(error, "Failed to update settings.")
       );
     },
   });

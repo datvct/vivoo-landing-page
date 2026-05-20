@@ -179,7 +179,9 @@ export default function AdminIndexPage() {
                 <Card
                   hoverable
                   className="rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group transition-all duration-300 hover:translate-y-[-4px] hover:shadow-md"
-                  bodyStyle={{ padding: "24px" }}
+                  styles={{
+                    body: { padding: "24px" },
+                  }}
                 >
                   {/* Decorative background gradient glow on hover */}
                   <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${kpi.accent}`} />

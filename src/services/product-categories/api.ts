@@ -31,17 +31,23 @@ export const productCategoriesApi = {
     return response.data;
   },
 
-  createCategory: async (payload: any): Promise<ApiResponse<ProductCategory>> => {
-    let data = payload;
+  createCategory: async (payload: Record<string, unknown>): Promise<ApiResponse<ProductCategory>> => {
+    let data: FormData | Record<string, unknown> = payload;
     let headers = {};
 
-    // Check if there is a file for upload
-    if (payload.thumbnail instanceof File) {
+    const needsFormData =
+      payload.thumbnail instanceof File || payload.featureImage instanceof File;
+
+    if (needsFormData) {
       const formData = new FormData();
       Object.keys(payload).forEach((key) => {
         const val = payload[key];
         if (val !== undefined && val !== null) {
-          formData.append(key, val);
+          if (val instanceof File || val instanceof Blob) {
+            formData.append(key, val);
+          } else {
+            formData.append(key, String(val));
+          }
         }
       });
       data = formData;
@@ -57,17 +63,24 @@ export const productCategoriesApi = {
     payload,
   }: {
     id: string;
-    payload: any;
+    payload: Record<string, unknown>;
   }): Promise<ApiResponse<ProductCategory>> => {
-    let data = payload;
+    let data: FormData | Record<string, unknown> = payload;
     let headers = {};
 
-    if (payload.thumbnail instanceof File) {
+    const needsFormData =
+      payload.thumbnail instanceof File || payload.featureImage instanceof File;
+
+    if (needsFormData) {
       const formData = new FormData();
       Object.keys(payload).forEach((key) => {
         const val = payload[key];
         if (val !== undefined && val !== null) {
-          formData.append(key, val);
+          if (val instanceof File || val instanceof Blob) {
+            formData.append(key, val);
+          } else {
+            formData.append(key, String(val));
+          }
         }
       });
       data = formData;

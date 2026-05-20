@@ -20,10 +20,10 @@ type InsightItem = {
   image: string;
   imageAlt: string;
   iconKey:
-    | "shield"
-    | "mic"
-    | "camera"
-    | "sun";
+  | "shield"
+  | "mic"
+  | "camera"
+  | "sun";
 };
 
 type ProductInsightsSectionProps = {
@@ -108,7 +108,7 @@ export default function ProductInsightsSection({
                         index
                       )
                     }
-                    className={`flex w-full items-start gap-3 rounded-md px-4 py-4 text-left transition sm:gap-4 sm:px-5 sm:py-5 ${isActive ? "bg-white shadow-[0_12px_28px_rgba(15,23,42,0.06)] ring-1 ring-black/5" : "hover:bg-white/70"}`}
+                    className={`flex cursor-pointer w-full items-start gap-3 rounded-md px-4 py-4 text-left transition sm:gap-4 sm:px-5 sm:py-5 ${isActive ? "bg-white shadow-[0_12px_28px_rgba(15,23,42,0.06)] ring-1 ring-black/5" : "hover:bg-white/70"}`}
                   >
                     <span
                       className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9 ${isActive ? "text-blue-600" : "text-black/80"}`}

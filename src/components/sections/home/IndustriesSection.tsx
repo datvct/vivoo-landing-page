@@ -7,117 +7,21 @@ import {
 
 import Image from "next/image";
 import LucideIcon from "@/components/common/LucideIcon";
+import { IndustriesSectionProps } from "@/types/types";
 
-type IndustryItem = {
-  id: string;
-  label: string;
-  iconName: string;
-  image: string;
-  imageAlt: string;
-  imagePosition?: string;
-};
-
-const defaultIndustries: IndustryItem[] = [
-  {
-    id: "commercial",
-    label: "Commercial Real Estate",
-    iconName: "Building2",
-    image: "/images/image1.avif",
-    imageAlt: "Commercial real estate security camera view",
-    imagePosition: "center center",
-  },
-  {
-    id: "data-centers",
-    label: "Data Centers",
-    iconName: "Server",
-    image: "/images/camera-1.avif",
-    imageAlt: "Data center security camera view",
-    imagePosition: "center top",
-  },
-  {
-    id: "education",
-    label: "Education",
-    iconName: "GraduationCap",
-    image: "/images/camera-2.avif",
-    imageAlt: "Education campus security view",
-    imagePosition: "center center",
-  },
-  {
-    id: "enterprise",
-    label: "Enterprise",
-    iconName: "BriefcaseBusiness",
-    image: "/images/image1.avif",
-    imageAlt: "Enterprise security monitoring image",
-    imagePosition: "center top",
-  },
-  {
-    id: "healthcare",
-    label: "Healthcare",
-    iconName: "HeartPulse",
-    image: "/images/camera-1.avif",
-    imageAlt: "Healthcare facility security image",
-    imagePosition: "center center",
-  },
-  {
-    id: "law-enforcement",
-    label: "Law Enforcement",
-    iconName: "ShieldCheck",
-    image: "/images/camera-2.avif",
-    imageAlt: "Law enforcement security image",
-    imagePosition: "center top",
-  },
-  {
-    id: "government",
-    label: "Government",
-    iconName: "Landmark",
-    image: "/images/image1.avif",
-    imageAlt: "Government building security image",
-    imagePosition: "center center",
-  },
-  {
-    id: "aviation",
-    label: "Aviation",
-    iconName: "Plane",
-    image: "/images/camera-1.avif",
-    imageAlt: "Aviation security image",
-    imagePosition: "center center",
-  },
-  {
-    id: "retail",
-    label: "Retail",
-    iconName: "ShoppingBag",
-    image: "/images/camera-2.avif",
-    imageAlt: "Retail security image",
-    imagePosition: "center center",
-  },
-  {
-    id: "banking",
-    label: "Banking & Finance",
-    iconName: "Banknote",
-    image: "/images/image1.avif",
-    imageAlt: "Banking and finance security image",
-    imagePosition: "center center",
-  },
-];
-
-type IndustriesSectionProps = {
-  title?: string;
-  description?: string;
-  industries?: IndustryItem[];
-};
 
 export default function IndustriesSection({
   title = "Security for every site, everywhere",
   description = "See how people and organizations around the world are better protected with Avigilon's end-to-end video security and access control solutions.",
   industries = [],
 }: IndustriesSectionProps) {
-  const activeIndustries = industries && industries.length > 0 ? industries : defaultIndustries;
+  const activeIndustries = industries && industries.length > 0 ? industries : [];
 
   const [
     activeIndustryId,
     setActiveIndustryId,
   ] = useState(activeIndustries[0]?.id || "");
-  
+
   const [
     imageVisible,
     setImageVisible,

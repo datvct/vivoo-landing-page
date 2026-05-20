@@ -2,6 +2,7 @@
 
 import { FormState } from "@/types/contact-types";
 import { useState } from "react";
+import Link from "next/link";
 
 import { useCreateContactMutation } from "@/services/contacts/mutations";
 
@@ -62,12 +63,11 @@ export default function ContactForm() {
 
   const validate = () => {
     return {
-      firstName:
-        form.firstName.trim() === "",
+      firstName: form.firstName.trim() === "",
+      lastName: form.lastName.trim() === "",
       email: form.email.trim() === "",
       phone: form.phone.trim() === "",
-      company:
-        form.company.trim() === "",
+      company: form.company.trim() === "",
       postal: form.postal.trim() === "",
     };
   };
@@ -80,6 +80,7 @@ export default function ContactForm() {
     e.preventDefault();
     setTouched({
       firstName: true,
+      lastName: true,
       email: true,
       phone: true,
       company: true,
@@ -105,6 +106,40 @@ export default function ContactForm() {
 
   const submitted = createContactMutation.isPending;
 
+  if (createContactMutation.isSuccess) {
+    return (
+      <div className="w-full max-w-3xl rounded-lg bg-white p-6 shadow-[0_30px_50px_rgba(2,6,23,0.08)] lg:p-16 text-center flex flex-col items-center justify-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-6">
+          <svg
+            className="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-bold text-black mb-3">
+          Thank you!
+        </h3>
+        <p className="text-base text-black/60 max-w-md mb-8 leading-relaxed">
+          Your message has been sent successfully. We will get back to you as soon as possible.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex h-12 items-center justify-center rounded-full bg-black px-8 text-sm font-semibold text-white transition hover:bg-black/85"
+        >
+          Back to Home
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -119,12 +154,11 @@ export default function ContactForm() {
             value={form.firstName}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${
-              touched.firstName &&
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.firstName &&
               errors.firstName
-                ? "ring-2 ring-red-400"
-                : ""
-            }`}
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
             aria-invalid={
               touched.firstName &&
               errors.firstName
@@ -133,8 +167,7 @@ export default function ContactForm() {
           {touched.firstName &&
             errors.firstName && (
               <p className="mt-2 text-sm text-red-500">
-                Please complete this
-                required field.
+                Please complete this required field.
               </p>
             )}
         </div>
@@ -146,8 +179,22 @@ export default function ContactForm() {
             value={form.lastName}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.lastName &&
+              errors.lastName
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
+            aria-invalid={
+              touched.lastName &&
+              errors.lastName
+            }
           />
+          {touched.lastName &&
+            errors.lastName && (
+              <p className="mt-2 text-sm text-red-500">
+                Please complete this required field.
+              </p>
+            )}
         </div>
 
         <div>
@@ -158,13 +205,22 @@ export default function ContactForm() {
             value={form.email}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.email &&
+              errors.email
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
+            aria-invalid={
               touched.email &&
               errors.email
-                ? "ring-2 ring-red-400"
-                : ""
-            }`}
+            }
           />
+          {touched.email &&
+            errors.email && (
+              <p className="mt-2 text-sm text-red-500">
+                Please complete this required field.
+              </p>
+            )}
         </div>
 
         <div>
@@ -174,13 +230,22 @@ export default function ContactForm() {
             value={form.phone}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.phone &&
+              errors.phone
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
+            aria-invalid={
               touched.phone &&
               errors.phone
-                ? "ring-2 ring-red-400"
-                : ""
-            }`}
+            }
           />
+          {touched.phone &&
+            errors.phone && (
+              <p className="mt-2 text-sm text-red-500">
+                Please complete this required field.
+              </p>
+            )}
         </div>
 
         <div>
@@ -190,13 +255,22 @@ export default function ContactForm() {
             value={form.company}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.company &&
+              errors.company
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
+            aria-invalid={
               touched.company &&
               errors.company
-                ? "ring-2 ring-red-400"
-                : ""
-            }`}
+            }
           />
+          {touched.company &&
+            errors.company && (
+              <p className="mt-2 text-sm text-red-500">
+                Please complete this required field.
+              </p>
+            )}
         </div>
 
         <div>
@@ -206,13 +280,22 @@ export default function ContactForm() {
             value={form.postal}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+            className={`w-full rounded-sm border border-black/20 px-4 py-3 text-sm placeholder:text-black/40 focus:ring-2 focus:ring-blue-200 focus:outline-none ${touched.postal &&
+              errors.postal
+              ? "ring-2 ring-red-400"
+              : ""
+              }`}
+            aria-invalid={
               touched.postal &&
               errors.postal
-                ? "ring-2 ring-red-400"
-                : ""
-            }`}
+            }
           />
+          {touched.postal &&
+            errors.postal && (
+              <p className="mt-2 text-sm text-red-500">
+                Please complete this required field.
+              </p>
+            )}
         </div>
       </div>
 
@@ -231,12 +314,12 @@ export default function ContactForm() {
       <div className="mt-8 flex justify-center">
         <button
           type="submit"
-          className="inline-flex h-12 items-center justify-center rounded-full bg-black px-7 text-sm font-semibold text-white transition hover:bg-black/85"
+          className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-black px-7 text-sm font-semibold text-white transition hover:bg-black/85"
           disabled={submitted}
         >
           {submitted
             ? "Sending..."
-            : "GET MY QUOTE"}
+            : "Submit"}
         </button>
       </div>
     </form>

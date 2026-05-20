@@ -13,28 +13,6 @@ import Image from "next/image";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { HomeSettings } from "@/types/types";
 
-const defaultBanners = [
-  {
-    id: "1",
-    image: "/images/image1.avif",
-    alt: "Vivoo banner quảng cáo 1",
-  },
-  {
-    id: "2",
-    image: "/images/product.avif",
-    alt: "Vivoo banner quảng cáo 2",
-  },
-  {
-    id: "3",
-    image: "/images/camera-1.avif",
-    alt: "Vivoo banner quảng cáo 3",
-  },
-  {
-    id: "4",
-    image: "/images/camera-2.avif",
-    alt: "Vivoo banner quảng cáo 4",
-  },
-];
 
 type BannerSliderProps = {
   fullWidth?: boolean;
@@ -51,7 +29,7 @@ export default function BannerSlider({
     ? slides
     : (homeSettings.banners && homeSettings.banners.length > 0
       ? homeSettings.banners
-      : defaultBanners);
+      : []);
 
   const [current, setCurrent] =
     useState(0);
@@ -126,7 +104,7 @@ export default function BannerSlider({
                 onClick={() =>
                   setCurrent((prev) =>
                     prev ===
-                    banners.length - 1
+                      banners.length - 1
                       ? 0
                       : prev + 1
                   )

@@ -1,260 +1,40 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import ProductDetailHeroSection from "@/components/sections/product/ProductDetailHeroSection";
-import ProductFlexibleSetupSection from "@/components/sections/product/ProductFlexibleSetupSection";
 import ProductInsightsSection from "@/components/sections/product/ProductInsightsSection";
 import ProductRelatedProductsSection from "@/components/sections/product/ProductRelatedProductsSection";
-import { ProductDetail } from "@/types/product-types";
+import { constructMetadata } from "@/utils/seo";
+import { getProductBySlug, getProducts } from "@/lib/get-products";
+import "../../../../components/common/TiptapEditor/styles.css";
 
-const productDetails: Record<
-  string,
-  ProductDetail
-> = {
-  "h6a-dome-camera": {
-    slug: "h6a-dome-camera",
-    breadcrumbs: [
-      {
-        label: "Security Cameras",
-        href: "/product-category/security-cameras",
-      },
-      {
-        label: "Dome Camera",
-        href: "/product/h6a-dome-camera",
-      },
-    ],
-    title: "H6A Dome Camera",
-    categoryLabel:
-      "Video Management Software:",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-    detail:`
-       <div>
-      <p><strong>Thông tin thiết bị:</strong></p>
-      <ul className="list-disc pl-5 mt-2">
-        <li>Mã máy: VIVOO-2026-X</li>
-        <li>Tình trạng: Hoạt động tốt</li>
-        <li>Bảo hành: 12 tháng</li>
-      </ul>
-    </div>
-    `,
- 
-    description:
-      "Detect critical events with integrated video and audio for enhanced awareness and faster response times.",
-    features: [
-      "Resolution up to 8 MP",
-      "AI-powered video and audio analytics",
-      "Built-in IR illumination",
-      "IK10/11 and Type 4X rated",
-      "ONVIF S, T, G & M conformant",
-    ],
-    primaryActionLabel: "GET PRICING",
-    primaryActionHref: "#",
-    thumbnails: [
-      {
-        src: "/images/product.avif",
-        alt: "H6A dome camera front view",
-      },
-      {
-        src: "/images/camera-1.avif",
-        alt: "H6A dome camera alternate view",
-      },
-      {
-        src: "/images/camera-2.avif",
-        alt: "H6A dome camera top view",
-      },
-      {
-        src: "/images/product.avif",
-        alt: "H6A dome camera side view",
-      },
-      {
-        src: "/images/camera-1.avif",
-        alt: "H6A dome camera rear view",
-      },
-    ]
-    
-  },
-  "h6xp-dome-camera": {
-    slug: "h6xp-dome-camera",
-    breadcrumbs: [
-      {
-        label: "Dome Camera",
-        href: "/product-category/dome-cameras",
-      },
-      {
-        label: "H6XP Dome Camera",
-        href: "/product/h6xp-dome-camera",
-      },
-    ],
-    title: "H6XP Dome Camera",
-    categoryLabel:
-      "Video Management Software:",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-    description:
-      "A flexible dome camera designed for dependable monitoring and efficient deployment.",
-    features: [
-      "Resolution up to 8 MP",
-      "Advanced analytics and audio",
-      "Weather-resistant design",
-      "Simple integration with existing systems",
-      "ONVIF conformant",
-    ],
-        detail:`
-       <div>
-      <p><strong>Thông tin thiết bị:</strong></p>
-      <ul className="list-disc pl-5 mt-2">
-        <li>Mã máy: VIVOO-2026-X</li>
-        <li>Tình trạng: Hoạt động tốt</li>
-        <li>Bảo hành: 12 tháng</li>
-      </ul>
-    </div>
-    `,
-    primaryActionLabel: "GET PRICING",
-    primaryActionHref: "#",
-    thumbnails: [
-      {
-        src: "/images/product.avif",
-        alt: "H6XP dome camera front view",
-      },
-      {
-        src: "/images/camera-1.avif",
-        alt: "H6XP dome camera alternate view",
-      },
-      {
-        src: "/images/camera-2.avif",
-        alt: "H6XP dome camera top view",
-      },
-      {
-        src: "/images/product.avif",
-        alt: "H6XP dome camera side view",
-      },
-      {
-        src: "/images/camera-1.avif",
-        alt: "H6XP dome camera rear view",
-      },
-    ],
+export async function generateStaticParams() {
+  const products = await getProducts({ limit: 100 });
+  return products.map((p: { slug: string }) => ({ slug: p.slug }));
+}
 
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
-const flexibleSetupCards = [
-  {
-    title: "Alta H6A Dome",
-    subtitle: "Cloud-native Alta Video",
-    description:
-      "Stay ahead of safety risks with the Alta H6A Dome and Alta Video, our cloud-native VMS with intelligent analytics.",
-    bullets: [
-      "Smart AI for notifications and investigations.",
-      "Discover and share videos from any location.",
-      "Easily expand your on-camera storage capabilities.",
-      "Get started quickly using QR-code onboarding.",
-    ],
-    image: "/images/product.avif",
-    imageAlt:
-      "Alta H6A dome camera cloud-native setup",
-    accentClassName:
-      "bg-gradient-to-r from-blue-600 via-emerald-500 to-lime-500",
-  },
-  {
-    title: "Unity H6A Dome",
-    subtitle: "On-premise Unity Video",
-    description:
-      "Get focused views where they matter most and a fast frame rate up to 60 FPS with the Unity H6A Dome and Unity Video VMS.",
-    bullets: [
-      "Find people and vehicles using Appearance Search.",
-      "Meet privacy needs with Dynamic Privacy Masking.",
-      "Cybersecurity with FIPS compliance and Secure Boot.",
-      "Interoperability with ONVIF conformance.",
-    ],
-    image: "/images/camera-1.avif",
-    imageAlt:
-      "Unity H6A dome camera on-premise setup",
-    accentClassName:
-      "bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400",
-  },
-];
+  if (!product) {
+    return constructMetadata({
+      title: "Product Not Found",
+      noIndex: true,
+    });
+  }
 
-const productInsights = [
-  {
-    title:
-      "Stay one step ahead of incidents",
-    description:
-      "Proactively flag important events using AI-powered video analytics.",
-    image: "/images/product.avif",
-    imageAlt:
-      "AI-powered incident detection camera",
-    iconKey: "shield" as const,
-  },
-  {
-    title: "Hear what’s most important",
-    description:
-      "Expand beyond sight with advanced audio alerts for a variety of sounds.",
-    image: "/images/camera-1.avif",
-    imageAlt:
-      "Audio-enabled security camera",
-    iconKey: "mic" as const,
-  },
-  {
-    title: "Capture the perfect shot",
-    description:
-      "See more in low-light with IR illumination and Wide Dynamic Range.",
-    image: "/images/camera-2.avif",
-    imageAlt:
-      "Security camera with IR illumination",
-    iconKey: "camera" as const,
-  },
-  {
-    title:
-      "Take on any environment with ease",
-    description:
-      "Help safeguard your site with a modular design and multiple mount options.",
-    image: "/images/image1.avif",
-    imageAlt:
-      "Dome camera in outdoor environment",
-    iconKey: "sun" as const,
-  },
-];
+  const ogImage = product.thumbnailUrl || "/images/og-default.jpg";
 
-const relatedProducts = [
-  {
-    title: "H6A Bullet Camera",
-    description:
-      "See far and wide to help secure large sites with the H6A Bullet. Built-in IR gives clarity in low-light areas.",
-    image: "/images/camera-1.avif",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-    href: "#",
-  },
-  {
-    title: "H6SL Dome Camera",
-    description:
-      "The H6SL Dome is a weatherproof dome camera that secures your site by offering AI-powered video analytics and an optional mic.",
-    image: "/images/camera-2.avif",
-    badges: [
-      "Unity On-Premise",
-      "Alta Cloud-Native",
-    ],
-    href: "#",
-  },
-  {
-    title: "H6X Dome Camera",
-    description:
-      "Protect your site with the H6X Dome that has been designed with no built-in mic so you can easily meet privacy requirements.",
-    image: "/images/product.avif",
-    badges: ["Unity On-Premise"],
-    href: "#",
-  },
-];
-
-export function generateStaticParams() {
-  return Object.keys(
-    productDetails
-  ).map((slug) => ({ slug }));
+  return constructMetadata({
+    title: product.seoTitle || product.title,
+    description: product.seoDescription || product.description,
+    canonicalUrl: `/product/${slug}`,
+    ogImage,
+  });
 }
 
 export default async function ProductDetailPage({
@@ -263,53 +43,117 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const detail = productDetails[slug];
+  const product = await getProductBySlug(slug);
 
-  if (!detail) {
+  if (!product) {
     notFound();
+  }
+
+  // Parse benefits
+  let displayBenefits = [];
+  if (product.benefits) {
+    try {
+      displayBenefits = typeof product.benefits === "string"
+        ? JSON.parse(product.benefits)
+        : product.benefits;
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Map to format required by ProductInsightsSection
+  const mappedInsights = displayBenefits.map((b: any) => ({
+    title: b.title || "",
+    description: b.description || "",
+    image: b.image || "/images/product.avif",
+    imageAlt: b.imageAlt || b.title || "benefit image",
+    iconKey: (b.iconKey || "shield") as "shield" | "mic" | "camera" | "sun",
+  }));
+
+  // Build breadcrumbs
+  const breadcrumbs = [
+    { label: "Home", href: "/" },
+    {
+      label: product.category?.title || "Products",
+      href: product.category?.slug ? `/product-category/${product.category.slug}` : "/products",
+    },
+    {
+      label: product.title,
+      href: `/product/${product.slug}`,
+    },
+  ];
+
+  // Build thumbnails
+  const thumbnails = [
+    {
+      src: product.thumbnailUrl || "/images/product.avif",
+      alt: product.title,
+    },
+    ...(product.productGalleryItems || [])
+      .sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .map((item: any, idx: number) => ({
+        src: item.url,
+        alt: item.title || `${product.title} gallery image ${idx + 1}`,
+      })),
+  ];
+
+  // Related products logic
+  let displayRelated = (product.relatedProducts || []).map((p: any) => ({
+    title: p.title,
+    description: p.description,
+    image: p.thumbnailUrl || "/images/product.avif",
+    badges: p.badges || [],
+    href: `/product/${p.slug}`,
+  }));
+
+  if (displayRelated.length === 0 && product.categoryId) {
+    const categoryProducts = await getProducts({ categoryId: product.categoryId, limit: 4 });
+    displayRelated = categoryProducts
+      .filter((p: any) => p.id !== product.id)
+      .slice(0, 3)
+      .map((p: any) => ({
+        title: p.title,
+        description: p.description,
+        image: p.thumbnailUrl || "/images/product.avif",
+        badges: p.badges || [],
+        href: `/product/${p.slug}`,
+      }));
   }
 
   return (
     <main className="bg-white text-black">
       <ProductDetailHeroSection
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          ...detail.breadcrumbs,
-        ]}
-        title={detail.title}
-        categoryLabel={
-          detail.categoryLabel
-        }
-        deviceInfo={detail.detail}
-        badges={detail.badges}
-        description={detail.description}
-        features={detail.features}
-        primaryActionLabel={
-          detail.primaryActionLabel
-        }
-        primaryActionHref={
-          detail.primaryActionHref
-        }
-        thumbnails={detail.thumbnails}
-      />
-      <ProductInsightsSection
-        title="Key benefits of Avigilon’s dome cameras"
-        description="Whether you're protecting a large retail store or a small meeting room, obtain the level of image detail you need to safeguard your facility with our robust range of dome security CCTV camera systems."
-        items={productInsights}
-        ctaLabel="GET PRICING"
+        breadcrumbs={breadcrumbs}
+        title={product.title}
+        categoryLabel={product.categoryLabel || product.category?.title || "Product"}
+        deviceInfo={product.contents}
+        badges={product.badges || []}
+        description={product.description || ""}
+        features={product.features || []}
+        videoUrl={product.video || ""}
+        primaryActionLabel={product.primaryActionLabel || "GET PRICING"}
+        primaryActionHref={product.primaryActionHref || "/contact"}
+        thumbnails={thumbnails}
       />
 
-      {/* <ProductFlexibleSetupSection
-        title="Capture clear details with a flexible setup"
-        description="Get the visibility you need, no matter the deployment choice. Available in cloud and on-premise options, the H6A Dome is ready to meet the challenge."
-        cards={flexibleSetupCards}
-      /> */}
+      {mappedInsights.length > 0 && (
+        <ProductInsightsSection
+          title={`Key benefits of ${product.title}`}
+          description={product.description || ""}
+          items={mappedInsights}
+          ctaLabel={product.primaryActionLabel || "GET PRICING"}
+          ctaHref={product.primaryActionHref || "/contact"}
+        />
+      )}
 
-      <ProductRelatedProductsSection
-        title="You may also be interested in these products"
-        description="Our video security solutions deliver clear images and AI-powered analytics that help you quickly detect and respond to site activity in real time."
-        products={relatedProducts}
-      />
+      {displayRelated.length > 0 && (
+        <ProductRelatedProductsSection
+          title="You may also be interested in these products"
+          description="Our video security solutions deliver clear images and AI-powered analytics that help you quickly detect and respond to site activity in real time."
+          products={displayRelated}
+        />
+      )}
     </main>
   );
 }
+

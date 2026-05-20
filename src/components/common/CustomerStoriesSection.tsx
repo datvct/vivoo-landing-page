@@ -11,87 +11,14 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
-type StoryItem = {
-  id: string | number;
-  company: string;
-  title: string;
-  quote: string;
-  author: string;
-  image: string;
-  logo: string;
-};
-
-const defaultStories: StoryItem[] = [
-  {
-    id: 1,
-    company: "City of Kelowna",
-    title: "City of Kelowna",
-    quote:
-      "Avigilon Unity helps us quickly respond to incidents. Our response time was 15 minutes. Now it’s just four minutes. That’s the difference that can help save lives.",
-    author:
-      "Alan Budde, Security and Business Continuity Manager at City of Kelowna",
-    image: "/images/image1.avif",
-    logo: "/svgs/logo.svg",
-  },
-  {
-    id: 2,
-    company: "Retail Hub",
-    title: "Retail Hub",
-    quote:
-      "We reduced blind spots across our stores and improved visibility into every customer-facing area with one system.",
-    author:
-      "Operations Director, Retail Hub",
-    image: "/images/camera-1.avif",
-    logo: "/svgs/logo.svg",
-  },
-  {
-    id: 3,
-    company: "University Campus",
-    title: "University Campus",
-    quote:
-      "The new workflow gives our team faster verification, easier collaboration, and a cleaner incident review process.",
-    author:
-      "Campus Safety Lead, University Campus",
-    image: "/images/camera-2.avif",
-    logo: "/svgs/logo.svg",
-  },
-  {
-    id: 4,
-    company: "Airport Operations",
-    title: "Airport Operations",
-    quote:
-      "We can now coordinate security teams across multiple terminals without losing context during busy periods.",
-    author:
-      "Security Manager, Airport Operations",
-    image: "/images/image1.avif",
-    logo: "/svgs/logo.svg",
-  },
-  {
-    id: 5,
-    company: "Healthcare Network",
-    title: "Healthcare Network",
-    quote:
-      "The platform helps us monitor sensitive areas more consistently while keeping day-to-day operations simple.",
-    author:
-      "Facilities Director, Healthcare Network",
-    image: "/images/camera-1.avif",
-    logo: "/svgs/logo.svg",
-  },
-];
-
-type CustomerStoriesSectionProps = {
-  title?: string;
-  description?: string;
-  stories?: StoryItem[];
-};
+import { CustomerStoriesSectionProps } from "@/types/types";
 
 export default function CustomerStoriesSection({
   title = "Our customer stories",
   description = "Hear how Avigilon's security solutions have enabled organizations globally to help keep their people, properties and assets safe and secure.",
   stories = [],
 }: CustomerStoriesSectionProps) {
-  const activeStories = stories && stories.length > 0 ? stories : defaultStories;
+  const activeStories = stories && stories.length > 0 ? stories : [];
 
   const [activeIndex, setActiveIndex] =
     useState(0);
@@ -203,13 +130,13 @@ export default function CustomerStoriesSection({
                 - {activeStory.author}
               </p>
 
-              <Link
+              {/* <Link
                 href="#"
                 className="mt-6 inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 transition hover:text-blue-700"
               >
                 Read this case study
                 <ChevronRight className="h-4 w-4" />
-              </Link>
+              </Link> */}
             </div>
           </div>
 

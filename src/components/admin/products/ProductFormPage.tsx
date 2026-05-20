@@ -19,6 +19,11 @@ import { DescriptionActionsCard } from "./components/DescriptionActionsCard";
 import { SeoMetadataCard } from "./components/SeoMetadataCard";
 import { RelatedProductsCard } from "./components/RelatedProductsCard";
 import { SidebarControls } from "./components/SidebarControls";
+import { generateSlug } from "@/utils/slug";
+
+type GalleryMediaItem = { mediaId: string; url: string };
+type BenefitFormItem = { imageFile?: Array<{ originFileObj?: File } | File>;[key: string]: unknown };
+type ProductFormValues = { contents?: string; benefits?: BenefitFormItem[];[key: string]: unknown };
 
 export default function ProductFormPage() {
   const router = useRouter();
@@ -28,50 +33,37 @@ export default function ProductFormPage() {
   const productId = params?.id as string;
   const isEditMode = Boolean(productId);
 
-  // States for images
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null | undefined>(undefined);
+  const [thumbnailMediaUrl, setThumbnailMediaUrl] = useState<string | null>(null);
 
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<{ file: File; url: string }[]>([]);
-  const [existingGallery, setExistingGallery] = useState<any[]>([]);
+  const [existingGallery, setExistingGallery] = useState<GalleryMediaItem[] | undefined>(undefined);
+  const [galleryImageMediaItems, setGalleryImageMediaItems] = useState<GalleryMediaItem[]>([]);
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null | undefined>(undefined);
+  const [videoMediaUrl, setVideoMediaUrl] = useState<string | null>(null);
 
-  // State for related product search
   const [searchRelatedText, setSearchRelatedText] = useState("");
   const [selectedRelatedId, setSelectedRelatedId] = useState<string | undefined>(undefined);
 
-  // Fetch product detail (if in edit mode)
-  const { data: productData, isLoading: isProductLoading } = useProductQuery(
-    productId,
-    isEditMode
-  );
-
-  // Fetch Categories
-  const { data: categoriesData } = useProductCategoriesQuery({
-    limit: 100,
-    status: "published",
-  });
+  const { data: productData, isLoading: isProductLoading } = useProductQuery(productId, isEditMode);
+  const { data: categoriesData } = useProductCategoriesQuery({ limit: 100, status: "published" });
   const categoriesList = categoriesData?.data?.items || [];
 
-  // Fetch all products (for related product search selection)
   const { data: allProductsData } = useAdminProductsQuery({
     page: 1,
     limit: 100,
     search: searchRelatedText || undefined,
     status: "published",
   });
-  const linkableProducts = (allProductsData?.data?.items || []).filter(
-    (p) => p.id !== productId // Prevent linking product to itself
-  );
+  const linkableProducts = (allProductsData?.data?.items || []).filter((p) => p.id !== productId);
 
-  // Mutations
-  const createMutation = useCreateProductMutation((newProd) => {
+  const createMutation = useCreateProductMutation(() => {
     router.push("/admin/product");
   });
-
   const updateMutation = useUpdateProductMutation(() => {
     router.push("/admin/product");
   });
@@ -79,7 +71,6 @@ export default function ProductFormPage() {
   const addRelatedMutation = useAddRelatedProductMutation(productId);
   const deleteRelatedMutation = useDeleteRelatedProductMutation(productId);
 
-  // Populate form with product data in Edit Mode
   useEffect(() => {
     if (isEditMode && productData?.data) {
       const prod = productData.data;
@@ -91,7 +82,7 @@ export default function ProductFormPage() {
         description: prod.description || "",
         badges: prod.badges || [],
         features: prod.features || [],
-        contents: typeof prod.contents === 'string' ? prod.contents : '',
+        contents: typeof prod.contents === "string" ? prod.contents : "",
         benefits: (() => {
           if (!prod.benefits) return [];
           if (Array.isArray(prod.benefits)) return prod.benefits;
@@ -99,8 +90,8 @@ export default function ProductFormPage() {
             try {
               const parsed = JSON.parse(prod.benefits);
               return Array.isArray(parsed) ? parsed : (parsed.list || []);
-            } catch (e) {
-              console.error("Failed to parse benefits JSON string:", e);
+            } catch (error) {
+              console.error("Failed to parse benefits JSON string:", error);
               return [];
             }
           }
@@ -116,15 +107,6 @@ export default function ProductFormPage() {
         seoRobots: prod.seoRobots || "",
       });
 
-      if (prod.thumbnailUrl) {
-        setThumbnailPreview(prod.thumbnailUrl);
-      }
-      if (prod.productGalleryItems) {
-        setExistingGallery(prod.productGalleryItems);
-      }
-      if (prod.video) {
-        setVideoPreview(prod.video);
-      }
     } else if (!isEditMode) {
       form.setFieldsValue({
         sortOrder: 0,
@@ -141,36 +123,32 @@ export default function ProductFormPage() {
     }
   }, [isEditMode, productData, form]);
 
-  // Clean up object URLs on unmount
+  const resolvedExistingGallery = existingGallery ?? productData?.data?.productGalleryItems ?? [];
+
+  const resolvedThumbnailPreview =
+    thumbnailPreview === undefined ? productData?.data?.thumbnailUrl || null : thumbnailPreview;
+  const resolvedVideoPreview =
+    videoPreview === undefined ? productData?.data?.video || null : videoPreview;
+
   useEffect(() => {
     return () => {
-      if (thumbnailPreview && !thumbnailPreview.startsWith("http")) {
+      if (thumbnailPreview?.startsWith("blob:")) {
         URL.revokeObjectURL(thumbnailPreview);
       }
-      if (videoPreview && !videoPreview.startsWith("http")) {
+      if (videoPreview?.startsWith("blob:")) {
         URL.revokeObjectURL(videoPreview);
       }
       galleryPreviews.forEach((item) => URL.revokeObjectURL(item.url));
     };
-  }, [thumbnailPreview, galleryPreviews]);
+  }, [thumbnailPreview, videoPreview, galleryPreviews]);
 
-  // Handle Slug generation on title change
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isEditMode) {
-      const title = e.target.value;
-      const slugVal = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
-        .replace(/\s+/g, "-") // Replace spaces with dashes
-        .replace(/-+/g, "-") // Collapse consecutive dashes
-        .replace(/^-+|-+$/g, ""); // Trim leading/trailing dashes
+      const slugVal = generateSlug(e.target.value);
       form.setFieldsValue({ slug: slugVal });
     }
   };
 
-
-
-  // Handle related product linking
   const handleAddRelatedLink = () => {
     if (!selectedRelatedId) return;
     addRelatedMutation.mutate(
@@ -188,24 +166,26 @@ export default function ProductFormPage() {
     );
   };
 
-  // Handle related product unlinking
   const handleRemoveRelatedLink = (relatedId: string) => {
-    deleteRelatedMutation.mutate({
-      id: productId,
-      relatedId,
-    });
+    deleteRelatedMutation.mutate({ id: productId, relatedId });
   };
 
-  // Main Form Submit Handler
-  const onFinish = (values: any) => {
-    const payload: any = {
+  const onFinish = (values: ProductFormValues) => {
+    const payload: Record<string, unknown> = {
       ...values,
-      thumbnail: thumbnailFile,
       galleryImages: galleryFiles,
     };
 
+    if (thumbnailFile) {
+      payload.thumbnail = thumbnailFile;
+    } else if (thumbnailMediaUrl) {
+      payload.thumbnailUrl = thumbnailMediaUrl;
+    }
+
     if (videoFile) {
       payload.video = videoFile;
+    } else if (videoMediaUrl) {
+      payload.videoUrl = videoMediaUrl;
     }
 
     if (values.contents) {
@@ -214,10 +194,12 @@ export default function ProductFormPage() {
 
     if (values.benefits) {
       const benefitImages: File[] = [];
-      const cleanedBenefits = values.benefits.map((benefit: any) => {
-        const cleanBenefit = { ...benefit };
-        if (cleanBenefit.imageFile && cleanBenefit.imageFile.length > 0) {
-          const file = cleanBenefit.imageFile[0].originFileObj || cleanBenefit.imageFile[0];
+      const cleanedBenefits = values.benefits.map((benefit) => {
+        const cleanBenefit: Record<string, unknown> = { ...benefit };
+        const imageFileValue = cleanBenefit.imageFile as BenefitFormItem["imageFile"] | undefined;
+        if (imageFileValue && imageFileValue.length > 0) {
+          const fileSource = imageFileValue[0] as { originFileObj?: File } | File;
+          const file = fileSource instanceof File ? fileSource : fileSource.originFileObj || fileSource;
           if (file instanceof File) {
             benefitImages.push(file);
             cleanBenefit.imageFileIndex = benefitImages.length - 1;
@@ -233,13 +215,20 @@ export default function ProductFormPage() {
       }
     }
 
+    const mergedGalleryMediaIds = Array.from(
+      new Set([
+        ...resolvedExistingGallery.map((item) => item.mediaId),
+        ...galleryImageMediaItems.map((item) => item.mediaId),
+      ])
+    );
+
+    if (mergedGalleryMediaIds.length > 0) {
+      payload.galleryImageMediaIds = mergedGalleryMediaIds;
+    }
+
     if (isEditMode) {
-      // Send remaining existing gallery items as a JSON string
-      payload.productGalleryItems = JSON.stringify(existingGallery);
-      updateMutation.mutate({
-        id: productId,
-        payload,
-      });
+      payload.productGalleryItems = JSON.stringify(resolvedExistingGallery);
+      updateMutation.mutate({ id: productId, payload });
     } else {
       createMutation.mutate(payload);
     }
@@ -247,7 +236,6 @@ export default function ProductFormPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top action header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button
@@ -284,41 +272,22 @@ export default function ProductFormPage() {
       </div>
 
       {isProductLoading ? (
-        <div className="h-[400px] flex items-center justify-center">
+        <div className="h-100 flex items-center justify-center">
           <Spin size="large" description="Loading product details..." />
         </div>
       ) : (
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          requiredMark={false}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6 flex flex-col gap-4">
-            <GeneralInfoCard
-              categoriesList={categoriesList}
-              handleTitleChange={handleTitleChange}
-              form={form}
-            />
+            <GeneralInfoCard categoriesList={categoriesList} handleTitleChange={handleTitleChange} form={form} />
 
             <DescriptionActionsCard />
 
-            {/* Card: Benefits */}
-            <Card
-              title={<span className="font-semibold text-slate-700">Benefits</span>}
-              className="shadow-sm border-slate-100 rounded-2xl"
-            >
+            <Card title={<span className="font-semibold text-slate-700">Benefits</span>} className="shadow-sm border-slate-100 rounded-2xl">
               <Form.List name="benefits">
                 {(fields, { add, remove }) => (
                   <div className="space-y-4">
                     {fields.map(({ key, name, ...restField }) => (
-                      <BenefitItemWithPreview
-                        key={key}
-                        name={name}
-                        restField={restField}
-                        remove={remove}
-                      />
+                      <BenefitItemWithPreview key={key} name={name} restField={restField} remove={remove} />
                     ))}
                     <Button
                       type="dashed"
@@ -334,15 +303,8 @@ export default function ProductFormPage() {
               </Form.List>
             </Card>
 
-            {/* Card: Content */}
-            <Card
-              title={<span className="font-semibold text-slate-700">Detailed Content</span>}
-              className="shadow-sm border-slate-100 rounded-2xl"
-            >
-              <Form.Item
-                name="contents"
-                className="mb-0"
-              >
+            <Card title={<span className="font-semibold text-slate-700">Detailed Content</span>} className="shadow-sm border-slate-100 rounded-2xl">
+              <Form.Item name="contents" className="mb-0">
                 <TiptapEditor />
               </Form.Item>
             </Card>
@@ -361,18 +323,21 @@ export default function ProductFormPage() {
             />
           </div>
 
-          {/* Cột Phải (Side Controls & Media) - Chiếm 1/3 */}
           <div className="space-y-6">
             <SidebarControls
               form={form}
-              thumbnailPreview={thumbnailPreview}
+              thumbnailPreview={resolvedThumbnailPreview}
               setThumbnailFile={setThumbnailFile}
               setThumbnailPreview={setThumbnailPreview}
-              videoPreview={videoPreview}
+              setThumbnailMediaUrl={setThumbnailMediaUrl}
+              videoPreview={resolvedVideoPreview}
               setVideoFile={setVideoFile}
               setVideoPreview={setVideoPreview}
-              existingGallery={existingGallery}
+              setVideoMediaUrl={setVideoMediaUrl}
+              existingGallery={resolvedExistingGallery}
               setExistingGallery={setExistingGallery}
+              galleryImageMediaItems={galleryImageMediaItems}
+              setGalleryImageMediaItems={setGalleryImageMediaItems}
               galleryPreviews={galleryPreviews}
               setGalleryFiles={setGalleryFiles}
               setGalleryPreviews={setGalleryPreviews}

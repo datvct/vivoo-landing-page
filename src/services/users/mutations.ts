@@ -13,7 +13,7 @@ export const useCreateUserMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to create user!");
+      message.error(error.response?.message|| "Failed to create user!");
     },
   });
 };
@@ -29,7 +29,7 @@ export const useUpdateUserMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to update user!");
+      message.error(error.response?.message|| "Failed to update user!");
     },
   });
 };
@@ -44,7 +44,7 @@ export const useDeleteUserMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Failed to delete user!");
+      message.error(error.response?.message|| "Failed to delete user!");
     },
   });
 };

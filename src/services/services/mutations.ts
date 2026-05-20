@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { servicesApi } from "./api";
 import { message } from "antd";
+import { getErrorMessage } from "@/utils/error";
 
 export const useCreateServiceMutation = (onSuccess?: (data: any) => void) => {
   const queryClient = useQueryClient();
@@ -12,7 +13,7 @@ export const useCreateServiceMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to create service");
+      message.error(getErrorMessage(error, "Failed to create service"));
     },
   });
 };
@@ -28,7 +29,7 @@ export const useUpdateServiceMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to update service");
+      message.error(getErrorMessage(error, "Failed to update service"));
     },
   });
 };
@@ -42,7 +43,7 @@ export const useDeleteServiceMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["services-admin"] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to delete service");
+      message.error(getErrorMessage(error, "Failed to delete service"));
     },
   });
 };

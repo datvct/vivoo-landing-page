@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { contactsApi } from "./api";
 import { message } from "antd";
+import { getErrorMessage } from "@/utils/error";
 
 import { ContactStatus } from "@/types/types";
 
@@ -13,7 +14,7 @@ export const useCreateContactMutation = (onSuccess?: (data: any) => void) => {
     },
     onError: (error: any) => {
       message.error(
-        error?.response?.data?.message || "Failed to submit contact form. Please try again."
+        getErrorMessage(error, "Failed to submit contact form. Please try again.")
       );
     },
   });
@@ -30,7 +31,7 @@ export const useUpdateContactStatusMutation = () => {
     },
     onError: (error: any) => {
       message.error(
-        error?.response?.data?.message || "Failed to update contact status."
+        getErrorMessage(error, "Failed to update contact status.")
       );
     },
   });
@@ -46,7 +47,7 @@ export const useDeleteContactMutation = () => {
     },
     onError: (error: any) => {
       message.error(
-        error?.response?.data?.message || "Failed to delete contact entry."
+        getErrorMessage(error, "Failed to delete contact entry.")
       );
     },
   });

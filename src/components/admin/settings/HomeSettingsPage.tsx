@@ -10,10 +10,11 @@ import {
   Sliders,
   Building,
   Users,
-  ShieldAlert,
   Heading,
   Globe,
+  Image as ImageIcon,
 } from "lucide-react";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
 import { useUploadMediaMutation } from "@/services/media/mutations";
@@ -27,6 +28,8 @@ export default function HomeSettingsPage() {
   const uploadMutation = useUploadMediaMutation();
 
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<string | null>(null);
 
   const [form, setForm] = useState<HomeSettings>({
     banners: [],
@@ -81,6 +84,56 @@ export default function HomeSettingsPage() {
       key: "home",
       value: form,
     });
+  };
+
+  const openMediaPicker = (target: string) => {
+    setMediaPickerTarget(target);
+    setMediaPickerOpen(true);
+  };
+
+  const handleSelectMedia = (media: { secureUrl: string }) => {
+    if (!mediaPickerTarget) return;
+
+    if (mediaPickerTarget.startsWith("banner-")) {
+      const index = Number(mediaPickerTarget.replace("banner-", ""));
+      setForm((prev) => {
+        const next = [...prev.banners];
+        next[index].image = media.secureUrl;
+        return { ...prev, banners: next };
+      });
+    } else if (mediaPickerTarget.startsWith("trusted-")) {
+      const index = Number(mediaPickerTarget.replace("trusted-", ""));
+      setForm((prev) => {
+        const next = [...prev.trustedLogos];
+        next[index] = media.secureUrl;
+        return { ...prev, trustedLogos: next };
+      });
+    } else if (mediaPickerTarget.startsWith("industry-")) {
+      const index = Number(mediaPickerTarget.replace("industry-", ""));
+      setForm((prev) => {
+        const next = [...prev.industriesList];
+        next[index].image = media.secureUrl;
+        return { ...prev, industriesList: next };
+      });
+    } else if (mediaPickerTarget.startsWith("story-img-")) {
+      const index = Number(mediaPickerTarget.replace("story-img-", ""));
+      setForm((prev) => {
+        const next = [...prev.storiesList];
+        next[index].image = media.secureUrl;
+        return { ...prev, storiesList: next };
+      });
+    } else if (mediaPickerTarget.startsWith("story-logo-")) {
+      const index = Number(mediaPickerTarget.replace("story-logo-", ""));
+      setForm((prev) => {
+        const next = [...prev.storiesList];
+        next[index].logo = media.secureUrl;
+        return { ...prev, storiesList: next };
+      });
+    }
+
+    message.success("Media selected successfully!");
+    setMediaPickerOpen(false);
+    setMediaPickerTarget(null);
   };
 
   // Helper upload functions
@@ -367,6 +420,13 @@ export default function HomeSettingsPage() {
                               <Upload beforeUpload={(file) => { handleBannerUpload(file, index); return false; }} showUploadList={false}>
                                 <Button icon={<UploadCloud className="w-4 h-4 mr-1" />} loading={uploadingField === `banner-${index}`} className="h-[36px] flex items-center">Upload</Button>
                               </Upload>
+                              <Button
+                                icon={<ImageIcon className="w-4 h-4" />}
+                                onClick={() => openMediaPicker(`banner-${index}`)}
+                                className="h-[36px] flex items-center"
+                              >
+                                Media
+                              </Button>
                             </div>
                           </div>
                           <div>
@@ -442,6 +502,11 @@ export default function HomeSettingsPage() {
                               <Upload beforeUpload={(file) => { handleTrustedLogoUpload(file, index); return false; }} showUploadList={false}>
                                 <Button icon={<UploadCloud className="w-3.5 h-3.5" />} loading={uploadingField === `trusted-${index}`} className="h-[32px] flex items-center px-2" />
                               </Upload>
+                              <Button
+                                icon={<ImageIcon className="w-3.5 h-3.5" />}
+                                onClick={() => openMediaPicker(`trusted-${index}`)}
+                                className="h-[32px] flex items-center px-2"
+                              />
                             </div>
                             {logo && (
                               <div className="h-[60px] rounded border border-dashed bg-white flex items-center justify-center p-1.5 overflow-hidden">
@@ -656,6 +721,13 @@ export default function HomeSettingsPage() {
                                 <Upload beforeUpload={(file) => { handleIndustryUpload(file, index); return false; }} showUploadList={false}>
                                   <Button icon={<UploadCloud className="w-4 h-4 mr-1" />} loading={uploadingField === `industry-${index}`} className="h-[36px] flex items-center">Upload</Button>
                                 </Upload>
+                                <Button
+                                  icon={<ImageIcon className="w-4 h-4" />}
+                                  onClick={() => openMediaPicker(`industry-${index}`)}
+                                  className="h-[36px] flex items-center"
+                                >
+                                  Media
+                                </Button>
                               </div>
                             </div>
                             <div>
@@ -829,6 +901,13 @@ export default function HomeSettingsPage() {
                                 <Upload beforeUpload={(file) => { handleStoryLogoUpload(file, index); return false; }} showUploadList={false}>
                                   <Button icon={<UploadCloud className="w-4 h-4 mr-1" />} loading={uploadingField === `story-logo-${index}`} className="h-[36px] flex items-center">Upload</Button>
                                 </Upload>
+                                <Button
+                                  icon={<ImageIcon className="w-4 h-4" />}
+                                  onClick={() => openMediaPicker(`story-logo-${index}`)}
+                                  className="h-[36px] flex items-center"
+                                >
+                                  Media
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -850,6 +929,13 @@ export default function HomeSettingsPage() {
                                 <Upload beforeUpload={(file) => { handleStoryImageUpload(file, index); return false; }} showUploadList={false}>
                                   <Button icon={<UploadCloud className="w-4 h-4 mr-1" />} loading={uploadingField === `story-img-${index}`} className="h-[36px] flex items-center">Upload</Button>
                                 </Upload>
+                                <Button
+                                  icon={<ImageIcon className="w-4 h-4" />}
+                                  onClick={() => openMediaPicker(`story-img-${index}`)}
+                                  className="h-[36px] flex items-center"
+                                >
+                                  Media
+                                </Button>
                               </div>
                             </div>
 
@@ -965,6 +1051,19 @@ export default function HomeSettingsPage() {
           ]}
         />
       </Card>
+
+      <MediaPickerModal
+        open={mediaPickerOpen}
+        onCancel={() => {
+          setMediaPickerOpen(false);
+          setMediaPickerTarget(null);
+        }}
+        onSelect={handleSelectMedia}
+        selectionMode="single"
+        defaultTab="image"
+        selectableTypes={["image"]}
+        title="Choose Image from Media"
+      />
     </div>
   );
 }

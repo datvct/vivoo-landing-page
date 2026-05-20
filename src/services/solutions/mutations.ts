@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { solutionsApi } from "./api";
 import { message } from "antd";
+import { getErrorMessage } from "@/utils/error";
 
 export const useCreateSolutionMutation = (onSuccess?: (data: any) => void) => {
   const queryClient = useQueryClient();
@@ -12,7 +13,7 @@ export const useCreateSolutionMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to create solution");
+      message.error(getErrorMessage(error, "Failed to create solution"));
     },
   });
 };
@@ -28,7 +29,7 @@ export const useUpdateSolutionMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to update solution");
+      message.error(getErrorMessage(error, "Failed to update solution"));
     },
   });
 };
@@ -42,7 +43,7 @@ export const useDeleteSolutionMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["solutions-admin"] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to delete solution");
+      message.error(getErrorMessage(error, "Failed to delete solution"));
     },
   });
 };

@@ -11,7 +11,9 @@ export type SolutionHeroSectionProps = {
   description: string;
   image: string;
   primaryCta: string;
-  secondaryCta: string;
+  secondaryCta?: string;
+  primaryActionHref?: string;
+  secondaryActionHref?: string;
   breadcrumbs?: {
     label: string;
     href?: string;
@@ -22,5 +24,7 @@ export type SolutionHeroTextProps = {
   title: string;
   description: string;
   primaryCta: string;
-  secondaryCta: string;
+  secondaryCta?: string;
+  primaryActionHref?: string;
+  secondaryActionHref?: string;
 };

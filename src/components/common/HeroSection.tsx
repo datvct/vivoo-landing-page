@@ -9,6 +9,8 @@ export default function SolutionHeroSection({
   image,
   primaryCta,
   secondaryCta,
+  primaryActionHref,
+  secondaryActionHref,
   breadcrumbs = [],
 }: SolutionHeroSectionProps) {
   return (
@@ -16,7 +18,7 @@ export default function SolutionHeroSection({
       <div className="relative mx-auto max-w-7xl px-6 py-4 lg:px-10">
         <Breadcrumb
           items={breadcrumbs}
-          // currentLabel={title}
+        // currentLabel={title}
         />
       </div>
       <div className="relative mx-auto flex h-121.25 max-w-7xl items-center px-4 py-8 sm:px-10 sm:py-16">
@@ -26,6 +28,8 @@ export default function SolutionHeroSection({
             description={description}
             primaryCta={primaryCta}
             secondaryCta={secondaryCta}
+            primaryActionHref={primaryActionHref}
+            secondaryActionHref={secondaryActionHref}
           />
         </div>
       </div>

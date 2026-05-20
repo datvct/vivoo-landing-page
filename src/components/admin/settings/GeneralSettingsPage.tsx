@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Spin, Row, Col, Space, Typography, Upload, Popconfirm, Select, message } from "antd";
+import { Card, Input, Button, Spin, Row, Col, Space, Typography, Upload, Popconfirm, Select, message, Tabs } from "antd";
 import {
   Globe,
   Mail,
@@ -15,7 +15,9 @@ import {
   Trash2,
   HelpCircle,
   FolderOpen,
+  Image as ImageIcon,
 } from "lucide-react";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import { FaFacebook, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
@@ -24,12 +26,38 @@ import { GeneralSettings } from "@/types/types";
 
 const { Title, Paragraph } = Typography;
 
+const DEFAULT_RESOURCES = [
+  {
+    id: "resource-1",
+    title: "Camera Configuration Tool",
+    description:
+      "Configure your cameras, apply common settings to multiple cameras or adjust individual cameras to fit your site requirements.",
+    url: "#",
+  },
+  {
+    id: "resource-2",
+    title: "Camera Accessories",
+    description:
+      "View technical documents such as installation guides and datasheets for camera accessories.",
+    url: "#",
+  },
+  {
+    id: "resource-3",
+    title: "Discontinued Products",
+    description:
+      "View technical documents and firmware for cameras and sensors that have been discontinued.",
+    url: "#",
+  },
+];
+
 export default function GeneralSettingsPage() {
   const { data: settingData, isLoading } = useSiteSettingQuery("general");
   const upsertMutation = useUpsertSiteSettingMutation();
   const uploadMutation = useUploadMediaMutation();
 
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<string | null>(null);
 
   const handleUpload = async (file: File, fieldName: keyof GeneralSettings) => {
     try {
@@ -72,6 +100,7 @@ export default function GeneralSettingsPage() {
     siteDescription: "",
     logoUrl: "",
     logoDarkUrl: "",
+    faviconUrl: "",
     supportEmail: "",
     supportPhone: "",
     supportAddress: "",
@@ -81,18 +110,48 @@ export default function GeneralSettingsPage() {
     linkedinUrl: "",
     youtubeUrl: "",
     faqs: [],
-    resources: [],
+    resources: DEFAULT_RESOURCES,
+    seoHomeTitle: "",
+    seoHomeDescription: "",
+    seoHomeKeywords: "",
+    seoHomeRobots: "index, follow",
+    seoSolutionsTitle: "",
+    seoSolutionsDescription: "",
+    seoSolutionsKeywords: "",
+    seoSolutionsRobots: "index, follow",
+    seoServicesTitle: "",
+    seoServicesDescription: "",
+    seoServicesKeywords: "",
+    seoServicesRobots: "index, follow",
+    seoContactTitle: "",
+    seoContactDescription: "",
+    seoContactKeywords: "",
+    seoContactRobots: "index, follow",
   });
 
   // Sync loaded settings to form state
   useEffect(() => {
     if (settingData?.data?.value) {
       const val = settingData.data.value as Partial<GeneralSettings>;
+
+      let resources = (val.resources || []).map((r, i) => ({
+        id: r.id || `resource-${i + 1}`,
+        title: r.title || DEFAULT_RESOURCES[i]?.title || "",
+        description: r.description || DEFAULT_RESOURCES[i]?.description || "",
+        url: r.url || DEFAULT_RESOURCES[i]?.url || "",
+      }));
+      while (resources.length < 3) {
+        const i = resources.length;
+        resources.push({ ...DEFAULT_RESOURCES[i] });
+      }
+      resources = resources.slice(0, 3);
+
       setForm({
         siteTitle: val.siteTitle || "",
         siteDescription: val.siteDescription || "",
         logoUrl: val.logoUrl || "",
         logoDarkUrl: val.logoDarkUrl || "",
+        faviconUrl: val.faviconUrl || "",
         supportEmail: val.supportEmail || "",
         supportPhone: val.supportPhone || "",
         supportAddress: val.supportAddress || "",
@@ -102,7 +161,23 @@ export default function GeneralSettingsPage() {
         linkedinUrl: val.linkedinUrl || "",
         youtubeUrl: val.youtubeUrl || "",
         faqs: val.faqs || [],
-        resources: val.resources || [],
+        resources: resources,
+        seoHomeTitle: val.seoHomeTitle || "",
+        seoHomeDescription: val.seoHomeDescription || "",
+        seoHomeKeywords: val.seoHomeKeywords || "",
+        seoHomeRobots: val.seoHomeRobots || "index, follow",
+        seoSolutionsTitle: val.seoSolutionsTitle || "",
+        seoSolutionsDescription: val.seoSolutionsDescription || "",
+        seoSolutionsKeywords: val.seoSolutionsKeywords || "",
+        seoSolutionsRobots: val.seoSolutionsRobots || "index, follow",
+        seoServicesTitle: val.seoServicesTitle || "",
+        seoServicesDescription: val.seoServicesDescription || "",
+        seoServicesKeywords: val.seoServicesKeywords || "",
+        seoServicesRobots: val.seoServicesRobots || "index, follow",
+        seoContactTitle: val.seoContactTitle || "",
+        seoContactDescription: val.seoContactDescription || "",
+        seoContactKeywords: val.seoContactKeywords || "",
+        seoContactRobots: val.seoContactRobots || "index, follow",
       });
     }
   }, [settingData]);
@@ -110,6 +185,34 @@ export default function GeneralSettingsPage() {
   const handleChange = (fieldName: keyof GeneralSettings, val: string) => {
     setForm((s) => ({ ...s, [fieldName]: val }));
   };
+
+  const openMediaPicker = (target: string) => {
+    setMediaPickerTarget(target);
+    setMediaPickerOpen(true);
+  };
+
+  const handleSelectMedia = (media: { secureUrl: string }) => {
+    if (!mediaPickerTarget) return;
+
+    if (mediaPickerTarget.startsWith("resource-")) {
+      const index = Number(mediaPickerTarget.replace("resource-", ""));
+      setForm((prev) => {
+        const next = prev.resources ? [...prev.resources] : [];
+        if (next[index]) {
+          next[index].url = media.secureUrl;
+        }
+        return { ...prev, resources: next };
+      });
+    } else {
+      handleChange(mediaPickerTarget as keyof GeneralSettings, media.secureUrl);
+    }
+
+    message.success("Media selected successfully!");
+    setMediaPickerOpen(false);
+    setMediaPickerTarget(null);
+  };
+
+  const isResourceMediaTarget = mediaPickerTarget?.startsWith("resource-");
 
   const handleSave = () => {
     upsertMutation.mutate({
@@ -156,6 +259,71 @@ export default function GeneralSettingsPage() {
     });
   };
 
+  const renderPageSEOFields = (prefix: "seoHome" | "seoSolutions" | "seoServices" | "seoContact") => {
+    const titleKey = `${prefix}Title` as keyof GeneralSettings;
+    const descKey = `${prefix}Description` as keyof GeneralSettings;
+    const keywordsKey = `${prefix}Keywords` as keyof GeneralSettings;
+    const robotsKey = `${prefix}Robots` as keyof GeneralSettings;
+
+    return (
+      <div className="space-y-4 pt-2">
+        <div>
+          <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+            Page Meta Title
+          </label>
+          <Input
+            value={form[titleKey] as string}
+            onChange={(e) => handleChange(titleKey, e.target.value)}
+            placeholder="e.g. Custom SEO Title for this page"
+            className="rounded-lg h-[36px]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+            Page Meta Description
+          </label>
+          <Input.TextArea
+            value={form[descKey] as string}
+            onChange={(e) => handleChange(descKey, e.target.value)}
+            placeholder="Summarize this page's content for search engines..."
+            rows={3}
+            className="rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+            Page Meta Keywords
+          </label>
+          <Input
+            value={form[keywordsKey] as string}
+            onChange={(e) => handleChange(keywordsKey, e.target.value)}
+            placeholder="e.g. security, camera, solutions (comma separated)"
+            className="rounded-lg h-[36px]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+            Page Robots Instructions
+          </label>
+          <Select
+            value={form[robotsKey] as string || "index, follow"}
+            onChange={(val) => handleChange(robotsKey, val)}
+            className="w-full h-[36px] [&_.ant-select-selector]:!h-[36px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+            options={[
+              { label: "index, follow (Default - Index page & follow links)", value: "index, follow" },
+              { label: "noindex, follow (Don't index page but follow links)", value: "noindex, follow" },
+              { label: "index, nofollow (Index page but don't follow links)", value: "index, nofollow" },
+              { label: "noindex, nofollow (Don't index page & don't follow links)", value: "noindex, nofollow" },
+            ]}
+          />
+        </div>
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="py-24 flex flex-col items-center justify-center gap-2">
@@ -194,7 +362,7 @@ export default function GeneralSettingsPage() {
       <Row gutter={[24, 24]}>
         {/* Left Column: Metadata & Brand */}
         <Col xs={24} lg={12} className="!flex flex-col gap-4">
-          {/* Site Metadata Card */}
+          {/* Search Engine Optimization (SEO) Settings */}
           <Card
             title={
               <div className="flex items-center gap-2 text-slate-700 font-bold">
@@ -204,32 +372,66 @@ export default function GeneralSettingsPage() {
             }
             className="rounded-2xl border border-slate-100 shadow-sm"
           >
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
-                  Site Title (Meta Title)
-                </label>
-                <Input
-                  value={form.siteTitle}
-                  onChange={(e) => handleChange("siteTitle", e.target.value)}
-                  placeholder="e.g. VIVOO - Advanced Security Solutions"
-                  className="rounded-lg h-[36px]"
-                />
-              </div>
+            <Tabs
+              defaultActiveKey="global"
+              type="card"
+              size="small"
+              className="[&_.ant-tabs-nav]:mb-4"
+              items={[
+                {
+                  key: "global",
+                  label: "Global Defaults",
+                  children: (
+                    <div className="space-y-4 pt-2">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
+                          Site Title (Meta Title Fallback)
+                        </label>
+                        <Input
+                          value={form.siteTitle}
+                          onChange={(e) => handleChange("siteTitle", e.target.value)}
+                          placeholder="e.g. VIVOO - Advanced Security Solutions"
+                          className="rounded-lg h-[36px]"
+                        />
+                      </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
-                  Site Description (Meta Description)
-                </label>
-                <Input.TextArea
-                  value={form.siteDescription}
-                  onChange={(e) => handleChange("siteDescription", e.target.value)}
-                  placeholder="Summarize what VIVOO does for visitors and search engines..."
-                  rows={4}
-                  className="rounded-lg"
-                />
-              </div>
-            </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
+                          Site Description (Meta Description Fallback)
+                        </label>
+                        <Input.TextArea
+                          value={form.siteDescription}
+                          onChange={(e) => handleChange("siteDescription", e.target.value)}
+                          placeholder="Summarize what VIVOO does for visitors and search engines..."
+                          rows={4}
+                          className="rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  ),
+                },
+                {
+                  key: "home",
+                  label: "Homepage",
+                  children: renderPageSEOFields("seoHome"),
+                },
+                {
+                  key: "solutions",
+                  label: "Solutions",
+                  children: renderPageSEOFields("seoSolutions"),
+                },
+                {
+                  key: "services",
+                  label: "Services",
+                  children: renderPageSEOFields("seoServices"),
+                },
+                {
+                  key: "contact",
+                  label: "Contact",
+                  children: renderPageSEOFields("seoContact"),
+                },
+              ]}
+            />
           </Card>
 
           {/* Brand Assets Logo Card */}
@@ -269,6 +471,13 @@ export default function GeneralSettingsPage() {
                       Upload
                     </Button>
                   </Upload>
+                  <Button
+                    icon={<ImageIcon className="w-4 h-4" />}
+                    onClick={() => openMediaPicker("logoUrl")}
+                    className="h-[36px] rounded-lg border-slate-200 hover:border-blue-500 hover:text-blue-500 flex items-center"
+                  >
+                    Media
+                  </Button>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-1">
                   Absolute URL of logo image. Example: copy from Media Vault or upload from computer.
@@ -306,6 +515,13 @@ export default function GeneralSettingsPage() {
                       Upload
                     </Button>
                   </Upload>
+                  <Button
+                    icon={<ImageIcon className="w-4 h-4" />}
+                    onClick={() => openMediaPicker("logoDarkUrl")}
+                    className="h-[36px] rounded-lg border-slate-200 hover:border-blue-500 hover:text-blue-500 flex items-center"
+                  >
+                    Media
+                  </Button>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-1">
                   Absolute URL of logo for dark background. Example: copy from Media Vault or upload from computer.
@@ -313,6 +529,50 @@ export default function GeneralSettingsPage() {
                 {form.logoDarkUrl && (
                   <div className="mt-2.5 p-3 border border-dashed border-slate-800 rounded-lg bg-slate-900 flex items-center justify-center max-w-[200px] h-[80px]">
                     <img src={form.logoDarkUrl} alt="Logo Dark Preview" className="max-w-full max-h-full object-contain" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
+                  Favicon URL (.ico or .png)
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    value={form.faviconUrl}
+                    onChange={(e) => handleChange("faviconUrl", e.target.value)}
+                    placeholder="e.g. /favicon.ico"
+                    className="rounded-lg h-[36px]"
+                  />
+                  <Upload
+                    beforeUpload={(file) => {
+                      handleUpload(file, "faviconUrl");
+                      return false;
+                    }}
+                    showUploadList={false}
+                  >
+                    <Button
+                      icon={<UploadCloud className="w-4 h-4 mr-1 inline-block" />}
+                      loading={uploadingField === "faviconUrl"}
+                      className="h-[36px] rounded-lg border-slate-200 hover:border-blue-500 hover:text-blue-500 flex items-center"
+                    >
+                      Upload
+                    </Button>
+                  </Upload>
+                  <Button
+                    icon={<ImageIcon className="w-4 h-4" />}
+                    onClick={() => openMediaPicker("faviconUrl")}
+                    className="h-[36px] rounded-lg border-slate-200 hover:border-blue-500 hover:text-blue-500 flex items-center"
+                  >
+                    Media
+                  </Button>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Favicon image file URL. Usually 16x16 or 32x32 pixels.
+                </p>
+                {form.faviconUrl && (
+                  <div className="mt-2.5 p-3 border border-dashed border-slate-200 rounded-lg bg-slate-50 flex items-center justify-center max-w-[80px] h-[80px]">
+                    <img src={form.faviconUrl} alt="Favicon Preview" className="max-w-full max-h-full object-contain" />
                   </div>
                 )}
               </div>
@@ -527,66 +787,48 @@ export default function GeneralSettingsPage() {
         <Col xs={24} lg={12} className="!flex flex-col gap-4">
           <Card
             title={
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2 text-slate-700 font-bold">
-                  <FolderOpen className="w-4.5 h-4.5 text-blue-500" />
-                  <span>Downloadable Resources & Links</span>
-                </div>
-                <Button
-                  type="dashed"
-                  icon={<Plus className="w-3.5 h-3.5 mr-1" />}
-                  onClick={addResource}
-                  size="small"
-                >
-                  Add Resource
-                </Button>
+              <div className="flex items-center gap-2 text-slate-700 font-bold">
+                <FolderOpen className="w-4.5 h-4.5 text-blue-500" />
+                <span>Resource Cards (Exactly 3 cards)</span>
               </div>
             }
             className="rounded-2xl border border-slate-100 shadow-sm"
           >
             <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1">
               {(form.resources || []).map((resource, index) => (
-                <div key={resource.id} className="p-4 border border-slate-100 rounded-xl bg-slate-50/50 relative group space-y-3">
-                  <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Popconfirm title="Delete resource?" onConfirm={() => removeResource(index)}>
-                      <Button type="text" danger icon={<Trash2 className="w-4 h-4" />} size="small" />
-                    </Popconfirm>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Title</label>
-                      <Input
-                        value={resource.title}
-                        onChange={(e) => {
-                          const next = [...(form.resources || [])];
-                          next[index].title = e.target.value;
-                          setForm({ ...form, resources: next });
-                        }}
-                        placeholder="e.g. Avigilon Unity Catalog"
-                        className="h-[36px] rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Type</label>
-                      <Select
-                        value={resource.type || "Link"}
-                        onChange={(val) => {
-                          const next = [...(form.resources || [])];
-                          next[index].type = val;
-                          setForm({ ...form, resources: next });
-                        }}
-                        className="w-full h-[36px] [&_.ant-select-selector]:!h-[36px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
-                        options={[
-                          { label: "Link", value: "Link" },
-                          { label: "PDF Document", value: "PDF" },
-                          { label: "Software / EXE", value: "Software" },
-                          { label: "Video link", value: "Video" },
-                        ]}
-                      />
-                    </div>
+                <div key={resource.id || index} className="p-4 border border-slate-100 rounded-xl bg-slate-50/50 space-y-3">
+                  <span className="text-xs font-bold text-blue-600 block">
+                    Card {index + 1}: {DEFAULT_RESOURCES[index]?.title}
+                  </span>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Title</label>
+                    <Input
+                      value={resource.title}
+                      onChange={(e) => {
+                        const next = [...(form.resources || [])];
+                        next[index].title = e.target.value;
+                        setForm({ ...form, resources: next });
+                      }}
+                      placeholder="Enter card title..."
+                      className="h-[36px] rounded-lg"
+                    />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">File URL</label>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Description</label>
+                    <Input.TextArea
+                      value={resource.description || ""}
+                      onChange={(e) => {
+                        const next = [...(form.resources || [])];
+                        next[index].description = e.target.value;
+                        setForm({ ...form, resources: next });
+                      }}
+                      placeholder="Enter card description..."
+                      rows={2.5}
+                      className="rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Link URL</label>
                     <div className="flex gap-2">
                       <Input
                         value={resource.url}
@@ -601,19 +843,38 @@ export default function GeneralSettingsPage() {
                       <Upload beforeUpload={(file) => { handleResourceUpload(file, index); return false; }} showUploadList={false}>
                         <Button icon={<UploadCloud className="w-4 h-4 mr-1" />} loading={uploadingField === `resource-${index}`} className="h-[36px] flex items-center">Upload</Button>
                       </Upload>
+                      <Button
+                        icon={<ImageIcon className="w-4 h-4" />}
+                        onClick={() => openMediaPicker(`resource-${index}`)}
+                        className="h-[36px] flex items-center"
+                      >
+                        Media
+                      </Button>
                     </div>
                   </div>
                 </div>
               ))}
-              {(!form.resources || form.resources.length === 0) && (
-                <div className="text-center py-6 text-slate-400 text-sm">
-                  No resources configured yet. Click Add Resource to start.
-                </div>
-              )}
             </div>
           </Card>
         </Col>
       </Row>
+
+      <MediaPickerModal
+        open={mediaPickerOpen}
+        onCancel={() => {
+          setMediaPickerOpen(false);
+          setMediaPickerTarget(null);
+        }}
+        onSelect={handleSelectMedia}
+        selectionMode="single"
+        defaultTab={isResourceMediaTarget ? "all" : "image"}
+        selectableTypes={isResourceMediaTarget ? ["all", "image", "video", "other"] : ["image"]}
+        title={
+          isResourceMediaTarget
+            ? "Choose Resource File from Media"
+            : "Choose Image from Media"
+        }
+      />
     </div>
   );
 }

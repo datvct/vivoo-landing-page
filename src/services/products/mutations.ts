@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { productsApi } from "./api";
 import { message } from "antd";
+import { getErrorMessage } from "@/utils/error";
 
 export const useCreateProductMutation = (onSuccess?: (data: any) => void) => {
   const queryClient = useQueryClient();
@@ -12,7 +13,8 @@ export const useCreateProductMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to create product");
+      console.log(error, "error");
+      message.error(getErrorMessage(error, "Failed to create product"));
     },
   });
 };
@@ -28,7 +30,7 @@ export const useUpdateProductMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to update product");
+      message.error(getErrorMessage(error, "Failed to update product"));
     },
   });
 };
@@ -42,7 +44,7 @@ export const useDeleteProductMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["products-admin"] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to delete product");
+      message.error(getErrorMessage(error, "Failed to delete product"));
     },
   });
 };
@@ -56,7 +58,7 @@ export const useAddRelatedProductMutation = (productId: string) => {
       queryClient.invalidateQueries({ queryKey: ["product", productId] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to link related product");
+      message.error(getErrorMessage(error, "Failed to link related product"));
     },
   });
 };
@@ -70,7 +72,7 @@ export const useDeleteRelatedProductMutation = (productId: string) => {
       queryClient.invalidateQueries({ queryKey: ["product", productId] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to remove related product");
+      message.error(getErrorMessage(error, "Failed to remove related product"));
     },
   });
 };

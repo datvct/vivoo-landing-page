@@ -12,7 +12,7 @@ export const useUploadMediaMutation = (onSuccess?: (data: any) => void) => {
       onSuccess?.(response.data);
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to upload file");
+      message.error(error?.response?.message|| "Failed to upload file");
     },
   });
 };
@@ -26,7 +26,7 @@ export const useDeleteMediaMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["media-list"] });
     },
     onError: (error: any) => {
-      message.error(error?.response?.data?.message || "Failed to delete file");
+      message.error(error?.response?.message|| "Failed to delete file");
     },
   });
 };

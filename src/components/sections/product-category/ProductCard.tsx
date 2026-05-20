@@ -14,7 +14,7 @@ export default function ProductCard({
       href={href}
       className="flex flex-col items-stretch overflow-hidden rounded-md bg-white p-3 text-center shadow-[0_18px_40px_rgba(2,6,23,0.04)] ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1 sm:p-6"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-full p-2 sm:p-4">
+      <div className="relative aspect-square w-full overflow-hidden p-2 sm:p-4">
         <Image
           src={image}
           alt={title}
