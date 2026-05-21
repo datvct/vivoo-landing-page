@@ -1,64 +1,34 @@
 "use client";
 
-import { Service } from "@/types/service-types";
 import ServiceCard from "./ServiceCard";
 import Link from "next/link";
-
-const defaultServices: Service[] = [
-  {
-    id: "video",
-    title: "Video Security",
-    description:
-      "AI-powered surveillance and analytics for 24/7 monitoring.",
-    image: "/images/image1.avif",
-    slug: "/solutions/video-security",
-  },
-  {
-    id: "access",
-    title: "Access Control",
-    description:
-      "Centralized access management with mobile and touchless options.",
-    image: "/images/camera-1.avif",
-    slug: "/solutions/access-control",
-  },
-  {
-    id: "sensors",
-    title: "Smart Sensors",
-    description:
-      "Perimeter and environmental sensors that trigger intelligent alerts.",
-    image: "/images/camera-2.avif",
-    slug: "/solutions/sensors",
-  },
-  {
-    id: "analytics",
-    title: "Analytics & Insights",
-    description:
-      "Actionable insights from aggregated sensor and video data.",
-    image: "/images/product.avif",
-    slug: "/solutions/analytics",
-  },
-];
+import type { Locale } from "@/i18n/config";
+import { localizedPath } from "@/i18n/navigation";
 
 type ServiceListSectionProps = {
   title?: string;
   description?: string;
   services?: any[];
+  locale?: Locale;
 };
 
 export default function ServiceListSection({
   title = "Service Groups",
   description = "Explore our grouped services — each designed to solve specific security challenges and scale with your business.",
   services = [],
+  locale,
 }: ServiceListSectionProps) {
-  const activeServices = services && services.length > 0
-    ? services.map((s: any) => ({
+  const activeServices =
+    services && services.length > 0
+      ? services.map((s: { id: string; slug: string; title: string; description?: string; thumbnailUrl?: string }) => ({
         id: s.id,
         title: s.title,
         description: s.description || "",
         image: s.thumbnailUrl || "/images/image1.avif",
-        slug: `/services/${s.slug}`,
+        slug: s.slug,
+        detailHref: localizedPath(`/services/${s.slug}`, locale),
       }))
-    : defaultServices;
+      : [];
 
   return (
     <section className="bg-gray-50 py-6 sm:py-16">
@@ -82,7 +52,7 @@ export default function ServiceListSection({
         </div>
         <div className="mt-8 flex justify-center">
           <Link
-            href="/services"
+            href={localizedPath("/services", locale)}
             className="inline-flex items-center gap-2 rounded-lg bg-[#0b76ff] px-10 py-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#095bd6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0b76ff] focus-visible:ring-offset-2"
           >
             View all

@@ -30,7 +30,7 @@ export default function ServiceCard({
 
         <div className="mt-6">
           <Link
-            href={slug.startsWith("/") ? slug : `/services/${slug}`}
+            href={service.detailHref ?? (slug.startsWith("/") ? slug : `/services/${slug}`)}
             className="inline-flex items-center gap-2 rounded-md bg-[#0b76ff] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#095bd6]"
           >
             Learn more

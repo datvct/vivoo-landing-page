@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button, Card, Form, Input, Image, Spin, Tooltip } from "antd";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, UploadCloud, X } from "lucide-react";
@@ -17,7 +17,7 @@ import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import { generateSlug } from "@/utils/slug";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
-export default function SolutionFormPage() {
+function SolutionFormPageInner() {
     const router = useRouter();
     const params = useParams();
     const searchParams = useSearchParams();
@@ -396,5 +396,19 @@ export default function SolutionFormPage() {
                 title="Choose Solution Thumbnail from Media"
             />
         </div>
+    );
+}
+
+export default function SolutionFormPage() {
+    return (
+        <Suspense
+            fallback={(
+                <div className="flex min-h-[40vh] items-center justify-center">
+                    <Spin size="large" />
+                </div>
+            )}
+        >
+            <SolutionFormPageInner />
+        </Suspense>
     );
 }

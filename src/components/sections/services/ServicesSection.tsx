@@ -1,4 +1,6 @@
 import ServiceCard from "./ServiceCard";
+import type { Locale } from "@/i18n/config";
+import { localizedPath } from "@/i18n/navigation";
 
 const fallbackServices = [
   {
@@ -45,10 +47,15 @@ const fallbackServices = [
 
 export default function ServicesSection({
   services = [],
+  locale,
 }: {
-  services?: any[];
+  services?: { id: string; slug?: string; title: string; description?: string; thumbnailUrl?: string; image?: string }[];
+  locale?: Locale;
 }) {
-  const displayServices = services.length > 0 ? services : fallbackServices;
+  const displayServices = (services.length > 0 ? services : fallbackServices).map((s) => ({
+    ...s,
+    detailHref: s.slug ? localizedPath(`/services/${s.slug}`, locale) : undefined,
+  }));
 
   return (
     <section className="bg-white py-6 sm:py-16">

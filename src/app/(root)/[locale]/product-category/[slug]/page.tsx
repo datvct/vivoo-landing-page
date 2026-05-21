@@ -9,11 +9,14 @@ import ResourcesSection from "@/components/sections/product-category/ResourcesSe
 import { constructMetadata } from "@/utils/seo";
 import { getCategoryBySlug } from "@/lib/get-product-categories";
 import { getProducts } from "@/lib/get-products";
-import { getGeneralSettings, getHomeSettings } from "@/lib/get-settings";
+import { getGeneralSettings } from "@/lib/get-settings";
+import { resolvePageLocale } from "@/i18n/get-locale";
+import { getMessage } from "@/i18n/messages";
+import { localizedPath } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/config";
 import type { Product } from "@/types/types";
 
 const DEFAULT_HERO_IMAGE = "/images/camera-2.avif";
-const DEFAULT_PRIMARY_CTA = "GET PRICING";
 
 function splitFeatureBody(body: string | null | undefined): string[] {
   if (!body?.trim()) return [];
@@ -24,24 +27,25 @@ function splitFeatureBody(body: string | null | undefined): string[] {
     .filter(Boolean);
 }
 
-function mapProductsToCatalog(products: Product[]) {
+function mapProductsToCatalog(products: Product[], locale: Locale) {
   return products.map((p) => ({
     title: p.title,
     description: p.description || "",
     image: p.thumbnailUrl || "/images/product.avif",
     badges: p.badges || [],
-    href: `/product/${p.slug}`,
+    href: localizedPath(`/product/${p.slug}`, locale),
   }));
 }
 
+type CategoryPageParams = { params: Promise<{ locale: string; slug: string }> };
+
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: CategoryPageParams): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategoryBySlug(slug);
-  const settings = await getGeneralSettings();
+  const locale = await resolvePageLocale(params);
+  const category = await getCategoryBySlug(slug, locale);
+  const settings = await getGeneralSettings(locale);
 
   if (!category || category.status !== "published") {
     return constructMetadata({
@@ -70,7 +74,7 @@ export async function generateMetadata({
   return constructMetadata({
     title,
     description,
-    canonicalUrl: `/product-category/${slug}`,
+    canonicalUrl: localizedPath(`/product-category/${slug}`, locale),
     ogImage: category.thumbnailUrl || DEFAULT_HERO_IMAGE,
     keywords,
     noIndex,
@@ -80,11 +84,10 @@ export async function generateMetadata({
 
 export default async function ProductCategoryPage({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+}: CategoryPageParams) {
   const { slug } = await params;
-  const category = await getCategoryBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const category = await getCategoryBySlug(slug, locale);
 
   if (!category || category.status !== "published") {
     notFound();
@@ -98,25 +101,38 @@ export default async function ProductCategoryPage({
       status: "published",
       sortBy: "sortOrder",
       sortOrder: "ASC",
+      locale,
     }),
-    getGeneralSettings(),
+    getGeneralSettings(locale),
   ]);
-  const products = mapProductsToCatalog(dbProducts);
 
+  const products = mapProductsToCatalog(dbProducts, locale);
   const featureParagraphs = splitFeatureBody(category.featureBody);
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
+    { label: getMessage(locale, "breadcrumb.home"), href: localizedPath("/", locale) },
     { label: category.title },
   ];
 
   const catalogTitle =
-    category.subtitle ||
+    category.subtitle?.trim() ||
     `Explore ${category.title} models`;
 
-  const catalogSubtitle = category.description || undefined;
+  const catalogSubtitle = category.description?.trim() || undefined;
 
+  const heroCtaLabel =
+    category.heroCtaLabel?.trim() || getMessage(locale, "hero.getPricing");
+  const heroCtaHref = category.heroCtaHref?.trim() || "#";
 
+  const catalogCtaLabel =
+    category.heroCtaLabel?.trim() || getMessage(locale, "catalog.compareProducts");
+  const catalogCtaHref = category.heroCtaHref?.trim() || "#";
+
+  const faqItems =
+    generalSettings?.faqs?.map((faq: { question: string; answer: string }) => ({
+      question: faq.question,
+      answer: faq.answer,
+    })) ?? undefined;
 
   return (
     <div className="bg-[#f6f6f6] text-black">
@@ -129,7 +145,8 @@ export default async function ProductCategoryPage({
           ""
         }
         image={category.thumbnailUrl || DEFAULT_HERO_IMAGE}
-        primaryCta={category.heroCtaLabel?.trim() || DEFAULT_PRIMARY_CTA}
+        primaryCta={heroCtaLabel}
+        primaryActionHref={heroCtaHref}
         breadcrumbs={breadcrumbs}
       />
 
@@ -139,8 +156,8 @@ export default async function ProductCategoryPage({
         title={catalogTitle}
         subtitle={catalogSubtitle}
         products={products}
-        ctaLabel={category.heroCtaLabel?.trim()}
-        ctaHref={category.heroCtaHref?.trim()}
+        ctaLabel={catalogCtaLabel}
+        ctaHref={catalogCtaHref}
       />
 
       <ProductBenefitsSection
@@ -155,7 +172,7 @@ export default async function ProductCategoryPage({
 
       <ResourcesSection items={generalSettings?.resources} />
 
-      <FAQSection />
+      <FAQSection items={faqItems} />
     </div>
   );
 }

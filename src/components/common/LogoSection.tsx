@@ -1,9 +1,11 @@
 import { getHomeSettings } from "@/lib/get-settings";
+import { getServerLocale } from "@/i18n/get-locale";
 import Image from "next/image";
 
 
 export default async function LogoSection() {
-  const homeSettings = await getHomeSettings();
+  const locale = await getServerLocale();
+  const homeSettings = await getHomeSettings(locale);
 
   const trustedTitle = homeSettings?.trustedTitle;
   const trustedLogos = homeSettings?.trustedLogos || [];

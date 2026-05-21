@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button, Card, Form, Input, Spin, Image, Upload, Tooltip } from "antd";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, Upload as UploadIcon, X } from "lucide-react";
@@ -68,7 +68,7 @@ const emptyDefaults: Partial<ProductCategoryFormValues> = {
   featureLinkHref: "",
 };
 
-export default function CategoryFormPage() {
+function CategoryFormPageInner() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -661,5 +661,19 @@ export default function CategoryFormPage() {
         title="Choose Feature Image from Media"
       />
     </div>
+  );
+}
+
+export default function CategoryFormPage() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Spin size="large" />
+        </div>
+      )}
+    >
+      <CategoryFormPageInner />
+    </Suspense>
   );
 }

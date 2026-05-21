@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import LocaleLink from "@/components/common/LocaleLink";
 import {
   Clock3,
   Mail,
@@ -19,6 +20,8 @@ import { useProductCategoriesQuery } from "@/services/product-categories/queries
 import { useAdminSolutionsQuery } from "@/services/solutions/queries";
 import { useAdminServicesQuery } from "@/services/services/queries";
 import { GeneralSettings } from "@/types/types";
+import { useLocale } from "@/contexts/LocaleContext";
+import { stripLocalePrefix } from "@/i18n/navigation";
 
 const product = [
   {
@@ -56,12 +59,25 @@ const solutionLinks = [
 
 export default function Footer() {
   const pathName = usePathname();
-  const { data: settingData } = useSiteSettingQuery("general");
+  const { locale } = useLocale();
+  const { data: settingData } = useSiteSettingQuery("general", locale);
   const settings = (settingData?.data?.value || {}) as Partial<GeneralSettings>;
 
-  const { data: categoriesData } = useProductCategoriesQuery({ limit: 10, status: "published" });
-  const { data: solutionsData } = useAdminSolutionsQuery({ limit: 5, status: "published" });
-  const { data: servicesData } = useAdminServicesQuery({ limit: 5, status: "published" });
+  const { data: categoriesData } = useProductCategoriesQuery({
+    limit: 10,
+    status: "published",
+    locale,
+  });
+  const { data: solutionsData } = useAdminSolutionsQuery({
+    limit: 5,
+    status: "published",
+    locale,
+  });
+  const { data: servicesData } = useAdminServicesQuery({
+    limit: 5,
+    status: "published",
+    locale,
+  });
 
   const logoDark = settings.logoDarkUrl || "/svgs/logo-bg-black.svg";
   const copyrightText = settings.copyrightText || "Avigilon Vietnam. All rights reserved.";
@@ -99,7 +115,7 @@ export default function Footer() {
 
   return (
     <>
-      {pathName !== "/contact" && (
+      {stripLocalePrefix(pathName) !== "/contact" && (
         <ContactSection />
       )}
       <footer className="bg-black text-white">
@@ -149,12 +165,12 @@ export default function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {displayProducts.map((item) => (
                   <li key={item.label}>
-                    <Link
+                    <LocaleLink
                       href={item.href}
                       className="text-sm text-white/70 transition hover:text-white"
                     >
                       {item.label}
-                    </Link>
+                    </LocaleLink>
                   </li>
                 ))}
               </ul>
@@ -167,12 +183,12 @@ export default function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {displaySolutions.map((item) => (
                   <li key={item.label}>
-                    <Link
+                    <LocaleLink
                       href={item.href}
                       className="text-sm text-white/70 transition hover:text-white"
                     >
                       {item.label}
-                    </Link>
+                    </LocaleLink>
                   </li>
                 ))}
               </ul>
@@ -224,7 +240,7 @@ export default function Footer() {
               {copyrightText}
             </p>
             <div className="flex items-center gap-4">
-              <Link
+              {/* <Link
                 href="#"
                 className="transition hover:text-white/80"
               >
@@ -241,7 +257,7 @@ export default function Footer() {
                 className="transition hover:text-white/80"
               >
                 Cookie Policy
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

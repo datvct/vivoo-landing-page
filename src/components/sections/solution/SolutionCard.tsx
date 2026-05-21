@@ -4,8 +4,10 @@ import Link from "next/link";
 
 export default function SolutionCard({
   tab,
+  detailHref,
 }: {
   tab: Tab;
+  detailHref?: string;
 }) {
   return (
     <article
@@ -31,10 +33,7 @@ export default function SolutionCard({
 
         <div className="mt-6">
           <Link
-            href={
-              `/solutions/${tab.slug}` ||
-              `/solutions/${tab.id}`
-            }
+            href={detailHref ?? `/solutions/${tab.slug || tab.id}`}
             className="inline-flex items-center gap-2 rounded-md bg-[#0b76ff] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#095bd6]"
           >
             Learn more

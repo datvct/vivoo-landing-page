@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/contexts/LocaleContext";
 
 export const defaultMenus = [
   {
@@ -58,6 +59,7 @@ type NavbarProps = {
 };
 
 export default function Navbar({ menus = [] }: NavbarProps) {
+  const { lp } = useLocale();
   const [hoveredMenu, setHoveredMenu] =
     useState<string | null>(null);
   const router = useRouter();
@@ -81,7 +83,7 @@ export default function Navbar({ menus = [] }: NavbarProps) {
           <button
             onClick={() => {
               if (item.link) {
-                router.push(item.link);
+                router.push(lp(item.link));
               }
             }}
             className="flex cursor-pointer items-center gap-1 py-6 text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-blue-600"
@@ -118,10 +120,7 @@ export default function Navbar({ menus = [] }: NavbarProps) {
                   (subitem: any, index: number) => (
                     <li key={index}>
                       <Link
-                        href={
-                          subitem?.link ??
-                          "#"
-                        }
+                        href={lp(subitem?.link ?? "#")}
                         className="block px-4 py-2.5 text-sm text-gray-700 transition-colors duration-150 first:pt-4 hover:bg-blue-50 hover:text-blue-600"
                       >
                         {subitem?.title ??

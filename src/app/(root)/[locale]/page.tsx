@@ -11,9 +11,15 @@ import { constructMetadata } from "@/utils/seo";
 import { getGeneralSettings, getHomeSettings } from "@/lib/get-settings";
 import { getServices } from "@/lib/get-services";
 import { getProducts } from "@/lib/get-products";
+import { resolvePageLocale } from "@/i18n/get-locale";
+import { localizedPath } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/config";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getGeneralSettings();
+type PageParams = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
+  const locale = await resolvePageLocale(params);
+  const settings = await getGeneralSettings(locale);
   const title = settings?.seoHomeTitle || settings?.siteTitle || "VIVOO - Advanced Security Solutions";
   const description = settings?.seoHomeDescription || settings?.siteDescription || "VIVOO provides state-of-the-art security, cloud and integration services.";
   const keywords = settings?.seoHomeKeywords
@@ -39,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return constructMetadata({
     title,
     description,
-    canonicalUrl: "/",
+    canonicalUrl: localizedPath("/", locale),
     keywords,
     noIndex,
     ogType: "website",
@@ -55,19 +61,22 @@ export const viewport = {
   userScalable: false,
 }
 
-export default async function HomePage() {
-  const homeSettings = await getHomeSettings();
+export default async function HomePage({ params }: PageParams) {
+  const locale = await resolvePageLocale(params);
+  const homeSettings = await getHomeSettings(locale);
   const dbProducts = await getProducts({
     limit: 6,
     page: 1,
-    sortOrder: 'ASC',
-    sortBy: 'sortOrder',
-    status: 'published'
+    sortOrder: "ASC",
+    sortBy: "sortOrder",
+    status: "published",
+    locale,
   });
   const dbServices = await getServices({
     page: 1,
     limit: 6,
-    status: 'published'
+    status: "published",
+    locale,
   });
 
   const productsTitle = homeSettings?.productsTitle || "Featured Products";
@@ -78,7 +87,7 @@ export default async function HomePage() {
       description: p.description || "",
       image: p.thumbnailUrl || "/images/camera-1.avif",
       linkLabel: p.primaryActionLabel || "View product",
-      href: `/product/${p.slug}`,
+      href: localizedPath(`/product/${p.slug}`, locale as Locale),
       badges: p.badges || [],
     }))
     : [];
@@ -109,11 +118,11 @@ export default async function HomePage() {
         title={productsTitle}
         description={productsDescription}
         products={products}
-        viewAllHref="/product"
+        viewAllHref={localizedPath("/product", locale as Locale)}
         viewAllLabel="View all products"
       />
-      <SolutionsSection title={solutionsTitle} description={solutionsDescription} />
-      <ServiceListSection title={servicesTitle} description={servicesDescription} services={dbServices} />
+      <SolutionsSection title={solutionsTitle} description={solutionsDescription} locale={locale} />
+      <ServiceListSection title={servicesTitle} description={servicesDescription} services={dbServices} locale={locale} />
       <IndustriesSection title={industriesTitle} description={industriesDescription} industries={industriesList} />
       <CustomerStoriesSection title={storiesTitle} description={storiesDescription} stories={storiesList} />
       <ComplianceSection title={complianceTitle} description={complianceDescription} complianceList={complianceList} />

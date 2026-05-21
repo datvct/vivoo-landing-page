@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Button, Card, Form, Space, Spin } from "antd";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
@@ -25,7 +25,7 @@ type GalleryMediaItem = { mediaId: string; url: string };
 type BenefitFormItem = { imageFile?: Array<{ originFileObj?: File } | File>;[key: string]: unknown };
 type ProductFormValues = { contents?: string; benefits?: BenefitFormItem[];[key: string]: unknown };
 
-export default function ProductFormPage() {
+function ProductFormPageInner() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -353,5 +353,19 @@ export default function ProductFormPage() {
         </Form>
       )}
     </div>
+  );
+}
+
+export default function ProductFormPage() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Spin size="large" />
+        </div>
+      )}
+    >
+      <ProductFormPageInner />
+    </Suspense>
   );
 }

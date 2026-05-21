@@ -5,20 +5,31 @@ import ProductInsightsSection from "@/components/sections/product/ProductInsight
 import ProductRelatedProductsSection from "@/components/sections/product/ProductRelatedProductsSection";
 import { constructMetadata } from "@/utils/seo";
 import { getProductBySlug, getProducts } from "@/lib/get-products";
-import "../../../../components/common/TiptapEditor/styles.css";
+import { resolvePageLocale } from "@/i18n/get-locale";
+import { localizedPath } from "@/i18n/navigation";
+import { LOCALES } from "@/i18n/config";
+import type { Locale } from "@/i18n/config";
+import "../../../../../components/common/TiptapEditor/styles.css";
 
 export async function generateStaticParams() {
-  const products = await getProducts({ limit: 100 });
-  return products.map((p: { slug: string }) => ({ slug: p.slug }));
+  const params: { locale: string; slug: string }[] = [];
+  for (const locale of LOCALES) {
+    const products = await getProducts({ limit: 100, status: "published", locale });
+    for (const p of products as { slug: string }[]) {
+      params.push({ locale, slug: p.slug });
+    }
+  }
+  return params;
 }
+
+type SlugPageParams = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: SlugPageParams): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const product = await getProductBySlug(slug, locale);
 
   if (!product) {
     return constructMetadata({
@@ -32,18 +43,15 @@ export async function generateMetadata({
   return constructMetadata({
     title: product.seoTitle || product.title,
     description: product.seoDescription || product.description,
-    canonicalUrl: `/product/${slug}`,
+    canonicalUrl: localizedPath(`/product/${slug}`, locale),
     ogImage,
   });
 }
 
-export default async function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProductDetailPage({ params }: SlugPageParams) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const product = await getProductBySlug(slug, locale);
 
   if (!product) {
     notFound();
@@ -71,15 +79,18 @@ export default async function ProductDetailPage({
   }));
 
   // Build breadcrumbs
+  const contactPath = localizedPath("/contact", locale);
   const breadcrumbs = [
-    { label: "Home", href: "/" },
+    { label: "Home", href: localizedPath("/", locale) },
     {
       label: product.category?.title || "Products",
-      href: product.category?.slug ? `/product-category/${product.category.slug}` : "/products",
+      href: product.category?.slug
+        ? localizedPath(`/product-category/${product.category.slug}`, locale)
+        : localizedPath("/", locale),
     },
     {
       label: product.title,
-      href: `/product/${product.slug}`,
+      href: localizedPath(`/product/${product.slug}`, locale),
     },
   ];
 
@@ -98,25 +109,30 @@ export default async function ProductDetailPage({
   ];
 
   // Related products logic
-  let displayRelated = (product.relatedProducts || []).map((p: any) => ({
+  let displayRelated = (product.relatedProducts || []).map((p: { slug: string; title: string; description?: string; thumbnailUrl?: string; badges?: string[] }) => ({
     title: p.title,
     description: p.description,
     image: p.thumbnailUrl || "/images/product.avif",
     badges: p.badges || [],
-    href: `/product/${p.slug}`,
+    href: localizedPath(`/product/${p.slug}`, locale),
   }));
 
   if (displayRelated.length === 0 && product.categoryId) {
-    const categoryProducts = await getProducts({ categoryId: product.categoryId, limit: 4 });
+    const categoryProducts = await getProducts({
+      categoryId: product.categoryId,
+      limit: 4,
+      status: "published",
+      locale,
+    });
     displayRelated = categoryProducts
-      .filter((p: any) => p.id !== product.id)
+      .filter((p: { id: string }) => p.id !== product.id)
       .slice(0, 3)
-      .map((p: any) => ({
+      .map((p: { slug: string; title: string; description?: string; thumbnailUrl?: string; badges?: string[] }) => ({
         title: p.title,
         description: p.description,
         image: p.thumbnailUrl || "/images/product.avif",
         badges: p.badges || [],
-        href: `/product/${p.slug}`,
+        href: localizedPath(`/product/${p.slug}`, locale),
       }));
   }
 
@@ -132,7 +148,7 @@ export default async function ProductDetailPage({
         features={product.features || []}
         videoUrl={product.video || ""}
         primaryActionLabel={product.primaryActionLabel || "GET PRICING"}
-        primaryActionHref={product.primaryActionHref || "/contact"}
+        primaryActionHref={product.primaryActionHref || contactPath}
         thumbnails={thumbnails}
       />
 
@@ -142,7 +158,7 @@ export default async function ProductDetailPage({
           description={product.description || ""}
           items={mappedInsights}
           ctaLabel={product.primaryActionLabel || "GET PRICING"}
-          ctaHref={product.primaryActionHref || "/contact"}
+          ctaHref={product.primaryActionHref || contactPath}
         />
       )}
 

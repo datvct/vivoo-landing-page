@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/config";
+
 export interface GetProductsOptions {
   page?: number;
   limit?: number;
@@ -6,6 +8,7 @@ export interface GetProductsOptions {
   sortOrder?: "ASC" | "DESC";
   categoryId?: string;
   search?: string;
+  locale?: Locale;
 }
 
 export async function getProducts(options: GetProductsOptions = {}) {
@@ -17,6 +20,7 @@ export async function getProducts(options: GetProductsOptions = {}) {
     sortOrder = "ASC",
     categoryId,
     search,
+    locale,
   } = options;
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
@@ -41,6 +45,9 @@ export async function getProducts(options: GetProductsOptions = {}) {
   if (search) {
     queryParams.append("search", search);
   }
+  if (locale) {
+    queryParams.append("locale", locale);
+  }
 
   try {
     const res = await fetch(`${backendUrl}/products?${queryParams.toString()}`, {
@@ -56,12 +63,13 @@ export async function getProducts(options: GetProductsOptions = {}) {
   return [];
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string, locale?: Locale) {
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
   const backendUrl = apiBase.replace("/api", "");
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
 
   try {
-    const res = await fetch(`${backendUrl}/products/slug/${encodeURIComponent(slug)}`, {
+    const res = await fetch(`${backendUrl}/products/slug/${encodeURIComponent(slug)}${query}`, {
       next: { revalidate: 60 },
     });
 

@@ -8,22 +8,31 @@ import ProductGridSection from "@/components/common/ProductGridSection";
 import { constructMetadata } from "@/utils/seo";
 import { getSolutionBySlug, getSolutions } from "@/lib/get-solutions";
 import { getProducts } from "@/lib/get-products";
-import "../../../../components/common/TiptapEditor/styles.css";
+import { resolvePageLocale } from "@/i18n/get-locale";
+import { localizedPath } from "@/i18n/navigation";
+import { LOCALES } from "@/i18n/config";
+import type { Locale } from "@/i18n/config";
+import "../../../../../components/common/TiptapEditor/styles.css";
 
 export async function generateStaticParams() {
-  const solutions = await getSolutions({ limit: 100 });
-  return solutions.map((s: any) => ({
-    slug: s.slug,
-  }));
+  const params: { locale: string; slug: string }[] = [];
+  for (const locale of LOCALES) {
+    const solutions = await getSolutions({ limit: 100, status: "published", locale });
+    for (const s of solutions as { slug: string }[]) {
+      params.push({ locale, slug: s.slug });
+    }
+  }
+  return params;
 }
+
+type SlugPageParams = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: SlugPageParams): Promise<Metadata> {
   const { slug } = await params;
-  const solution = await getSolutionBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const solution = await getSolutionBySlug(slug, locale);
 
   if (!solution) {
     return constructMetadata({
@@ -35,7 +44,7 @@ export async function generateMetadata({
   return constructMetadata({
     title: solution.seoTitle || solution.title,
     description: solution.seoDescription || solution.description || "",
-    canonicalUrl: `/solutions/${slug}`,
+    canonicalUrl: localizedPath(`/solutions/${slug}`, locale),
     ogImage: solution.thumbnailUrl || undefined,
   });
 }
@@ -83,13 +92,10 @@ function parseTableOfContents(htmlContent: string) {
   return { headings, html: modifiedHtml };
 }
 
-export default async function SolutionPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function SolutionPage({ params }: SlugPageParams) {
   const { slug } = await params;
-  const solution = await getSolutionBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const solution = await getSolutionBySlug(slug, locale);
 
   if (!solution) {
     notFound();
@@ -99,28 +105,20 @@ export default async function SolutionPage({
   const { headings, html: parsedHtml } = parseTableOfContents(solution.content || "");
 
   // Fetch related products dynamically
-  const rawProducts = await getProducts({ limit: 6 });
-  const products = rawProducts.map((p: any) => ({
+  const rawProducts = await getProducts({ limit: 6, status: "published", locale });
+  const products = rawProducts.map((p: { slug: string; title: string; description?: string; thumbnailUrl?: string; badges?: string[] }) => ({
     title: p.title,
     description: p.description || "",
     image: p.thumbnailUrl || "/images/image1.avif",
     badges: p.badges || [],
-    href: `/product/${p.slug}`,
+    href: localizedPath(`/product/${p.slug}`, locale),
   }));
 
+  const contactPath = localizedPath("/contact", locale);
   const breadcrumbs = [
-    {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Solutions",
-      href: "/solutions",
-    },
-    {
-      label: solution.title,
-      href: `/solutions/${slug}`,
-    },
+    { label: "Home", href: localizedPath("/", locale) },
+    { label: "Solutions", href: localizedPath("/solutions", locale) },
+    { label: solution.title, href: localizedPath(`/solutions/${slug}`, locale) },
   ];
 
   return (
@@ -131,7 +129,7 @@ export default async function SolutionPage({
         image={solution.thumbnailUrl || "/images/image1.avif"}
         primaryCta={solution.primaryActionHref ? "LEARN MORE" : "REQUEST A QUOTE"}
         secondaryCta={solution.secondaryActionHref ? "DOWNLOAD GUIDE" : undefined}
-        primaryActionHref={solution.primaryActionHref || "/contact"}
+        primaryActionHref={solution.primaryActionHref || contactPath}
         secondaryActionHref={solution.secondaryActionHref || undefined}
         breadcrumbs={breadcrumbs}
       />
@@ -171,7 +169,7 @@ export default async function SolutionPage({
                 Get in touch with our experts to design a custom security plan tailored to your needs.
               </p>
               <Link
-                href="/contact"
+                href={contactPath}
                 className="inline-flex w-full h-11 items-center justify-center rounded-full bg-black text-sm font-semibold text-white transition hover:bg-black/85"
               >
                 REQUEST A QUOTE
@@ -207,13 +205,13 @@ export default async function SolutionPage({
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center items-center">
             <Link
-              href="/contact"
+              href={contactPath}
               className="inline-flex h-12 items-center justify-center rounded-full bg-[#0b76ff] px-8 font-semibold text-white transition-colors hover:bg-[#095bd6]"
             >
               Get Free Audit
             </Link>
             <Link
-              href="/contact"
+              href={contactPath}
               className="inline-flex h-12 items-center justify-center rounded-full border-2 border-[#0b76ff] px-8 font-semibold text-[#0b76ff] transition-colors hover:bg-[#0b76ff] hover:text-white"
             >
               Contact Sales

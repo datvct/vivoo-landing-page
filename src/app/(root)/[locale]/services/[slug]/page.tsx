@@ -9,22 +9,30 @@ import ProductGridSection from "@/components/common/ProductGridSection";
 import { constructMetadata } from "@/utils/seo";
 import { getServiceBySlug, getServices } from "@/lib/get-services";
 import { getProducts } from "@/lib/get-products";
-import "../../../../components/common/TiptapEditor/styles.css";
+import { resolvePageLocale } from "@/i18n/get-locale";
+import { localizedPath } from "@/i18n/navigation";
+import { LOCALES } from "@/i18n/config";
+import "../../../../../components/common/TiptapEditor/styles.css";
 
 export async function generateStaticParams() {
-  const services = await getServices({ limit: 100 });
-  return services.map((s: any) => ({
-    slug: s.slug,
-  }));
+  const params: { locale: string; slug: string }[] = [];
+  for (const locale of LOCALES) {
+    const services = await getServices({ limit: 100, status: "published", locale });
+    for (const s of services as { slug: string }[]) {
+      params.push({ locale, slug: s.slug });
+    }
+  }
+  return params;
 }
+
+type SlugPageParams = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}: SlugPageParams): Promise<Metadata> {
   const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const service = await getServiceBySlug(slug, locale);
 
   if (!service) {
     return constructMetadata({
@@ -36,7 +44,7 @@ export async function generateMetadata({
   return constructMetadata({
     title: service.seoTitle || service.title,
     description: service.seoDescription || service.description || "",
-    canonicalUrl: `/services/${slug}`,
+    canonicalUrl: localizedPath(`/services/${slug}`, locale),
     ogImage: service.thumbnailUrl || undefined,
   });
 }
@@ -84,13 +92,10 @@ function parseTableOfContents(htmlContent: string) {
   return { headings, html: modifiedHtml };
 }
 
-export default async function ServiceDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ServiceDetailPage({ params }: SlugPageParams) {
   const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const locale = await resolvePageLocale(params);
+  const service = await getServiceBySlug(slug, locale);
 
   if (!service) {
     notFound();
@@ -100,24 +105,19 @@ export default async function ServiceDetailPage({
   const { headings, html: parsedHtml } = parseTableOfContents(service.content || "");
 
   // Fetch related products dynamically
-  const rawProducts = await getProducts({ limit: 6 });
-  const products = rawProducts.map((p: any) => ({
+  const rawProducts = await getProducts({ limit: 6, status: "published", locale });
+  const products = rawProducts.map((p: { slug: string; title: string; description?: string; thumbnailUrl?: string; badges?: string[] }) => ({
     title: p.title,
     description: p.description || "",
     image: p.thumbnailUrl || "/images/image1.avif",
     badges: p.badges || [],
-    href: `/product/${p.slug}`,
+    href: localizedPath(`/product/${p.slug}`, locale),
   }));
 
+  const contactPath = localizedPath("/contact", locale);
   const breadcrumbs = [
-    {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Services",
-      href: "/services",
-    },
+    { label: "Home", href: localizedPath("/", locale) },
+    { label: "Services", href: localizedPath("/services", locale) },
   ];
 
   const heroImage = service.thumbnailUrl || "/images/product.avif";
@@ -153,7 +153,7 @@ export default async function ServiceDetailPage({
                   VIEW DETAILS
                 </a>
                 <Link
-                  href="/contact"
+                  href={contactPath}
                   className="inline-flex h-12 items-center justify-center rounded-full border border-black/45 bg-white px-6 text-sm font-semibold text-black transition hover:border-black hover:bg-black/5"
                 >
                   REQUEST A QUOTE
@@ -212,7 +212,7 @@ export default async function ServiceDetailPage({
                 Get in touch with our experts to design a custom service plan tailored to your needs.
               </p>
               <Link
-                href="/contact"
+                href={contactPath}
                 className="inline-flex w-full h-11 items-center justify-center rounded-full bg-black text-sm font-semibold text-white transition hover:bg-black/85"
               >
                 REQUEST A QUOTE
