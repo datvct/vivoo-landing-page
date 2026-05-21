@@ -10,6 +10,7 @@ export const useAdminSolutionsQuery = (filters: SolutionFilters) => {
       filters.limit,
       filters.search,
       filters.status,
+      filters.locale,
       filters.sortBy,
       filters.sortOrder,
     ],

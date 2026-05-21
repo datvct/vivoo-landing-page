@@ -22,7 +22,7 @@ import { FaFacebook, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
 import { useUploadMediaMutation } from "@/services/media/mutations";
-import { GeneralSettings } from "@/types/types";
+import { APP_LOCALES, GeneralSettings } from "@/types/types";
 
 const { Title, Paragraph } = Typography;
 
@@ -51,7 +51,10 @@ const DEFAULT_RESOURCES = [
 ];
 
 export default function GeneralSettingsPage() {
-  const { data: settingData, isLoading } = useSiteSettingQuery("general");
+  const [locale, setLocale] = useState("vi");
+  const [siteCode, setSiteCode] = useState("vivoo");
+
+  const { data: settingData, isLoading } = useSiteSettingQuery("general", locale, siteCode);
   const upsertMutation = useUpsertSiteSettingMutation();
   const uploadMutation = useUploadMediaMutation();
 
@@ -106,6 +109,7 @@ export default function GeneralSettingsPage() {
     supportAddress: "",
     businessHours: "",
     copyrightText: "",
+    footerDescription: "",
     facebookUrl: "",
     linkedinUrl: "",
     youtubeUrl: "",
@@ -157,6 +161,7 @@ export default function GeneralSettingsPage() {
         supportAddress: val.supportAddress || "",
         businessHours: val.businessHours || "",
         copyrightText: val.copyrightText || "",
+        footerDescription: val.footerDescription || "",
         facebookUrl: val.facebookUrl || "",
         linkedinUrl: val.linkedinUrl || "",
         youtubeUrl: val.youtubeUrl || "",
@@ -218,6 +223,8 @@ export default function GeneralSettingsPage() {
     upsertMutation.mutate({
       key: "general",
       value: form,
+      locale,
+      siteCode
     });
   };
 
@@ -347,16 +354,30 @@ export default function GeneralSettingsPage() {
             Configure site-wide metadata, brand logos, contact coordinates, social connections, and copyright strings.
           </Paragraph>
         </div>
-        <Button
-          type="primary"
-          icon={<Save className="w-4 h-4 mr-1 inline-block" />}
-          onClick={handleSave}
-          loading={isSaving}
-          size="large"
-          className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
-        >
-          Save Changes
-        </Button>
+        <div className="flex items-center gap-3">
+          <Select
+            value={siteCode}
+            onChange={setSiteCode}
+            options={[{ label: "Vivoo Main Site", value: "vivoo" }]}
+            className="w-40 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Select
+            value={locale}
+            onChange={setLocale}
+            options={APP_LOCALES}
+            className="w-36 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Button
+            type="primary"
+            icon={<Save className="w-4 h-4 mr-1 inline-block" />}
+            onClick={handleSave}
+            loading={isSaving}
+            size="large"
+            className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
+          >
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <Row gutter={[24, 24]}>
@@ -668,6 +689,19 @@ export default function GeneralSettingsPage() {
                   onChange={(e) => handleChange("copyrightText", e.target.value)}
                   placeholder="Avigilon Vietnam. All rights reserved."
                   className="rounded-lg h-[36px]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">
+                  Footer Description Text
+                </label>
+                <Input.TextArea
+                  value={form.footerDescription}
+                  onChange={(e) => handleChange("footerDescription", e.target.value)}
+                  placeholder="End-to-end video security and access control solutions to help your team protect what matters most."
+                  rows={3}
+                  className="rounded-lg"
                 />
               </div>
 

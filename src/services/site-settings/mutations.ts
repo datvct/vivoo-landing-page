@@ -6,12 +6,12 @@ import { getErrorMessage } from "@/utils/error";
 export const useUpsertSiteSettingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ key, value }: { key: string; value: any }) =>
-      siteSettingsApi.upsertSetting(key, value),
+    mutationFn: ({ key, value, locale, siteCode }: { key: string; value: any; locale?: string; siteCode?: string }) =>
+      siteSettingsApi.upsertSetting(key, value, locale, siteCode),
     onSuccess: (_, variables) => {
       message.success(`Settings updated successfully.`);
-      queryClient.invalidateQueries({ queryKey: ["site-setting", variables.key] });
-      queryClient.invalidateQueries({ queryKey: ["all-site-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["site-setting", variables.key, variables.locale, variables.siteCode] });
+      queryClient.invalidateQueries({ queryKey: ["all-site-settings", variables.locale, variables.siteCode] });
     },
     onError: (error: any) => {
       message.error(

@@ -15,6 +15,9 @@ import {
 import ContactSection from "@/components/common/ContactSection";
 import { usePathname } from "next/navigation";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
+import { useProductCategoriesQuery } from "@/services/product-categories/queries";
+import { useAdminSolutionsQuery } from "@/services/solutions/queries";
+import { useAdminServicesQuery } from "@/services/services/queries";
 import { GeneralSettings } from "@/types/types";
 
 const product = [
@@ -56,8 +59,13 @@ export default function Footer() {
   const { data: settingData } = useSiteSettingQuery("general");
   const settings = (settingData?.data?.value || {}) as Partial<GeneralSettings>;
 
+  const { data: categoriesData } = useProductCategoriesQuery({ limit: 10, status: "published" });
+  const { data: solutionsData } = useAdminSolutionsQuery({ limit: 5, status: "published" });
+  const { data: servicesData } = useAdminServicesQuery({ limit: 5, status: "published" });
+
   const logoDark = settings.logoDarkUrl || "/svgs/logo-bg-black.svg";
   const copyrightText = settings.copyrightText || "Avigilon Vietnam. All rights reserved.";
+  const footerDescription = settings.footerDescription || "End-to-end video security and access control solutions to help your team protect what matters most.";
   const facebookLink = settings.facebookUrl || "#";
   const linkedinLink = settings.linkedinUrl || "#";
   const youtubeLink = settings.youtubeUrl || "#";
@@ -65,6 +73,29 @@ export default function Footer() {
   const phoneVal = settings.supportPhone || "(+84) 123456789";
   const emailVal = settings.supportEmail || "contact@gmail.com";
   const hoursVal = settings.businessHours || "Mon - Sat: 08:00 - 5:30";
+
+  const categories = categoriesData?.data?.items || [];
+  const displayProducts = categories.length > 0
+    ? categories.map((cat: any) => ({
+      label: cat.title,
+      href: `/product-category/${cat.slug}`,
+    }))
+    : product;
+
+  const solutions = solutionsData?.data?.items || [];
+  const services = servicesData?.data?.items || [];
+  const displaySolutions = (solutions.length > 0 || services.length > 0)
+    ? [
+      ...solutions.map((sol: any) => ({
+        label: sol.title,
+        href: `/solutions/${sol.slug}`,
+      })),
+      ...services.map((srv: any) => ({
+        label: srv.title,
+        href: `/services/${srv.slug}`,
+      })),
+    ]
+    : solutionLinks;
 
   return (
     <>
@@ -83,11 +114,7 @@ export default function Footer() {
                 className="mb-6"
               />
               <p className="mt-4 max-w-xs text-sm leading-7 text-white/70">
-                End-to-end video
-                security and access
-                control solutions to
-                help your team protect
-                what matters most.
+                {footerDescription}
               </p>
 
               <div className="mt-6 flex items-center gap-3">
@@ -120,7 +147,7 @@ export default function Footer() {
                 Products
               </h5>
               <ul className="mt-4 space-y-2.5">
-                {product.map((item) => (
+                {displayProducts.map((item) => (
                   <li key={item.label}>
                     <Link
                       href={item.href}
@@ -138,20 +165,16 @@ export default function Footer() {
                 Solutions & Services
               </h5>
               <ul className="mt-4 space-y-2.5">
-                {solutionLinks.map(
-                  (item) => (
-                    <li
-                      key={item.label}
+                {displaySolutions.map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-white/70 transition hover:text-white"
                     >
-                      <Link
-                        href={item.href}
-                        className="text-sm text-white/70 transition hover:text-white"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  )
-                )}
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 

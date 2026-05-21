@@ -10,6 +10,7 @@ export const useProductCategoriesQuery = (filters: ProductCategoryFilters) => {
       filters.limit,
       filters.search,
       filters.status,
+      filters.locale,
       filters.sortBy,
       filters.sortOrder,
     ],

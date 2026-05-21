@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Card, Form, Input, Image, Spin } from "antd";
-import { useRouter, useParams } from "next/navigation";
+import { Button, Card, Form, Input, Image, Spin, Tooltip } from "antd";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, UploadCloud, X } from "lucide-react";
 import TiptapEditor from "@/components/common/TiptapEditor";
 import AdminFormInput from "../common/AdminFormInput";
@@ -12,15 +12,20 @@ import {
     useUpdateSolutionMutation,
 } from "@/services/solutions/mutations";
 import { useSolutionQuery } from "@/services/solutions/queries";
-import { SolutionFormValues } from "@/types/types";
+import { SolutionFormValues, APP_LOCALES } from "@/types/types";
 import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import { generateSlug } from "@/utils/slug";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 export default function SolutionFormPage() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
     const solutionId = params.id as string;
+    const translateFromId = searchParams.get("translateFromId");
     const isEditMode = Boolean(solutionId);
+    const fetchId = isEditMode ? solutionId : (translateFromId || "");
+    const shouldFetch = isEditMode || Boolean(translateFromId);
 
     const [form] = Form.useForm<SolutionFormValues>();
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -29,8 +34,8 @@ export default function SolutionFormPage() {
     const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
     const { data: solutionData, isLoading: isSolutionLoading } = useSolutionQuery(
-        solutionId,
-        isEditMode
+        fetchId,
+        shouldFetch
     );
 
     const createMutation = useCreateSolutionMutation(() => {
@@ -42,10 +47,12 @@ export default function SolutionFormPage() {
     });
 
     useEffect(() => {
-        if (isEditMode && solutionData?.data) {
+        if (shouldFetch && solutionData?.data) {
             const sol = solutionData.data;
             form.setFieldsValue({
-                slug: sol.slug,
+                locale: isEditMode ? (sol.locale || "vi") : "en",
+                translationGroup: sol.translationGroup,
+                slug: isEditMode ? sol.slug : `${sol.slug}-en`,
                 title: sol.title,
                 primaryActionHref: sol.primaryActionHref || "",
                 secondaryActionHref: sol.secondaryActionHref || "",
@@ -58,8 +65,9 @@ export default function SolutionFormPage() {
                 seoRobots: sol.seoRobots || "",
                 thumbnailUrl: sol.thumbnailUrl || undefined,
             });
-        } else if (!isEditMode) {
+        } else if (!shouldFetch) {
             form.setFieldsValue({
+                locale: "vi",
                 status: "draft",
                 content: "",
                 seoTitle: "",
@@ -69,7 +77,7 @@ export default function SolutionFormPage() {
                 thumbnailUrl: undefined,
             });
         }
-    }, [isEditMode, solutionData, form]);
+    }, [isEditMode, shouldFetch, solutionData, form]);
 
     const resolvedThumbnailPreview =
         thumbnailPreview === undefined ? solutionData?.data?.thumbnailUrl || null : thumbnailPreview;
@@ -160,10 +168,10 @@ export default function SolutionFormPage() {
                     />
                     <div>
                         <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-                            {isEditMode ? "Edit Solution" : "Create Solution"}
+                            {isEditMode ? "Edit Solution" : (translateFromId ? "Translate Solution" : "Create Solution")}
                         </h1>
                         <p className="text-slate-400 text-xs mt-0.5">
-                            {isEditMode ? "Modify details of this solution" : "Publish a new solution to your public site"}
+                            {isEditMode ? "Modify details of this solution" : (translateFromId ? "Translate the solution into a new language" : "Publish a new solution to your public site")}
                         </p>
                     </div>
                 </div>
@@ -204,6 +212,26 @@ export default function SolutionFormPage() {
                             className="shadow-sm border-slate-100 rounded-2xl"
                         >
                             <div className="grid grid-cols-2 gap-4">
+                                <Form.Item name="translationGroup" hidden>
+                                    <Input />
+                                </Form.Item>
+                                <AdminFormSelect
+                                    name="locale"
+                                    label={
+                                        <div className="flex items-center gap-1">
+                                            Language
+                                            <Tooltip title="Select the language for this solution">
+                                                <InfoCircleOutlined className="text-slate-400 w-3.5 h-3.5" />
+                                            </Tooltip>
+                                        </div>
+                                    }
+                                    required
+                                    options={APP_LOCALES}
+                                    placeholder="Select Language"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mt-2">
                                 <AdminFormInput
                                     name="title"
                                     label="Solution Title"

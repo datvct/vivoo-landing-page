@@ -14,6 +14,8 @@ import { ProductCategory, ProductCategoryStatus } from "@/types/types";
 import { formatDateTime } from "@/utils/utils";
 import { useProductCategoriesQuery } from "@/services/product-categories/queries";
 import { useDeleteCategoryMutation } from "@/services/product-categories/mutations";
+import { APP_LOCALES } from "@/types/types";
+import { Tag } from "antd";
 
 export default function CategoryManagementPage() {
   const router = useRouter();
@@ -21,6 +23,7 @@ export default function CategoryManagementPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ProductCategoryStatus | undefined>(undefined);
+  const [localeFilter, setLocaleFilter] = useState<string>("vi");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [sortBy, setSortBy] = useState<string>("sortOrder");
@@ -39,6 +42,7 @@ export default function CategoryManagementPage() {
     page,
     limit,
     search: debouncedSearch.trim() || undefined,
+    locale: localeFilter,
     status: statusFilter,
     sortBy,
     sortOrder,
@@ -116,6 +120,21 @@ export default function CategoryManagementPage() {
       ),
     },
     {
+      title: "Language",
+      dataIndex: "locale",
+      key: "locale",
+      width: 100,
+      render: (locale: string) => {
+        const isEn = locale === "en";
+        return (
+          <div className="flex items-center gap-1.5 font-medium text-slate-600">
+            <span className="text-lg leading-none">{isEn ? "🇺🇸" : "🇻🇳"}</span>
+            <span className="text-xs uppercase">{isEn ? "EN" : "VI"}</span>
+          </div>
+        );
+      },
+    },
+    {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
@@ -175,6 +194,7 @@ export default function CategoryManagementPage() {
         <AdminActionMenu
           onEdit={() => router.push(`/admin/product-categories/${record.id}/edit`)}
           onDelete={() => handleDelete(record.id)}
+          onTranslate={() => router.push(`/admin/product-categories/create?translateFromId=${record.id}`)}
         />
       ),
     },
@@ -207,6 +227,16 @@ export default function CategoryManagementPage() {
         {/* Filter Section */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center">
           <div className="flex gap-3 items-center ">
+            <Select
+              placeholder="Language"
+              value={localeFilter}
+              className="w-32 h-[32px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+              onChange={(val) => {
+                setLocaleFilter(val);
+                setPage(1);
+              }}
+              options={APP_LOCALES}
+            />
             <AdminSearchBar
               placeholder="Search categories..."
               value={search}
@@ -228,12 +258,13 @@ export default function CategoryManagementPage() {
                 { label: "Archived", value: "archived" },
               ]}
             />
-            {(search || statusFilter) && (
+            {(search || statusFilter || localeFilter !== 'vi') && (
               <Button
                 type="text"
                 onClick={() => {
                   setSearch("");
                   setStatusFilter(undefined);
+                  setLocaleFilter("vi");
                   setPage(1);
                 }}
                 icon={<RotateCcw className="w-4 h-4" />}

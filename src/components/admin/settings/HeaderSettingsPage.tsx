@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Spin, Row, Col, Space, Typography, Popconfirm, message } from "antd";
+import { Card, Input, Button, Spin, Row, Col, Space, Typography, Popconfirm, Select, message } from "antd";
 import {
   Save,
   Plus,
@@ -13,12 +13,15 @@ import {
 } from "lucide-react";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
-import { HeaderSettings, HeaderMenuItem, HeaderSubmenuItem } from "@/types/types";
+import { APP_LOCALES, HeaderSettings, HeaderMenuItem, HeaderSubmenuItem } from "@/types/types";
 
 const { Title, Paragraph } = Typography;
 
 export default function HeaderSettingsPage() {
-  const { data: settingData, isLoading } = useSiteSettingQuery("header");
+  const [locale, setLocale] = useState("vi");
+  const [siteCode, setSiteCode] = useState("vivoo");
+
+  const { data: settingData, isLoading } = useSiteSettingQuery("header", locale, siteCode);
   const upsertMutation = useUpsertSiteSettingMutation();
 
   const [form, setForm] = useState<HeaderSettings>({
@@ -39,6 +42,8 @@ export default function HeaderSettingsPage() {
     upsertMutation.mutate({
       key: "header",
       value: form,
+      locale,
+      siteCode
     });
   };
 
@@ -112,16 +117,30 @@ export default function HeaderSettingsPage() {
             Build and organize your main site navigation links, dropdown lists and routing paths.
           </Paragraph>
         </div>
-        <Button
-          type="primary"
-          icon={<Save className="w-4 h-4 mr-1 inline-block" />}
-          onClick={handleSave}
-          loading={isSaving}
-          size="large"
-          className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
-        >
-          Save Changes
-        </Button>
+        <div className="flex items-center gap-3">
+          <Select
+            value={siteCode}
+            onChange={setSiteCode}
+            options={[{ label: "Vivoo Main Site", value: "vivoo" }]}
+            className="w-40 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Select
+            value={locale}
+            onChange={setLocale}
+            options={APP_LOCALES}
+            className="w-36 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Button
+            type="primary"
+            icon={<Save className="w-4 h-4 mr-1 inline-block" />}
+            onClick={handleSave}
+            loading={isSaving}
+            size="large"
+            className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
+          >
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <Card

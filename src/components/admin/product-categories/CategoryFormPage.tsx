@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Card, Form, Input, Spin, Image, Upload } from "antd";
-import { useRouter, useParams } from "next/navigation";
+import { Button, Card, Form, Input, Spin, Image, Upload, Tooltip } from "antd";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, Upload as UploadIcon, X } from "lucide-react";
 import AdminFormInput from "../common/AdminFormInput";
 import AdminFormSelect from "../common/AdminFormSelect";
@@ -11,9 +11,10 @@ import {
   useUpdateCategoryMutation,
 } from "@/services/product-categories/mutations";
 import { useProductCategoryQuery } from "@/services/product-categories/queries";
-import { ProductCategory, ProductCategoryFormValues } from "@/types/types";
 import { generateSlug } from "@/utils/slug";
 import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
+import { APP_LOCALES, ProductCategory, ProductCategoryFormValues } from "@/types/types";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 function categoryToFormFields(c: ProductCategory): Partial<ProductCategoryFormValues> {
   return {
@@ -70,8 +71,12 @@ const emptyDefaults: Partial<ProductCategoryFormValues> = {
 export default function CategoryFormPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const categoryId = typeof params?.id === "string" ? params.id : "";
+  const translateFromId = searchParams.get("translateFromId");
   const isEditMode = Boolean(categoryId);
+  const fetchId = isEditMode ? categoryId : (translateFromId || "");
+  const shouldFetch = isEditMode || Boolean(translateFromId);
 
   const [form] = Form.useForm<ProductCategoryFormValues>();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -84,7 +89,7 @@ export default function CategoryFormPage() {
   const [featureMediaPickerOpen, setFeatureMediaPickerOpen] = useState(false);
   const [featureBlobUrl, setFeatureBlobUrl] = useState<string | null>(null);
 
-  const { data: categoryData, isLoading: isFetching } = useProductCategoryQuery(categoryId, isEditMode);
+  const { data: categoryData, isLoading: isFetching } = useProductCategoryQuery(fetchId, shouldFetch);
 
   const createMutation = useCreateCategoryMutation(() => {
     router.push("/admin/product-categories");
@@ -107,16 +112,25 @@ export default function CategoryFormPage() {
 
   /* eslint-disable react-hooks/set-state-in-effect -- reset local image preview when query data or mode changes */
   useEffect(() => {
-    if (isEditMode && categoryData?.data) {
-      form.setFieldsValue(categoryToFormFields(categoryData.data));
+    if (shouldFetch && categoryData?.data) {
+      const cat = categoryData.data;
+      form.setFieldsValue({
+        ...categoryToFormFields(cat),
+        locale: isEditMode ? (cat.locale || "vi") : "en",
+        translationGroup: cat.translationGroup,
+        slug: isEditMode ? cat.slug : `${cat.slug}-en`,
+      });
       setPreviewSource("server");
       setPreviewUrl(null);
       setThumbnailFileUrl(null);
       setFeaturePreviewSource("server");
       setFeaturePreviewUrl(null);
       setFeatureBlobUrl(null);
-    } else if (!isEditMode) {
-      form.setFieldsValue(emptyDefaults);
+    } else if (!shouldFetch) {
+      form.setFieldsValue({
+        ...emptyDefaults,
+        locale: "vi",
+      });
       setPreviewSource("empty");
       setPreviewUrl(null);
       setThumbnailFileUrl(null);
@@ -124,7 +138,7 @@ export default function CategoryFormPage() {
       setFeaturePreviewUrl(null);
       setFeatureBlobUrl(null);
     }
-  }, [isEditMode, categoryData, form]);
+  }, [isEditMode, shouldFetch, categoryData, form]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const resolvedPreviewUrl =
@@ -269,12 +283,12 @@ export default function CategoryFormPage() {
           />
           <div>
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-              {isEditMode ? "Edit Category" : "Create Category"}
+              {isEditMode ? "Edit Category" : (translateFromId ? "Translate Category" : "Create Category")}
             </h1>
             <p className="text-slate-400 text-xs mt-0.5">
               {isEditMode
                 ? "Update category details, storefront hero, benefits, feature block, SEO and images."
-                : "Add a new product category for the storefront."}
+                : (translateFromId ? "Translate the category into a new language." : "Add a new product category for the storefront.")}
             </p>
           </div>
         </div>
@@ -315,6 +329,26 @@ export default function CategoryFormPage() {
               className="shadow-sm border-slate-100 rounded-2xl"
             >
               <div className="grid grid-cols-2 gap-4">
+                <Form.Item name="translationGroup" hidden>
+                  <Input />
+                </Form.Item>
+                <AdminFormSelect
+                  name="locale"
+                  label={
+                    <div className="flex items-center gap-1">
+                      Language
+                      <Tooltip title="Select the language for this category">
+                        <InfoCircleOutlined className="text-slate-400 w-3.5 h-3.5" />
+                      </Tooltip>
+                    </div>
+                  }
+                  required
+                  options={APP_LOCALES}
+                  placeholder="Select Language"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-2">
                 <AdminFormInput
                   name="title"
                   label="Title"

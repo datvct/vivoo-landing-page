@@ -10,6 +10,7 @@ export const useAdminServicesQuery = (filters: ServiceFilters) => {
       filters.limit,
       filters.search,
       filters.status,
+      filters.locale,
       filters.sortBy,
       filters.sortOrder,
     ],

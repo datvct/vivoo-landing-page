@@ -10,6 +10,7 @@ export const useAdminProductsQuery = (filters: ProductFilters) => {
       filters.limit,
       filters.search,
       filters.status,
+      filters.locale,
       filters.categoryId,
       filters.sortBy,
       filters.sortOrder,

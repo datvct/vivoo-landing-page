@@ -14,6 +14,7 @@ import { formatDateTime } from "@/utils/utils";
 import { useAdminProductsQuery } from "@/services/products/queries";
 import { useDeleteProductMutation } from "@/services/products/mutations";
 import { useProductCategoriesQuery } from "@/services/product-categories/queries";
+import { APP_LOCALES } from "@/types/types";
 
 export default function ProductManagementPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function ProductManagementPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
+  const [localeFilter, setLocaleFilter] = useState<string>("vi");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [sortBy, setSortBy] = useState<string>("sortOrder");
@@ -49,6 +51,7 @@ export default function ProductManagementPage() {
     page,
     limit,
     search: debouncedSearch.trim() || undefined,
+    locale: localeFilter,
     status: statusFilter,
     categoryId: categoryFilter,
     sortBy,
@@ -67,6 +70,10 @@ export default function ProductManagementPage() {
 
   function openEdit(record: Product) {
     router.push(`/admin/product/${record.id}/edit`);
+  }
+
+  function handleTranslate(record: Product) {
+    router.push(`/admin/product/create?translateFromId=${record.id}`);
   }
 
   function handleDelete(id: string) {
@@ -119,6 +126,21 @@ export default function ProductManagementPage() {
           )}
         </div>
       ),
+    },
+    {
+      title: "Language",
+      dataIndex: "locale",
+      key: "locale",
+      width: 100,
+      render: (locale: string) => {
+        const isEn = locale === "en";
+        return (
+          <div className="flex items-center gap-1.5 font-medium text-slate-600">
+            <span className="text-lg leading-none">{isEn ? "🇺🇸" : "🇻🇳"}</span>
+            <span className="text-xs uppercase">{isEn ? "EN" : "VI"}</span>
+          </div>
+        );
+      },
     },
     {
       title: "Slug",
@@ -193,6 +215,7 @@ export default function ProductManagementPage() {
         <AdminActionMenu
           onEdit={() => openEdit(record)}
           onDelete={() => handleDelete(record.id)}
+          onTranslate={() => handleTranslate(record)}
         />
       ),
     },
@@ -225,6 +248,17 @@ export default function ProductManagementPage() {
         {/* Filter Section */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
           <div className="flex flex-nowrap gap-3 items-center">
+            <Select
+              placeholder="Language"
+              value={localeFilter}
+              className="w-32 h-[32px] [&_.ant-select-selector]:!rounded-lg"
+              onChange={(val) => {
+                setLocaleFilter(val);
+                setPage(1);
+              }}
+              options={APP_LOCALES}
+            />
+
             <AdminSearchBar
               placeholder="Search products..."
               value={search}
@@ -268,6 +302,7 @@ export default function ProductManagementPage() {
                   setSearch("");
                   setCategoryFilter(undefined);
                   setStatusFilter(undefined);
+                  setLocaleFilter("vi");
                   setPage(1);
                 }}
                 icon={<RotateCcw className="w-4 h-4" />}

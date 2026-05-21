@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Space, Spin } from "antd";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
 import TiptapEditor from "@/components/common/TiptapEditor";
 import { useProductCategoriesQuery } from "@/services/product-categories/queries";
@@ -28,10 +28,14 @@ type ProductFormValues = { contents?: string; benefits?: BenefitFormItem[];[key:
 export default function ProductFormPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const [form] = Form.useForm();
 
   const productId = params?.id as string;
+  const translateFromId = searchParams.get("translateFromId");
   const isEditMode = Boolean(productId);
+  const fetchId = isEditMode ? productId : (translateFromId || "");
+  const shouldFetch = isEditMode || Boolean(translateFromId);
 
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null | undefined>(undefined);
@@ -49,7 +53,7 @@ export default function ProductFormPage() {
   const [searchRelatedText, setSearchRelatedText] = useState("");
   const [selectedRelatedId, setSelectedRelatedId] = useState<string | undefined>(undefined);
 
-  const { data: productData, isLoading: isProductLoading } = useProductQuery(productId, isEditMode);
+  const { data: productData, isLoading: isProductLoading } = useProductQuery(fetchId, shouldFetch);
   const { data: categoriesData } = useProductCategoriesQuery({ limit: 100, status: "published" });
   const categoriesList = categoriesData?.data?.items || [];
 
@@ -72,10 +76,12 @@ export default function ProductFormPage() {
   const deleteRelatedMutation = useDeleteRelatedProductMutation(productId);
 
   useEffect(() => {
-    if (isEditMode && productData?.data) {
+    if (shouldFetch && productData?.data) {
       const prod = productData.data;
       form.setFieldsValue({
-        slug: prod.slug,
+        locale: isEditMode ? (prod.locale || "vi") : "en", // Default to 'en' when translating
+        translationGroup: prod.translationGroup,
+        slug: isEditMode ? prod.slug : `${prod.slug}-en`,
         title: prod.title,
         categoryId: prod.categoryId || undefined,
         categoryLabel: prod.categoryLabel || "",
@@ -107,8 +113,9 @@ export default function ProductFormPage() {
         seoRobots: prod.seoRobots || "",
       });
 
-    } else if (!isEditMode) {
+    } else if (!shouldFetch) {
       form.setFieldsValue({
+        locale: "vi",
         sortOrder: 0,
         status: "published",
         badges: [],
@@ -121,7 +128,7 @@ export default function ProductFormPage() {
         seoRobots: "",
       });
     }
-  }, [isEditMode, productData, form]);
+  }, [isEditMode, shouldFetch, productData, form]);
 
   const resolvedExistingGallery = existingGallery ?? productData?.data?.productGalleryItems ?? [];
 
@@ -246,12 +253,12 @@ export default function ProductFormPage() {
           />
           <div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-              {isEditMode ? "Edit Product" : "Create Product"}
+              {isEditMode ? "Edit Product" : (translateFromId ? "Translate Product" : "Create Product")}
             </h1>
             <p className="text-slate-500 text-sm mt-0.5">
               {isEditMode
                 ? "Update your product details, gallery images and cross-selling links."
-                : "Fill out the fields to publish a brand new digital product."}
+                : (translateFromId ? "Translate the product into a new language." : "Fill out the fields to publish a brand new digital product.")}
             </p>
           </div>
         </div>

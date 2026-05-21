@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Card, Form, Input, Spin, Image } from "antd";
-import { useRouter, useParams } from "next/navigation";
+import { Button, Card, Form, Input, Spin, Image, Tooltip } from "antd";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, UploadCloud, X } from "lucide-react";
 import TiptapEditor from "@/components/common/TiptapEditor";
 import AdminFormInput from "../common/AdminFormInput";
@@ -12,16 +12,21 @@ import {
   useUpdateServiceMutation,
 } from "@/services/services/mutations";
 import { useServiceQuery } from "@/services/services/queries";
-import { ServiceFormValues } from "@/types/types";
+import { ServiceFormValues, APP_LOCALES } from "@/types/types";
 import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 
 import { generateSlug } from "@/utils/slug";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 export default function ServiceFormPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const serviceId = params.id as string;
+  const translateFromId = searchParams.get("translateFromId");
   const isEditMode = Boolean(serviceId);
+  const fetchId = isEditMode ? serviceId : (translateFromId || "");
+  const shouldFetch = isEditMode || Boolean(translateFromId);
 
   const [form] = Form.useForm();
 
@@ -31,10 +36,10 @@ export default function ServiceFormPage() {
   const [thumbnailMediaUrl, setThumbnailMediaUrl] = useState<string | null>(null);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
-  // Fetch service details in Edit Mode
+  // Fetch service details in Edit Mode or Translate Mode
   const { data: serviceData, isLoading: isServiceLoading } = useServiceQuery(
-    serviceId,
-    isEditMode
+    fetchId,
+    shouldFetch
   );
 
   // Create Mutation Hook
@@ -47,12 +52,14 @@ export default function ServiceFormPage() {
     router.push("/admin/services");
   });
 
-  // Populate form with service data in Edit Mode
+  // Populate form with service data
   useEffect(() => {
-    if (isEditMode && serviceData?.data) {
+    if (shouldFetch && serviceData?.data) {
       const srv = serviceData.data;
       form.setFieldsValue({
-        slug: srv.slug,
+        locale: isEditMode ? (srv.locale || "vi") : "en",
+        translationGroup: srv.translationGroup,
+        slug: isEditMode ? srv.slug : `${srv.slug}-en`,
         title: srv.title,
         primaryActionHref: srv.primaryActionHref || "",
         secondaryActionHref: srv.secondaryActionHref || "",
@@ -65,8 +72,9 @@ export default function ServiceFormPage() {
         seoRobots: srv.seoRobots || "",
         thumbnailUrl: srv.thumbnailUrl || undefined,
       });
-    } else if (!isEditMode) {
+    } else if (!shouldFetch) {
       form.setFieldsValue({
+        locale: "vi",
         status: "draft",
         content: "",
         seoTitle: "",
@@ -76,7 +84,7 @@ export default function ServiceFormPage() {
         thumbnailUrl: undefined,
       });
     }
-  }, [isEditMode, serviceData, form]);
+  }, [isEditMode, shouldFetch, serviceData, form]);
 
   const resolvedThumbnailPreview =
     thumbnailPreview === undefined ? serviceData?.data?.thumbnailUrl || null : thumbnailPreview;
@@ -168,10 +176,10 @@ export default function ServiceFormPage() {
           />
           <div>
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-              {isEditMode ? "Edit Service" : "Create Service"}
+              {isEditMode ? "Edit Service" : (translateFromId ? "Translate Service" : "Create Service")}
             </h1>
             <p className="text-slate-400 text-xs mt-0.5">
-              {isEditMode ? "Modify details of this service" : "Publish a new service to your public site"}
+              {isEditMode ? "Modify details of this service" : (translateFromId ? "Translate the service into a new language" : "Publish a new service to your public site")}
             </p>
           </div>
         </div>
@@ -214,6 +222,26 @@ export default function ServiceFormPage() {
               className="shadow-sm border-slate-100 rounded-2xl"
             >
               <div className="grid grid-cols-2 gap-4">
+                <Form.Item name="translationGroup" hidden>
+                  <Input />
+                </Form.Item>
+                <AdminFormSelect
+                  name="locale"
+                  label={
+                    <div className="flex items-center gap-1">
+                      Language
+                      <Tooltip title="Select the language for this service">
+                        <InfoCircleOutlined className="text-slate-400 w-3.5 h-3.5" />
+                      </Tooltip>
+                    </div>
+                  }
+                  required
+                  options={APP_LOCALES}
+                  placeholder="Select Language"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-2">
                 <AdminFormInput
                   name="title"
                   label="Service Title"

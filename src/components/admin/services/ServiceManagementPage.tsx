@@ -13,6 +13,8 @@ import { Service, ServiceStatus } from "@/types/types";
 import { formatDateTime } from "@/utils/utils";
 import { useAdminServicesQuery } from "@/services/services/queries";
 import { useDeleteServiceMutation } from "@/services/services/mutations";
+import { APP_LOCALES } from "@/types/types";
+import { Tag } from "antd";
 
 export default function ServiceManagementPage() {
   const router = useRouter();
@@ -21,6 +23,7 @@ export default function ServiceManagementPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ServiceStatus | undefined>(undefined);
+  const [localeFilter, setLocaleFilter] = useState<string>("vi");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [sortBy, setSortBy] = useState<string>("createdAt");
@@ -40,6 +43,7 @@ export default function ServiceManagementPage() {
     page,
     limit,
     search: debouncedSearch.trim() || undefined,
+    locale: localeFilter,
     status: statusFilter,
     sortBy,
     sortOrder,
@@ -111,6 +115,21 @@ export default function ServiceManagementPage() {
       ),
     },
     {
+      title: "Language",
+      dataIndex: "locale",
+      key: "locale",
+      width: 100,
+      render: (locale: string) => {
+        const isEn = locale === "en";
+        return (
+          <div className="flex items-center gap-1.5 font-medium text-slate-600">
+            <span className="text-lg leading-none">{isEn ? "🇺🇸" : "🇻🇳"}</span>
+            <span className="text-xs uppercase">{isEn ? "EN" : "VI"}</span>
+          </div>
+        );
+      },
+    },
+    {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
@@ -180,6 +199,7 @@ export default function ServiceManagementPage() {
         <AdminActionMenu
           onEdit={() => openEdit(record)}
           onDelete={() => handleDelete(record.id)}
+          onTranslate={() => router.push(`/admin/services/create?translateFromId=${record.id}`)}
         />
       ),
     },
@@ -212,6 +232,17 @@ export default function ServiceManagementPage() {
         {/* Filter Section */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
           <div className="flex flex-nowrap gap-3 items-center">
+            <Select
+              placeholder="Language"
+              value={localeFilter}
+              className="w-32 h-[32px] [&_.ant-select-selector]:!rounded-lg"
+              onChange={(val) => {
+                setLocaleFilter(val);
+                setPage(1);
+              }}
+              options={APP_LOCALES}
+            />
+
             <AdminSearchBar
               placeholder="Search services..."
               value={search}
@@ -235,12 +266,13 @@ export default function ServiceManagementPage() {
               ]}
             />
 
-            {(search || statusFilter) && (
+            {(search || statusFilter || localeFilter !== 'vi') && (
               <Button
                 type="text"
                 onClick={() => {
                   setSearch("");
                   setStatusFilter(undefined);
+                  setLocaleFilter("vi");
                   setPage(1);
                 }}
                 icon={<RotateCcw className="w-4 h-4" />}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Spin, Row, Col, Space, Typography, Upload, Popconfirm, Tabs, Divider, message } from "antd";
+import { Card, Input, Button, Spin, Row, Col, Space, Typography, Upload, Popconfirm, Tabs, Divider, Select, message } from "antd";
 import {
   Save,
   Plus,
@@ -18,12 +18,15 @@ import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
 import { useUploadMediaMutation } from "@/services/media/mutations";
-import { HomeSettings, HomeBannerSlide, HomeIndustry, HomeStory, HomeComplianceItem } from "@/types/types";
+import { APP_LOCALES, HomeSettings, HomeBannerSlide, HomeIndustry, HomeStory, HomeComplianceItem } from "@/types/types";
 
 const { Title, Paragraph } = Typography;
 
 export default function HomeSettingsPage() {
-  const { data: settingData, isLoading } = useSiteSettingQuery("home");
+  const [locale, setLocale] = useState("vi");
+  const [siteCode, setSiteCode] = useState("vivoo");
+
+  const { data: settingData, isLoading } = useSiteSettingQuery("home", locale, siteCode);
   const upsertMutation = useUpsertSiteSettingMutation();
   const uploadMutation = useUploadMediaMutation();
 
@@ -83,6 +86,8 @@ export default function HomeSettingsPage() {
     upsertMutation.mutate({
       key: "home",
       value: form,
+      locale,
+      siteCode
     });
   };
 
@@ -357,16 +362,30 @@ export default function HomeSettingsPage() {
             Easily update text copy, logos, banner sliders, industries, customer quotes, and certifications.
           </Paragraph>
         </div>
-        <Button
-          type="primary"
-          icon={<Save className="w-4 h-4 mr-1 inline-block" />}
-          onClick={handleSave}
-          loading={upsertMutation.isPending}
-          size="large"
-          className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
-        >
-          Save Changes
-        </Button>
+        <div className="flex items-center gap-3">
+          <Select
+            value={siteCode}
+            onChange={setSiteCode}
+            options={[{ label: "Vivoo Main Site", value: "vivoo" }]}
+            className="w-40 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Select
+            value={locale}
+            onChange={setLocale}
+            options={APP_LOCALES}
+            className="w-36 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+          />
+          <Button
+            type="primary"
+            icon={<Save className="w-4 h-4 mr-1 inline-block" />}
+            onClick={handleSave}
+            loading={upsertMutation.isPending}
+            size="large"
+            className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
+          >
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <Card className="rounded-2xl border border-slate-100 shadow-sm">

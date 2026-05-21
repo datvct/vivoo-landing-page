@@ -6,6 +6,11 @@ export type NavItem = {
   children?: NavItem[];
 };
 
+export const APP_LOCALES = [
+  { value: "vi", label: "Vietnamese" },
+  { value: "en", label: "English" }
+];
+
 export type User = {
   id: string;
   email: string;
@@ -35,6 +40,8 @@ export type ProductCategoryStatus = "draft" | "scheduled" | "published" | "archi
 export type ProductCategory = {
   id: string;
   slug: string;
+  locale: string;
+  translationGroup: string;
   title: string;
   subtitle?: string | null;
   description?: string | null;
@@ -68,6 +75,7 @@ export type ProductCategoryFilters = {
   page?: number;
   limit?: number;
   search?: string;
+  locale?: string;
   status?: ProductCategoryStatus;
   sortBy?: string;
   sortOrder?: "ASC" | "DESC";
@@ -76,6 +84,8 @@ export type ProductCategoryFilters = {
 export type ProductCategoryFormValues = {
   id?: string;
   slug: string;
+  locale?: string;
+  translationGroup?: string;
   title: string;
   subtitle?: string | null;
   description?: string | null;
@@ -115,6 +125,8 @@ export type Product = {
   id: string;
   categoryId?: string | null;
   slug: string;
+  locale: string;
+  translationGroup: string;
   title: string;
   categoryLabel?: string | null;
   thumbnailUrl?: string | null;
@@ -148,6 +160,7 @@ export type ProductFilters = {
   limit?: number;
   categoryId?: string;
   search?: string;
+  locale?: string;
   status?: ProductStatus;
   sortBy?: string;
   sortOrder?: "ASC" | "DESC";
@@ -156,6 +169,8 @@ export type ProductFilters = {
 export type ProductFormValues = {
   id?: string;
   slug: string;
+  locale?: string;
+  translationGroup?: string;
   title: string;
   categoryId?: string | null;
   categoryLabel?: string | null;
@@ -183,6 +198,8 @@ export type SolutionStatus = "draft" | "scheduled" | "published" | "archived";
 export type Solution = {
   id: string;
   slug: string;
+  locale: string;
+  translationGroup: string;
   title: string;
   primaryActionHref?: string | null;
   secondaryActionHref?: string | null;
@@ -206,6 +223,7 @@ export type SolutionFilters = {
   limit?: number;
   status?: SolutionStatus;
   search?: string;
+  locale?: string;
   sortBy?: string;
   sortOrder?: "ASC" | "DESC";
 };
@@ -213,6 +231,8 @@ export type SolutionFilters = {
 export type SolutionFormValues = {
   id?: string;
   slug: string;
+  locale?: string;
+  translationGroup?: string;
   title: string;
   primaryActionHref?: string | null;
   secondaryActionHref?: string | null;
@@ -233,6 +253,8 @@ export type ServiceStatus = "draft" | "scheduled" | "published" | "archived";
 export type Service = {
   id: string;
   slug: string;
+  locale: string;
+  translationGroup: string;
   title: string;
   primaryActionHref?: string | null;
   secondaryActionHref?: string | null;
@@ -256,6 +278,7 @@ export type ServiceFilters = {
   limit?: number;
   status?: ServiceStatus;
   search?: string;
+  locale?: string;
   sortBy?: string;
   sortOrder?: "ASC" | "DESC";
 };
@@ -263,6 +286,8 @@ export type ServiceFilters = {
 export type ServiceFormValues = {
   id?: string;
   slug: string;
+  locale?: string;
+  translationGroup?: string;
   title: string;
   primaryActionHref?: string | null;
   secondaryActionHref?: string | null;
@@ -382,6 +407,7 @@ export type GeneralSettings = {
   supportAddress?: string;
   businessHours?: string;
   copyrightText?: string;
+  footerDescription?: string;
   facebookUrl?: string;
   linkedinUrl?: string;
   youtubeUrl?: string;
