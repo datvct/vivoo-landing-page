@@ -31,3 +31,51 @@ export async function getCategoryBySlug(
 
   return null;
 }
+
+//viết giúp tôi getProductCategories giúp tôi 
+
+export interface GetProductCategoriesOptions {
+  page?: number;
+  limit?: number;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
+  search?: string;
+  locale?: Locale;
+}
+
+export async function getProductCategories(options: GetProductCategoriesOptions = {}): Promise<ProductCategory[]> {
+  const {
+    page = 1,
+    limit = 10,
+    status = "published",
+    sortBy = "sortOrder",
+    sortOrder = "ASC",
+    search,
+    locale,
+  } = options;
+
+  const backendUrl = getBackendUrl();
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", String(page));
+  queryParams.append("limit", String(limit));
+
+  if (status) queryParams.append("status", status);
+  if (sortBy) queryParams.append("sortBy", sortBy);
+  if (sortOrder) queryParams.append("sortOrder", sortOrder);
+  if (search) queryParams.append("search", search);
+  if (locale) queryParams.append("locale", locale);
+
+  try {
+    const res = await fetch(`${backendUrl}/product-categories?${queryParams.toString()}`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const result = await res.json();
+      return result?.data?.items || [];
+    }
+  } catch (error) {
+    // Ignore
+  }
+  return [];
+}

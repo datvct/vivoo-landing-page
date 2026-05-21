@@ -1,9 +1,7 @@
 "use client";
 
 import LocaleLink from "@/components/common/LocaleLink";
-import Navbar, {
-  defaultMenus,
-} from "./Navbar";
+import Navbar from "./Navbar";
 import {
   Menu,
   X,
@@ -28,7 +26,7 @@ export default function Header() {
 
   const { data: headerData } = useSiteSettingQuery("header", locale);
   const customMenus = headerData?.data?.value?.menus || [];
-  const activeMenus = customMenus.length > 0 ? customMenus : defaultMenus;
+  const activeMenus = customMenus.length > 0 ? customMenus : [];
 
   const openDrawer = () => {
     setShowDrawer(true);
