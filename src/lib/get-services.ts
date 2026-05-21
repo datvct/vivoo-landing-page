@@ -19,26 +19,51 @@ export async function getServices(
     locale,
   } = options;
 
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
-  const queryParams = new URLSearchParams();
-  queryParams.append("page", String(page));
-  queryParams.append("limit", String(limit));
+  const apiBase =
+    process.env
+      .NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:8080/api";
+  const backendUrl = apiBase.replace(
+    "/api",
+    ""
+  );
+  const queryParams =
+    new URLSearchParams();
+  queryParams.append(
+    "page",
+    String(page)
+  );
+  queryParams.append(
+    "limit",
+    String(limit)
+  );
 
   if (status) {
-    queryParams.append("status", status);
+    queryParams.append(
+      "status",
+      status
+    );
   }
   if (search) {
-    queryParams.append("search", search);
+    queryParams.append(
+      "search",
+      search
+    );
   }
   if (locale) {
-    queryParams.append("locale", locale);
+    queryParams.append(
+      "locale",
+      locale
+    );
   }
 
   try {
-    const res = await fetch(`${backendUrl}/services?${queryParams.toString()}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/services?${queryParams.toString()}`,
+      {
+        next: { revalidate: 60 * 10 },
+      }
+    );
     if (res.ok) {
       const result = await res.json();
       return result?.data?.items || [];
@@ -49,15 +74,29 @@ export async function getServices(
   return [];
 }
 
-export async function getServiceBySlug(slug: string, locale?: Locale) {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
-  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+export async function getServiceBySlug(
+  slug: string,
+  locale?: Locale
+) {
+  const apiBase =
+    process.env
+      .NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:8080/api";
+  const backendUrl = apiBase.replace(
+    "/api",
+    ""
+  );
+  const query = locale
+    ? `?locale=${encodeURIComponent(locale)}`
+    : "";
 
   try {
-    const res = await fetch(`${backendUrl}/services/slug/${encodeURIComponent(slug)}${query}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/services/slug/${encodeURIComponent(slug)}${query}`,
+      {
+        next: { revalidate: 60 * 10 },
+      }
+    );
     if (res.ok) {
       const result = await res.json();
       return result?.data || null;

@@ -2,7 +2,10 @@ import type { ProductCategory } from "@/types/types";
 import type { Locale } from "@/i18n/config";
 
 function getBackendUrl() {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
+  const apiBase =
+    process.env
+      .NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:8080/api";
   return apiBase.replace("/api", "");
 }
 
@@ -11,13 +14,15 @@ export async function getCategoryBySlug(
   locale?: Locale
 ): Promise<ProductCategory | null> {
   const backendUrl = getBackendUrl();
-  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const query = locale
+    ? `?locale=${encodeURIComponent(locale)}`
+    : "";
 
   try {
     const res = await fetch(
       `${backendUrl}/product-categories/slug/${encodeURIComponent(slug)}${query}`,
       {
-        next: { revalidate: 60 },
+        next: { revalidate: 60 * 10 },
       }
     );
 
@@ -32,7 +37,7 @@ export async function getCategoryBySlug(
   return null;
 }
 
-//viết giúp tôi getProductCategories giúp tôi 
+//viết giúp tôi getProductCategories giúp tôi
 
 export interface GetProductCategoriesOptions {
   page?: number;
@@ -44,7 +49,9 @@ export interface GetProductCategoriesOptions {
   locale?: Locale;
 }
 
-export async function getProductCategories(options: GetProductCategoriesOptions = {}): Promise<ProductCategory[]> {
+export async function getProductCategories(
+  options: GetProductCategoriesOptions = {}
+): Promise<ProductCategory[]> {
   const {
     page = 1,
     limit = 10,
@@ -56,20 +63,50 @@ export async function getProductCategories(options: GetProductCategoriesOptions 
   } = options;
 
   const backendUrl = getBackendUrl();
-  const queryParams = new URLSearchParams();
-  queryParams.append("page", String(page));
-  queryParams.append("limit", String(limit));
+  const queryParams =
+    new URLSearchParams();
+  queryParams.append(
+    "page",
+    String(page)
+  );
+  queryParams.append(
+    "limit",
+    String(limit)
+  );
 
-  if (status) queryParams.append("status", status);
-  if (sortBy) queryParams.append("sortBy", sortBy);
-  if (sortOrder) queryParams.append("sortOrder", sortOrder);
-  if (search) queryParams.append("search", search);
-  if (locale) queryParams.append("locale", locale);
+  if (status)
+    queryParams.append(
+      "status",
+      status
+    );
+  if (sortBy)
+    queryParams.append(
+      "sortBy",
+      sortBy
+    );
+  if (sortOrder)
+    queryParams.append(
+      "sortOrder",
+      sortOrder
+    );
+  if (search)
+    queryParams.append(
+      "search",
+      search
+    );
+  if (locale)
+    queryParams.append(
+      "locale",
+      locale
+    );
 
   try {
-    const res = await fetch(`${backendUrl}/product-categories?${queryParams.toString()}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/product-categories?${queryParams.toString()}`,
+      {
+        next: { revalidate: 60 * 10 },
+      }
+    );
     if (res.ok) {
       const result = await res.json();
       return result?.data?.items || [];

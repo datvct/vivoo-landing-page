@@ -11,7 +11,9 @@ export interface GetProductsOptions {
   locale?: Locale;
 }
 
-export async function getProducts(options: GetProductsOptions = {}) {
+export async function getProducts(
+  options: GetProductsOptions = {}
+) {
   const {
     page = 1,
     limit = 10,
@@ -23,36 +25,70 @@ export async function getProducts(options: GetProductsOptions = {}) {
     locale,
   } = options;
 
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
+  const apiBase =
+    process.env
+      .NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:8080/api";
+  const backendUrl = apiBase.replace(
+    "/api",
+    ""
+  );
 
-  const queryParams = new URLSearchParams();
-  queryParams.append("page", String(page));
-  queryParams.append("limit", String(limit));
-  
+  const queryParams =
+    new URLSearchParams();
+  queryParams.append(
+    "page",
+    String(page)
+  );
+  queryParams.append(
+    "limit",
+    String(limit)
+  );
+
   if (status) {
-    queryParams.append("status", status);
+    queryParams.append(
+      "status",
+      status
+    );
   }
   if (sortBy) {
-    queryParams.append("sortBy", sortBy);
+    queryParams.append(
+      "sortBy",
+      sortBy
+    );
   }
   if (sortOrder) {
-    queryParams.append("sortOrder", sortOrder);
+    queryParams.append(
+      "sortOrder",
+      sortOrder
+    );
   }
   if (categoryId) {
-    queryParams.append("categoryId", categoryId);
+    queryParams.append(
+      "categoryId",
+      categoryId
+    );
   }
   if (search) {
-    queryParams.append("search", search);
+    queryParams.append(
+      "search",
+      search
+    );
   }
   if (locale) {
-    queryParams.append("locale", locale);
+    queryParams.append(
+      "locale",
+      locale
+    );
   }
 
   try {
-    const res = await fetch(`${backendUrl}/products?${queryParams.toString()}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/products?${queryParams.toString()}`,
+      {
+        next: { revalidate: 60 * 10 },
+      }
+    );
     if (res.ok) {
       const result = await res.json();
       return result?.data?.items || [];
@@ -63,15 +99,29 @@ export async function getProducts(options: GetProductsOptions = {}) {
   return [];
 }
 
-export async function getProductBySlug(slug: string, locale?: Locale) {
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
-  const backendUrl = apiBase.replace("/api", "");
-  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+export async function getProductBySlug(
+  slug: string,
+  locale?: Locale
+) {
+  const apiBase =
+    process.env
+      .NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:8080/api";
+  const backendUrl = apiBase.replace(
+    "/api",
+    ""
+  );
+  const query = locale
+    ? `?locale=${encodeURIComponent(locale)}`
+    : "";
 
   try {
-    const res = await fetch(`${backendUrl}/products/slug/${encodeURIComponent(slug)}${query}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${backendUrl}/products/slug/${encodeURIComponent(slug)}${query}`,
+      {
+        next: { revalidate: 60 * 10 },
+      }
+    );
 
     if (res.ok) {
       const result = await res.json();
