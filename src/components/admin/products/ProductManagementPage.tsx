@@ -24,7 +24,7 @@ export default function ProductManagementPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
-  const [localeFilter, setLocaleFilter] = useState<string>("vi");
+  const [localeFilter, setLocaleFilter] = useState<string>("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [sortBy, setSortBy] = useState<string>("sortOrder");
@@ -51,7 +51,7 @@ export default function ProductManagementPage() {
     page,
     limit,
     search: debouncedSearch.trim() || undefined,
-    locale: localeFilter,
+    locale: localeFilter || undefined,
     status: statusFilter,
     categoryId: categoryFilter,
     sortBy,
@@ -163,7 +163,7 @@ export default function ProductManagementPage() {
         return (
           <div className="flex flex-wrap gap-1">
             {badges.map((badge, idx) => (
-              <Tag key={idx} color="blue" className="!mr-0 rounded-full font-medium text-[11px]">
+              <Tag key={idx} color="blue" className="mr-0! rounded-full font-medium text-[11px]">
                 {badge}
               </Tag>
             ))}
@@ -239,7 +239,7 @@ export default function ProductManagementPage() {
             icon={<Plus className="w-4 h-4 mr-1 inline-block" />}
             onClick={openCreate}
             size="large"
-            className="shadow-sm font-semibold h-[32px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
+            className="shadow-sm font-semibold h-8 px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
           >
             Create Product
           </Button>
@@ -251,12 +251,12 @@ export default function ProductManagementPage() {
             <Select
               placeholder="Language"
               value={localeFilter}
-              className="w-32 h-[32px] [&_.ant-select-selector]:!rounded-lg"
+              className="w-40 h-8 [&_.ant-select-selector]:rounded-lg!"
               onChange={(val) => {
                 setLocaleFilter(val);
                 setPage(1);
               }}
-              options={APP_LOCALES}
+              options={[{ label: "All languages", value: "" }, ...APP_LOCALES]}
             />
 
             <AdminSearchBar
@@ -269,7 +269,7 @@ export default function ProductManagementPage() {
               placeholder="Filter by Category"
               allowClear
               value={categoryFilter}
-              className="w-56 h-[32px] [&_.ant-select-selector]:!rounded-lg"
+              className="w-56 h-8 [&_.ant-select-selector]:rounded-lg!"
               onChange={(val) => {
                 setCategoryFilter(val);
                 setPage(1);
@@ -284,7 +284,7 @@ export default function ProductManagementPage() {
               placeholder="Filter by Status"
               allowClear
               value={statusFilter}
-              className="w-44 h-[32px] [&_.ant-select-selector]:!rounded-lg"
+              className="w-44 h-8 [&_.ant-select-selector]:rounded-lg!"
               onChange={(val) => {
                 setStatusFilter(val);
                 setPage(1);
@@ -295,18 +295,18 @@ export default function ProductManagementPage() {
               ]}
             />
 
-            {(search || categoryFilter || statusFilter) && (
+            {(search || categoryFilter || statusFilter || localeFilter) && (
               <Button
                 type="text"
                 onClick={() => {
                   setSearch("");
                   setCategoryFilter(undefined);
                   setStatusFilter(undefined);
-                  setLocaleFilter("vi");
+                  setLocaleFilter("");
                   setPage(1);
                 }}
                 icon={<RotateCcw className="w-4 h-4" />}
-                className="flex items-center text-slate-500 hover:text-slate-700 h-[32px] hover:bg-slate-100 rounded-lg px-3 font-medium transition"
+                className="flex items-center text-slate-500 hover:text-slate-700 h-8 hover:bg-slate-100 rounded-lg px-3 font-medium transition"
               >
                 Clear Filters
               </Button>
@@ -345,7 +345,7 @@ export default function ProductManagementPage() {
             }
           }}
           scroll={{ x: 1200 }}
-          className="[&_.ant-table-thead>tr>th]:bg-slate-50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-pagination]:!px-4"
+          className="[&_.ant-table-thead>tr>th]:bg-slate-50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-pagination]:px-4!"
         />
       </div>
     </div>

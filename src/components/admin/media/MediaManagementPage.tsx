@@ -29,7 +29,7 @@ export default function MediaManagementPage() {
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
-  const limit = 20;
+  const limit = 18;
 
   // Queries & Mutations
   const { data: mediaResponse, isLoading } = useMediaListQuery({

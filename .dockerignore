@@ -1,0 +1,62 @@
+# ==========================================
+# .dockerignore — vivoo-frontend
+# ==========================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node modules (rebuilt inside container)
+node_modules
+
+# Next.js build output (rebuilt inside container)
+.next
+out
+
+# Environment files (inject at runtime)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Development / IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Docker files (not needed inside image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Nginx config (mounted as volume)
+nginx/
+
+# README / docs
+README.md
+CHANGELOG.md
+*.md
+
+# CI/CD
+.azure
+.github
+.gitlab-ci.yml
+
+# Tests
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# TypeScript build cache
+tsconfig.tsbuildinfo

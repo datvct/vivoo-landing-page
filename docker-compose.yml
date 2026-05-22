@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+  # ============================================
+  # Next.js Frontend App
+  # ============================================
+  vivoo-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    image: vivoo-frontend:latest
+    container_name: vivoo-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+    volumes:
+      - logs:/app/logs
+    networks:
+      - vivoo-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:3000/api/health",
+          "||",
+          "exit",
+          "1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================
+  # Nginx Reverse Proxy
+  # ============================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: vivoo-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+      - certbot-www:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    depends_on:
+      - vivoo-frontend
+    networks:
+      - vivoo-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # Certbot (SSL Let's Encrypt - optional)
+  # ============================================
+  certbot:
+    image: certbot/certbot:latest
+    container_name: vivoo-certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-certs:/etc/letsencrypt
+    # Run manually: docker compose run --rm certbot certonly ...
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  logs:
+    driver: local
+  nginx-logs:
+    driver: local
+  certbot-www:
+    driver: local
+  certbot-certs:
+    driver: local
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  vivoo-network:
+    driver: bridge
+    name: vivoo-network

@@ -68,7 +68,7 @@ export default function FAQSection({
                   className="overflow-hidden rounded-xl bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] ring-1 ring-black/5 transition-all duration-300 sm:rounded-2xl"
                 >
                   <button
-                    className="flex w-full items-center justify-between px-4 py-4 text-left sm:px-6 sm:py-5"
+                    className="flex w-full cursor-pointer items-center justify-between px-4 py-4 text-left sm:px-6 sm:py-5"
                     onClick={() =>
                       toggle(i)
                     }
@@ -80,8 +80,8 @@ export default function FAQSection({
 
                     <div
                       className={`ml-4 shrink-0 transition-transform duration-300 ${open
-                          ? "rotate-45"
-                          : "rotate-0"
+                        ? "rotate-45"
+                        : "rotate-0"
                         }`}
                     >
                       <Plus size={18} />
@@ -90,8 +90,8 @@ export default function FAQSection({
 
                   <div
                     className={`grid transition-all duration-300 ease-in-out ${open
-                        ? "grid-rows-[1fr] opacity-100"
-                        : "grid-rows-[0fr] opacity-0"
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0"
                       }`}
                   >
                     <div className="overflow-hidden">

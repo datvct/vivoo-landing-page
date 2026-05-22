@@ -17,11 +17,10 @@ export default function LanguageSwitcher() {
           key={code}
           type="button"
           onClick={() => setLocale(code as Locale)}
-          className={`min-w-[2.25rem] rounded-full px-2.5 py-1.5 transition ${
-            locale === code
+          className={`min-w-[2.25rem] rounded-full px-2.5 cursor-pointer py-1.5 transition ${locale === code
               ? "bg-white text-blue-600 shadow-sm"
               : "text-slate-500 hover:text-slate-800"
-          }`}
+            }`}
           aria-pressed={locale === code}
         >
           {code.toUpperCase()}

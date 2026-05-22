@@ -6,7 +6,9 @@ import { getProductCategories } from "@/lib/get-product-categories";
 import { LOCALES } from "@/i18n/config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.vivoo.com.vn";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://www.vivoo.com.vn";
 
   const staticRoutes = [
     "",
@@ -16,7 +18,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
   ];
 
-  const sitemap: MetadataRoute.Sitemap = [];
+  const sitemap: MetadataRoute.Sitemap =
+    [];
 
   // Static routes for all locales
   for (const locale of LOCALES) {
@@ -25,7 +28,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${baseUrl}/${locale}${route}`,
         lastModified: new Date(),
         changeFrequency: "daily",
-        priority: route === "" ? 1 : 0.8,
+        priority:
+          route === "" ? 1 : 0.8,
       });
     }
   }
@@ -33,20 +37,52 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic content
   try {
     for (const locale of LOCALES) {
-      const [products, services, solutions, categories] = await Promise.all([
-        getProducts({ limit: 100, page: 1, status: 'published', locale }),
-        getServices({ limit: 100, page: 1, status: 'published', locale }),
-        getSolutions({ limit: 100, page: 1, status: 'published', locale }),
-        getProductCategories({ limit: 100, page: 1, status: 'published', locale }),
+      const [
+        products,
+        services,
+        solutions,
+        categories,
+      ] = await Promise.all([
+        getProducts({
+          limit: 100,
+          page: 1,
+          status: "published",
+          locale,
+        }),
+        getServices({
+          limit: 100,
+          page: 1,
+          status: "published",
+          locale,
+        }),
+        getSolutions({
+          limit: 100,
+          page: 1,
+          status: "published",
+          locale,
+        }),
+        getProductCategories({
+          limit: 100,
+          page: 1,
+          status: "published",
+          locale,
+        }),
       ]);
 
       // Helper to generate locale-based dynamic routes
-      const addDynamicRoutes = (items: any[], path: string, priority = 0.6) => {
+      const addDynamicRoutes = (
+        items: any[],
+        path: string,
+        priority = 0.6
+      ) => {
         items?.forEach((item) => {
           if (item?.slug) {
             sitemap.push({
               url: `${baseUrl}/${locale}/${path}/${item.slug}`,
-              lastModified: new Date(item.updatedAt || Date.now()),
+              lastModified: new Date(
+                item.updatedAt ||
+                  Date.now()
+              ),
               changeFrequency: "weekly",
               priority,
             });
@@ -54,13 +90,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
       };
 
-      addDynamicRoutes(products, "product", 0.7);
-      addDynamicRoutes(services, "services", 0.6);
-      addDynamicRoutes(solutions, "solutions", 0.7);
-      addDynamicRoutes(categories, "product-category", 0.7);
+      addDynamicRoutes(
+        products,
+        "product",
+        0.7
+      );
+      addDynamicRoutes(
+        services,
+        "services",
+        0.6
+      );
+      addDynamicRoutes(
+        solutions,
+        "solutions",
+        0.7
+      );
+      addDynamicRoutes(
+        categories,
+        "product-category",
+        0.7
+      );
     }
   } catch (error) {
-    console.error("Error generating sitemap:", error);
+    console.error(
+      "Error generating sitemap:",
+      error
+    );
   }
 
   return sitemap;

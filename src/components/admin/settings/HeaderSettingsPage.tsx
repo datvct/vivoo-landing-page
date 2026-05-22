@@ -1,19 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Spin, Row, Col, Space, Typography, Popconfirm, Select, message } from "antd";
+import { Card, Input, Button, Spin, Typography, Popconfirm, Select, } from "antd";
 import {
   Save,
   Plus,
   Trash2,
-  Sliders,
-  Heading,
-  Globe,
   Navigation,
 } from "lucide-react";
 import { useSiteSettingQuery } from "@/services/site-settings/queries";
 import { useUpsertSiteSettingMutation } from "@/services/site-settings/mutations";
-import { APP_LOCALES, HeaderSettings, HeaderMenuItem, HeaderSubmenuItem } from "@/types/types";
+import { APP_LOCALES, HeaderSettings, } from "@/types/types";
 
 const { Title, Paragraph } = Typography;
 
@@ -106,14 +103,14 @@ export default function HeaderSettingsPage() {
   const isSaving = upsertMutation.isPending;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-10">
+    <div className="space-y-6 max-w-6xl mx-auto pb-10">
       {/* Save bar */}
       <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <Title level={2} className="!mb-0 !font-bold tracking-tight text-slate-800">
+          <Title level={2} className="mb-0! font-bold! tracking-tight text-slate-800">
             Header Menu Settings
           </Title>
-          <Paragraph className="text-slate-500 text-sm !mb-0 mt-1">
+          <Paragraph className="text-slate-500 text-sm mb-0! mt-1">
             Build and organize your main site navigation links, dropdown lists and routing paths.
           </Paragraph>
         </div>
@@ -122,13 +119,13 @@ export default function HeaderSettingsPage() {
             value={siteCode}
             onChange={setSiteCode}
             options={[{ label: "Vivoo Main Site", value: "vivoo" }]}
-            className="w-40 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+            className="w-40 h-10 [&_.ant-select-selector]:h-10! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center! [&_.ant-select-selector]:rounded-lg!"
           />
           <Select
             value={locale}
             onChange={setLocale}
             options={APP_LOCALES}
-            className="w-36 h-[40px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!flex [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-lg"
+            className="w-36 h-10 [&_.ant-select-selector]:h-10! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center! [&_.ant-select-selector]:rounded-lg!"
           />
           <Button
             type="primary"
@@ -136,7 +133,7 @@ export default function HeaderSettingsPage() {
             onClick={handleSave}
             loading={isSaving}
             size="large"
-            className="shadow-sm font-semibold h-[40px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
+            className="shadow-sm font-semibold h-10 px-6 rounded-lg bg-blue-600 hover:bg-blue-700 border-none flex items-center"
           >
             Save Changes
           </Button>
@@ -182,7 +179,7 @@ export default function HeaderSettingsPage() {
                       setForm({ ...form, menus: next });
                     }}
                     placeholder="Enter menu label"
-                    className="h-[36px] rounded-lg"
+                    className="h-9 rounded-lg"
                   />
                 </div>
                 <div>
@@ -195,7 +192,7 @@ export default function HeaderSettingsPage() {
                       setForm({ ...form, menus: next });
                     }}
                     placeholder="e.g. /solutions (leave empty if dropdown only)"
-                    className="h-[36px] rounded-lg"
+                    className="h-9 rounded-lg"
                   />
                 </div>
               </div>
@@ -226,7 +223,7 @@ export default function HeaderSettingsPage() {
                             setForm({ ...form, menus: next });
                           }}
                           placeholder="Submenu Title (e.g. ViVoo Camera)"
-                          className="h-[34px] rounded-lg text-sm"
+                          className="h-8.5 rounded-lg text-sm"
                         />
                         <Input
                           value={sub.link}
@@ -236,7 +233,7 @@ export default function HeaderSettingsPage() {
                             setForm({ ...form, menus: next });
                           }}
                           placeholder="Submenu Link (e.g. /product-category/camera)"
-                          className="h-[34px] rounded-lg text-sm"
+                          className="h-8.5 rounded-lg text-sm"
                         />
                       </div>
                       <Popconfirm title="Delete item?" onConfirm={() => removeSubmenuItem(menuIndex, subIndex)}>

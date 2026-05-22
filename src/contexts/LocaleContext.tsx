@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, type Locale } from "@/i18n/config";
 import { getMessage, type MessageKey } from "@/i18n/messages";
-import { localizedPath, swapLocaleInPathname } from "@/i18n/navigation";
+import { localizedPath } from "@/i18n/navigation";
 
 type LocaleContextValue = {
   locale: Locale;
@@ -30,6 +30,22 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: Loc
     document.documentElement.lang = initialLocale;
   }, [initialLocale]);
 
+  useEffect(() => {
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+  }, [pathname]);
+
   const setLocale = useCallback(
     (next: Locale) => {
       const segment = pathname.split("/").filter(Boolean)[0];
@@ -39,8 +55,7 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: Loc
       if (typeof document !== "undefined") {
         document.documentElement.lang = next;
       }
-      const target = swapLocaleInPathname(pathname, next);
-      router.push(target);
+      router.push(localizedPath("/", next));
     },
     [initialLocale, pathname, router]
   );

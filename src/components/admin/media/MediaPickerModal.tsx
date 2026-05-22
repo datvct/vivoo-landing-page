@@ -46,7 +46,7 @@ export default function MediaPickerModal({
     selectableTypes = ["image"],
     selectionMode = "single",
     defaultTab = "image",
-    pageSize = 24,
+    pageSize = 18,
 }: MediaPickerModalProps) {
     const [mediaPage, setMediaPage] = useState(1);
     const [mediaSearch, setMediaSearch] = useState("");
